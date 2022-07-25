@@ -19,6 +19,8 @@ see the Cue and Stream classes.
 """
 
 import sys
+import logging
+logger = logging.getLogger('decode')
 
 from .cue import Cue
 from .stream import Stream
@@ -30,7 +32,9 @@ def _read_stuff(stuff):
         strm = Stream(stuff)
         strm.decode()
         return True
-    except:
+    except Exception as e:
+        logger.error(e)        
+        logger.info(f"Decode as stream failed. Retrying decode as cue...")
         try:
             cue = Cue(stuff)
             cue.decode()
