@@ -6,6 +6,8 @@ from functools import partial
 from .cue import Cue
 from .packetdata import PacketData
 from .reader import reader
+import logging
+logger = logging.getLogger('stream')
 
 """
 stream types for program streams.
@@ -576,28 +578,79 @@ class Stream:
         chunk_size = 5
         end_idx = (idx + si_len) - chunk_size
         while idx < end_idx:
-            stream_type, pid, ei_len = self._parse_stream_type(pay, idx)
+            stream_type, pid, ei_len, descrs = self._parse_stream_type(pay, idx)
             if self.info:
                 pinfo = self._prgm[program_number]
                 pinfo.streams[pid] = stream_type
             idx += chunk_size
             idx += ei_len
             self._pid_prgm[pid] = program_number
-            self._chk_pid_stream_type(pid, stream_type)
+            self._chk_pid_stream_type(pid, stream_type, descrs)
 
     def _parse_stream_type(self, pay, idx):
         """
         extract stream pid and type
         """
         stream_type = hex(pay[idx])
+        logger.debug(f"strem_type={stream_type}")
         el_pid = self._parse_pid(pay[idx + 1], pay[idx + 2])
         ei_len = self._parse_length(pay[idx + 3], pay[idx + 4])
-        return stream_type, el_pid, ei_len
+        descr_base_len = 2
+        ei_len_rem = ei_len
+        descrs = []
+        # atleast one descriptor with a 1 byte tag and 1 byte length
+        didx = idx + 5
+        while ei_len_rem >= descr_base_len:
+            descr_tag = pay[didx]
+            descr_len = pay[didx + 1]
+            logger.debug(f"descr_tag={descr_tag} ({hex(descr_tag)})")
+            if descr_tag == 0x05:
+                if descr_len >= 4:
+                    format_id = ((pay[didx + 2] << 24) | (pay[didx + 3] << 16) | (pay[didx + 4] << 8) | pay[didx + 5])
+                    logger.debug(f"format_id={format_id} ({hex(format_id)})")
+                    if format_id == 0x43554549:
+                        descrs.append("CUEI")
+                    elif format_id == 0x56414E43:
+                        # VANC
+                        descrs.append("VANC")
+                        pass
+                else:
+                    raise Exception(f'Registration descriptor has only {descr_len} bytes instead of 4 byte format id')
+            elif descr_tag == 0xC4:
+                if descr_len >= 9:
+                    if pay[didx + 2:didx + 2 + 9] == "SMPTE2038".encode("ascii"):
+                        pass
+            elif descr_tag == 0x0A:
+                # ISO 639 language
+                pass
+            elif descr_tag == 0x6A:
+                # AC-3
+                pass
+            elif descr_tag == 0x8A:
+                if descr_len >= 1:
+                    cue_stream_type = pay[didx + 2]
+                    logger.debug(f"cue_strem_type={cue_stream_type} ({hex(cue_stream_type)})")
+                    descrs.append(f"CUEI")
+                    descrs.append(f"CUEI {hex(cue_stream_type)}")
+                else:
+                    raise Exception(f'Cue ID descriptor has only {descr_len} bytes instead of 1 byte cue stream type')
+            didx += 2 + descr_len
+            ei_len_rem -= 2 + descr_len
+        logger.debug(f"descrs={descrs}")
+        return stream_type, el_pid, ei_len, descrs
 
-    def _chk_pid_stream_type(self, pid, stream_type):
+    def _chk_pid_stream_type(self, pid, stream_type, descrs):
         """
         if stream_type is 0x06 or 0x86
         add it to self._scte35_pids.
         """
-        if stream_type in ["0x6", "0x86"]:
+        stream_type_desc = None
+        if stream_type == "0x6":
+            if "CUEI" in descrs:
+                self._pids["scte35"].add(pid)
+                stream_type_desc = "Private"
+        elif stream_type == "0x86":
             self._pids["scte35"].add(pid)
+            stream_type_desc = "SCTE-35"
+        if self.info:
+            print(f"\tPID: {pid}({hex(pid)}) Type: {stream_type} {stream_type_desc} {descrs}")
