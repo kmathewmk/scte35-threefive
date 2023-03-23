@@ -33,14 +33,15 @@ def _read_stuff(stuff):
         strm.decode_fu()
         return True
     except Exception as e:
-        logger.error(e)        
+        logger.error(e, exc_info=True)
         logger.info(f"Decode as stream failed. Retrying decode as cue...")
         try:
             cue = Cue(stuff)
             cue.decode()
             cue.show()
             return True
-        except:
+        except Exception as e1:
+            logger.error(e1, exc_info=True)
             return False
 
 
