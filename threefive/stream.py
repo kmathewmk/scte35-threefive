@@ -427,7 +427,10 @@ class Stream:
 
     def _parse(self, pkt):
         cue = False
+        payload_unit_start_indicator = (pkt[1] & 0x40) >> 6
         pid = (pkt[1] & 0x01F) << 8 | pkt[2]
+        if payload_unit_start_indicator:
+            self._clr_partial(pid)
         if pid in self._pids["tables"]:
             self._parse_tables(pkt, pid)
         if pid in self._pids["pcr"]:
@@ -440,6 +443,13 @@ class Stream:
             cue = self._parse_scte35(pkt, pid)
         return cue
 
+    def _clr_partial(self, pid):
+        if pid in self._partial:
+            partial_pay = self._partial.pop(pid)
+            logger.warn(f"Cleared incomplete payload. len={len(partial_pay)} PID={pid}")
+            return True
+        return False
+    
     def _chk_partial(self, pay, pid, sep):
         if pid in self._partial:
             pay = self._partial.pop(pid) + pay
@@ -592,7 +602,7 @@ class Stream:
         extract stream pid and type
         """
         stream_type = hex(pay[idx])
-        logger.debug(f"strem_type={stream_type}")
+        logger.debug(f"stream_type={stream_type}")
         el_pid = self._parse_pid(pay[idx + 1], pay[idx + 2])
         ei_len = self._parse_length(pay[idx + 3], pay[idx + 4])
         descr_base_len = 2
@@ -627,6 +637,7 @@ class Stream:
                 # AC-3
                 pass
             elif descr_tag == 0x8A:
+                # Cue Identifier
                 if descr_len >= 1:
                     cue_stream_type = pay[didx + 2]
                     logger.debug(f"cue_strem_type={cue_stream_type} ({hex(cue_stream_type)})")
@@ -634,6 +645,12 @@ class Stream:
                     descrs.append(f"CUEI {hex(cue_stream_type)}")
                 else:
                     raise Exception(f'Cue ID descriptor has only {descr_len} bytes instead of 1 byte cue stream type')
+            elif descr_tag == 0x97:
+                # SCTE 128-2 adaptation_field_data_descriptor
+                pass
+            elif descr_tag == 0xE9:
+                # Cablelabs EBP_descriptor OC-SP-EBP-I01-130118
+                pass
             didx += 2 + descr_len
             ei_len_rem -= 2 + descr_len
         logger.debug(f"descrs={descrs}")
