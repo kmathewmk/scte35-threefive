@@ -2,6 +2,7 @@
 Mpeg-TS Stream parsing class Stream
 """
 import sys
+from sys import stderr, stdout
 from functools import partial
 from new_reader import reader
 from .stuff import print2
@@ -46,8 +47,14 @@ def show_cue_stderr(cue):
     print2 cue data to sys.stderr
     for Stream.decode_proxy
     """
-    cue.to_stderr()
+    cue.show(stderr)
 
+def show_cue_base64(cue):
+    cue.show_base64()
+
+
+def show_cue_base64_stderr(cue):
+    cue.show_base64(stderr)
 
 class ProgramInfo:
     """
