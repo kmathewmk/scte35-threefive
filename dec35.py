@@ -17,6 +17,7 @@ logging.basicConfig(level=logging.WARN)
 logger = logging.getLogger('dec35')
 
 # Usage:
+# python3 dec35.py --outFile stdout --outFormat json tsdir
 # python3 dec35.py --outFile stdout --outFormat json test.ts
 # python3 dec35.py --outFile stderr --outFormat base64 test.ts
 # python3 dec35.py --outFile stdout --outFormat base64 "/DAsAAAgo7rtAP/wBQb/33AAuQAWAhRDVUVJAA0f3X//AAApvnUAADAAAB+Ivbs="
@@ -36,7 +37,9 @@ if os.path.isdir(args.input):
     dir = args.input
     for dirent in os.scandir(dir):
         if dirent.is_file() and dirent.path.endswith(".ts"):
-            print(dirent.path.encode(sys.stdout.encoding, errors='replace'))
+            print(f"tsFile: {dirent.path}")
+            #print(dirent.path.encode(sys.stdout.encoding, errors='replace'))
             threefive.decode(dirent.path, args)
+            print()
 else:
     threefive.decode(args.input, args)
