@@ -31,32 +31,39 @@ from .stream import Stream
 
 def _read_stuff(stuff, args):
     try:
-        if args.outFormat == "json":
-            format_func = show_cue_stderr if args.outFile == stderr else show_cue
-        elif args.outFormat == "base64":
-            format_func = show_cue_base64_stderr if args.outFile == stderr else show_cue_base64
-        else:
-            raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
-        # Mpegts Video
-        strm = Stream(stuff)
-        strm.decode_fu(format_func)
-        return True
+        return _read_ts(stuff, args)
     except Exception as e:
-        logger.error(e, exc_info=True)
-        logger.info(f"Decode as stream failed. Retrying decode as cue...")
+        logger.warn(f"Decode as TS failed. Retrying decode as cue...")
         try:
-            cue = Cue(stuff)
-            cue.decode()
-            if args.outFormat == "json":
-                cue.show(args.outFile)
-            elif args.outFormat == "base64":
-                cue.show_base64(args.outFile)
-            else:
-                raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
-            return True
+            return _read_cue(stuff, args)
         except Exception as e1:
+            logger.error(f"Decode as cue failed")
             logger.error(e1, exc_info=True)
             return False
+
+def _read_ts(stuff, args):
+    if args.outFormat == "json":
+        format_func = show_cue_stderr if args.outFile == stderr else show_cue
+    elif args.outFormat == "base64":
+        format_func = show_cue_base64_stderr if args.outFile == stderr else show_cue_base64
+    else:
+        raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
+    # Mpegts Video
+    strm = Stream(stuff)
+    strm.decode_fu(format_func)
+    return True
+
+
+def _read_cue(stuff, args):
+    cue = Cue(stuff)
+    cue.decode()
+    if args.outFormat == "json":
+        cue.show(args.outFile)
+    elif args.outFormat == "base64":
+        cue.show_base64(args.outFile)
+    else:
+        raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
+    return True
 
 
 def decode(stuff=None, args={"outFormat": "json", "outFile": stdout}):
