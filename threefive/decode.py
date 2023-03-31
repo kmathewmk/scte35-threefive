@@ -50,7 +50,7 @@ def _read_ts(stuff, args):
         raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
     # Mpegts Video
     strm = Stream(stuff)
-    strm.decode_fu(format_func)
+    strm.decode(format_func)
     return True
 
 
