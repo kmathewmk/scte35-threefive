@@ -200,7 +200,7 @@ class Cue(SCTE35Base):
         """
         Cue.show prints the Cue as base64 ascii
         """
-        print(b64encode(self.bites).decode(), file=file)
+        print(self.encode(), file=file)
 
     def to_stderr(self):
         """
