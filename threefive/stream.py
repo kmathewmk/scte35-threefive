@@ -2,11 +2,14 @@
 Mpeg-TS Stream parsing class Stream
 """
 import sys
+from sys import stderr, stdout
 from functools import partial
 from new_reader import reader
 from .stuff import print2
 from .cue import Cue
 from .packetdata import PacketData
+import logging
+logger = logging.getLogger('stream')
 
 
 streamtype_map = {
@@ -43,8 +46,13 @@ def show_cue_stderr(cue):
     print2 cue data to sys.stderr
     for Stream.decode_proxy
     """
-    cue.to_stderr()
+    cue.show(stderr)
 
+def show_cue_base64(cue):
+    cue.show_base64()
+
+def show_cue_base64_stderr(cue):
+    cue.show_base64(stderr)
 
 class ProgramInfo:
     """
@@ -157,6 +165,7 @@ class Stream:
         self.the_program = None
         self.pids = Pids()
         self.maps = Maps()
+        self.pkt_num = 0
 
     def __repr__(self):
         return str(self.__dict__)
@@ -432,11 +441,18 @@ class Stream:
         and returns the pid
         """
         pid = self._parse_pid(pkt[1], pkt[2])
+        
+        payload_unit_start_indicator = (pkt[1] & 0x40) >> 6
+        # logger.warn(f"idx={self.pkt_num} pid={pid} pusi={payload_unit_start_indicator}")
+        if payload_unit_start_indicator:
+            self._clr_partial(pid)
+
         if pid in self.pids.tables:
             self._parse_tables(pkt, pid)
         return pid
 
     def _parse(self, pkt):
+        self.pkt_num += 1
         cue = False
         pid = self._parse_info(pkt)
         # self._parse_cc(pkt, pid)
@@ -445,6 +461,13 @@ class Stream:
             cue = self._parse_scte35(pkt, pid)
         return cue
 
+    def _clr_partial(self, pid):
+        if pid in self.maps.partial:
+            partial_pay = self.maps.partial.pop(pid)
+            logger.warn(f"Cleared incomplete payload. len={len(partial_pay)} PID={pid}")
+            return True
+        return False
+    
     def _chk_partial(self, pay, pid, sep):
         if pid in self.maps.partial:
             pay = self.maps.partial.pop(pid) + pay
@@ -452,7 +475,8 @@ class Stream:
 
     def _same_as_last(self, pay, pid):
         if pid in self.maps.last:
-            return pay == self.maps.last[pid]
+            if pay == self.maps.last[pid]:
+                return True
         self.maps.last[pid] = pay
         return False
 
@@ -597,13 +621,74 @@ class Stream:
         stream_type = hex(pay[idx])
         el_pid = self._parse_pid(pay[idx + 1], pay[idx + 2])
         ei_len = self._parse_length(pay[idx + 3], pay[idx + 4])
-        self._set_scte35_pids(el_pid, stream_type)
+        descrs = self._parse_es_info_descriptors(pay, idx, ei_len)
+        logger.debug(f"pid={el_pid} stream_type={stream_type} es_info_len={ei_len} descrs={descrs}")
+        self._set_scte35_pids(el_pid, stream_type, descrs)
         return stream_type, el_pid, ei_len
 
-    def _set_scte35_pids(self, pid, stream_type):
+    def _parse_es_info_descriptors(self, pay, idx, ei_len):
+        descr_base_len = 2
+        ei_len_rem = ei_len
+        descrs = []
+        # atleast one descriptor with a 1 byte tag and 1 byte length
+        didx = idx + 5
+        while ei_len_rem >= descr_base_len:
+            descr_tag = pay[didx]
+            descr_len = pay[didx + 1]
+            logger.debug(f"descr tag={descr_tag} ({hex(descr_tag)}) len={descr_len}")
+            if descr_tag == 0x05:
+                if descr_len >= 4:
+                    format_id = ((pay[didx + 2] << 24) | (pay[didx + 3] << 16) | (pay[didx + 4] << 8) | pay[didx + 5])
+                    logger.debug(f"format_id={format_id} ({hex(format_id)})")
+                    if format_id == 0x43554549:
+                        descrs.append("CUEI")
+                    elif format_id == 0x56414E43:
+                        # VANC
+                        descrs.append("VANC")
+                        pass
+                else:
+                    raise Exception(f'Registration descriptor has only {descr_len} bytes instead of 4 byte format id')
+            elif descr_tag == 0xC4:
+                if descr_len >= 9:
+                    if pay[didx + 2:didx + 2 + 9] == "SMPTE2038".encode("ascii"):
+                        pass
+            elif descr_tag == 0x0A:
+                # ISO 639 language
+                pass
+            elif descr_tag == 0x6A:
+                # AC-3
+                pass
+            elif descr_tag == 0x8A:
+                # Cue Identifier
+                if descr_len >= 1:
+                    cue_stream_type = pay[didx + 2]
+                    logger.debug(f"cue_strem_type={cue_stream_type} ({hex(cue_stream_type)})")
+                    descrs.append(f"CUEI")
+                    descrs.append(f"CUEI {hex(cue_stream_type)}")
+                else:
+                    raise Exception(f'Cue ID descriptor has only {descr_len} bytes instead of 1 byte cue stream type')
+            elif descr_tag == 0x97:
+                # SCTE 128-2 adaptation_field_data_descriptor
+                pass
+            elif descr_tag == 0xE9:
+                # Cablelabs EBP_descriptor OC-SP-EBP-I01-130118
+                pass
+            didx += 2 + descr_len
+            ei_len_rem -= 2 + descr_len
+        return descrs
+
+    def _set_scte35_pids(self, pid, stream_type, descrs):
         """
         if stream_type is 0x06 or 0x86
         add it to self._scte35_pids.
         """
-        if stream_type in ["0x6", "0x86"]:
+        stream_type_desc = None
+        if stream_type == "0x6":
+            if "CUEI" in descrs:
+                self.pids.scte35.add(pid)
+                stream_type_desc = "Private"
+        elif stream_type == "0x86":
             self.pids.scte35.add(pid)
+            stream_type_desc = "SCTE-35"
+        if self.info:
+            print(f"\tPID: {pid}({hex(pid)}) Type: {stream_type} {stream_type_desc} {descrs}")

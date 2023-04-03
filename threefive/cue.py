@@ -4,12 +4,15 @@ threefive.Cue Class
 from base64 import b64decode, b64encode
 import json
 from .stuff import print2
+from sys import stderr, stdout
 from .bitn import NBin
 from .base import SCTE35Base
 from .section import SpliceInfoSection
 from .commands import command_map
 from .descriptors import splice_descriptor, descriptor_map
 from .crc import crc32
+import logging
+logger = logging.getLogger('cue')
 
 
 class Cue(SCTE35Base):
@@ -48,6 +51,7 @@ class Cue(SCTE35Base):
         packet_data is a instance passed from a Stream instance
         """
         self.bites = None
+        self.data = data
         if data:
             self.bites = self._mk_bits(data)
         self.info_section = SpliceInfoSection()
@@ -186,19 +190,25 @@ class Cue(SCTE35Base):
         bites = bites[self.command.command_length :]
         return bites
 
-    def show(self):
+    def show(self, file=stdout):
         """
         Cue.show prints the Cue as JSON
         """
-        print2(self.get_json())
+        print(self.get_json(), file=file)
 
+    def show_base64(self, file=stdout):
+        """
+        Cue.show prints the Cue as base64 ascii
+        """
+        print(self.encode(), file=file)
+        
     def to_stderr(self):
         """
         Cue.to_stderr prints the Cue
         as JSON to sys.stderr
         """
         # print(self.get_json(), file=stderr)
-        self.show()
+        self.show(stderr)
 
     # encode related
 
