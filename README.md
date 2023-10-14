@@ -1,11 +1,35 @@
-# threefive is the highest rate SCTE-35 Tool. Ever.
+#  threefive is the most advanced SCTE-35 tool.   Ever. 
+# Latest Version is `2.4.9`
 
-### Latest Version is 2.3.79
-*  Big thanks to the fine folks at [airlangga-m2amedia](https://github.com/airlangga-m2amedia) for their work. I appreciate it.
+<details><summary><h1>2FA?  </h1></summary<H1> </summary>
+
+  * I am nor installing an app on my phone or giving github my phone number so they can spam me with text messages.
+  * I found an application called numberstation that runs on my desktop, seems to be a good way to go. 
+ 
+ 
+</details>
+
+
+ 
+ ⚡ `Decodes` __SCTE-35__.
+<br>⚡ `Encodes` __SCTE-35__.
+<br>⚡ `Parses` __SCTE-35__ from `Base64`, `Bytes`, `Hex`, `Integers`, and `MPEGTS` Streams.
+<br>⚡ `Parses` __SCTE-36__ from `files`, `http(s)`, `Multicast`, `UDP` and even `stdin` _( you can pipe to it)_. 
+<br>⚡ `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
+
+[`threefive/go` is now `cuei`](https://github.com/futzu/cuei) <br/>
+
+[The `threefive.Segment` class for parsing `HLS` segments](https://github.com/futzu/scte35-threefive/segment.md)
 
 
 
- <details><summary>Installation and Getting Started</summary>
+
+<details><summary>Supported Platforms</summary>
+ 
+* threefive is expected to work on any platform that runs python3.6 and up.
+* There are no known platform specific issues. 
+  
+</details>
 
 <details><summary>Requirements</summary>
 
@@ -13,7 +37,6 @@
   * [pypy3](https://pypy.org) or python 3.6+ (pypy3 runs threefive 2-3 times faster than python 3.10)
   * [new_reader](https://github.com/futzu/new_reader)
   *  __pyaes__
-</details>
 
 
 * [Install threefive](#install)
@@ -34,27 +57,32 @@
 * __Unstable__ testing versions are __even__.
 </details>
 
- <details><summary>Parse SCTE-35 on the command line. </summary>
-
-
+ <details><summary>Parse SCTE-35 on the command line.</summary>
+ 
+* `Parse base64`
+```js
+threefive '/DAvAAAAAAAA///wFAVIAACPf+/+c2nALv4AUsz1AAAAAAAKAAhDVUVJAAABNWLbowo='
+```
+* `Parse a hex value`
 ```js
 threefive 0xFC302F000000000000FFFFF014054800008F7FEFFE7369C02EFE0052CCF500000000000A0008435545490000013562DBA30A
 ```
+* `Parse MPEGTS from stdin`
 ```js
 cat video.ts | threefive
 ```
-or like this
+* `Parse MPEGTS video over https`
 ```js
 threefive https://so.slo.me/longb.ts
 ```
-parse multicast like this
+* `Parse multicast`
 ```lua
 threefive udp://@235.35.3.5:3535
 ```
 
 </details>
 
- <details><summary>Parse SCTE-35 with three to five lines of code.</summary>
+ <details><summary>Parse SCTE-35 programmatically with a few lines of code.</summary>
 
    <details><summary>Mpegts Multicast in three lines of code.</summary>
 
@@ -77,6 +105,7 @@ strm = threefive.Stream('https://iodisco.com/ch1/ready.ts')
 strm.decode()
 
 
+       
    </details>
 
  <details><summary>Base64 in five lines of code.</summary>
@@ -436,6 +465,29 @@ ___
 </details>
 
 
+<details><summary> Need to verify your splice points? </summary> 
+ 
+
+ 
+ 
+* Try [cue2vtt.py](https://github.com/futzu/scte35-threefive/blob/master/examples/stream/cue2vtt.py) in the examples.
+
+   * cue2vtt.py creates webvtt subtitles out of SCTE-35 Cue data
+ 
+* use it like this 
+
+ ```rebol
+ pypy3 cue2vtt.py video.ts | mplayer video.ts -sub -
+```
+
+
+ ![image](https://github.com/futzu/scte35-threefive/assets/52701496/5b8dbea3-1d39-48c4-8fbe-de03a53cc1dd)
+
+
+---
+
+</details> 
+
 <details><summary>Custom charsets for UPIDS aka upids.charset</summary>
 
 `Specify a charset for Upid data by setting threefive.upids.charset` [`issue #55`](https://github.com/futzu/scte35-threefive/issues/55)
@@ -470,22 +522,130 @@ True
 
 </details>
 
-### Powered by threefive
+<details> <summary> Parse Custom Splice Descriptors</summary>
 
 
-  * [x9k3](https://github.com/futzu/x9k3): SCTE-35 HLS Segmenter and Cue Inserter.
+1.   Subclass `threefive.descriptors.SpliceDescriptor`
+2. Add `self.private_data` to` __init__`
+3. Add a `decode` method 
+4. Add it to `threefive.descriptors.descriptor_map` tag:Class  `112: MDSNDescriptor`
+```py3
+import threefive
 
-  * [m3ufu](https://github.com/futzu/m3ufu): SCTE-35 m3u8 Parser.
+class MDSNDescriptor(threefive.descriptors.SpliceDescriptor):
+    """
+    MDSNDescriptor
+    """
+    def __init__(self, bites=None):
+        super().__init__(bites)
+        self.name = "MDSN Descriptor"
+        self.private_data=None
 
-  * [six2scte35](https://github.com/futzu/six2scte35): ffmpeg changes SCTE-35 stream type to 0x06 bin data, six2scte35 changes it back.
+    def decode(self):
+        self.private_data="".join(list(self.bites[: self.descriptor_length -4].decode()))
 
-  * [SuperKabuki](https://github.com/futzu/SuperKabuki): SCTE-35 Packet Injection.
 
-### other threefive stuff
+if __name__ == '__main__':
+    threefive.descriptors.descriptor_map[112]=MDSNDescriptor 
 
-  * [Diagram](https://github.com/futzu/threefive/blob/master/cue.md) of a threefive SCTE-35 Cue.
+    cue = threefive.Cue('/DBlAAAAAAAAAP/wBQb+GVJTDABPcAZNRFNOQzUCRUNVRUkAAKTff8MAACky4A8xdXJuOnV1aWQ6QnJlYWstQjAwMjA4NTU2ODlfMDAxMi0wNy0xMC1YMDExMjUxNjEyNDAAAPkSB7E=')
+    cue.decode()
+    cue.show()
 
-  * [ffmpeg and threefive](https://github.com/futzu/SCTE35-threefive/blob/master/threefive-ffmpeg.md) and SCTE35 and Stream Type 0x6 bin data.
+```
 
-  * [Issues and Bugs and Feature Requests](https://github.com/futzu/scte35-threefive/issues) *No forms man, just open an issue and tell me what you need.*
+
+```json
+a@debian:~/clean/scte35-threefive$ pypy3 mdsn.py 
+{
+    "info_section": {
+        "table_id": "0xfc",
+        "section_syntax_indicator": false,
+        "private": false,
+        "sap_type": "0x3",
+        "sap_details": "No Sap Type",
+        "section_length": 101,
+        "protocol_version": 0,
+        "encrypted_packet": false,
+        "encryption_algorithm": 0,
+        "pts_adjustment_ticks": 0,
+        "pts_adjustment": 0.0,
+        "cw_index": "0x0",
+        "tier": "0xfff",
+        "splice_command_length": 5,
+        "splice_command_type": 6,
+        "descriptor_loop_length": 79,
+        "crc": "0xf91207b1"
+    },
+    "command": {
+        "command_length": 5,
+        "command_type": 6,
+        "name": "Time Signal",
+        "time_specified_flag": true,
+        "pts_time": 4720.284578,
+        "pts_time_ticks": 424825612
+    },
+    "descriptors": [
+        {
+            "tag": 112,
+            "descriptor_length": 6,
+            "name": "MDSN Descriptor",   # <---- Custom Descriptor parsed. 
+            "identifier": "MDSN",
+            "private_data": "C5"
+        },
+        {
+            "tag": 2,
+            "descriptor_length": 69,
+            "name": "Segmentation Descriptor",
+            "identifier": "CUEI",
+            "components": [],
+            "segmentation_event_id": "0xa4df",
+            "segmentation_event_cancel_indicator": false,
+            "program_segmentation_flag": true,
+            "segmentation_duration_flag": true,
+            "delivery_not_restricted_flag": false,
+            "web_delivery_allowed_flag": false,
+            "no_regional_blackout_flag": false,
+            "archive_allowed_flag": false,
+            "device_restrictions": "No Restrictions",
+            "segmentation_duration": 30.0,
+            "segmentation_duration_ticks": 2700000,
+            "segmentation_message": "Provider Advertisement Start",
+            "segmentation_upid_type": 15,
+            "segmentation_upid_type_name": "URI",
+            "segmentation_upid_length": 49,
+            "segmentation_upid": "urn:uuid:Break-B0020855689_0012-07-10-X0112516124",
+            "segmentation_type_id": 48,
+            "segment_num": 0,
+            "segments_expected": 0
+        }
+    ]
+}
+
+```
+
+
+</details>
+
+ Powered by threefive
+---
+
+<br>⚡ [myvideeotools.com](https://myvideotools.com/scte35parser) online SCTE-35 Cue parser. Powered by threefive. 
+<br>⚡ [POIS Server](https://github.com/scunning1987/pois_reference_server) is Super Cool.
+<br>⚡ [bpkio-cli](https://pypi.org/project/bpkio-cli/): A command line interface to the broadpeak.io APIs. 
+<br>⚡ [x9k3](https://github.com/futzu/x9k3): SCTE-35 HLS Segmenter and Cue Inserter.
+      <br>⚡ [amt-play ](https://github.com/vivoh-inc/amt-play) uses x9k3.
+<br>⚡ [m3ufu](https://github.com/futzu/m3ufu): SCTE-35 m3u8 Parser.
+<br>⚡ [six2scte35](https://github.com/futzu/six2scte35): ffmpeg changes SCTE-35 stream type to 0x06 bin data, six2scte35 changes it back.
+<br>⚡ [SuperKabuki](https://github.com/futzu/SuperKabuki): SCTE-35 Packet Injection.
+<br>⚡ [showcues](https://github.com/futzu/showcues) m3u8 SCTE-35 parser.
+  
+ threefive | more
+---
+<br>⚡ [Diagram](https://github.com/futzu/threefive/blob/master/cue.md) of a threefive SCTE-35 Cue.
+<br>⚡ [ffmpeg and threefive](https://github.com/futzu/SCTE35-threefive/blob/master/threefive-ffmpeg.md) and SCTE35 and Stream Type 0x6 bin data.
+<br>⚡ [Issues and Bugs and Feature Requests](https://github.com/futzu/scte35-threefive/issues) No forms man, just open an issue and tell me what you need. <br><i>(It needs to be  threefive related or a "What is the meaning of life and stuff?" type of question)</i>
+
+
+
 

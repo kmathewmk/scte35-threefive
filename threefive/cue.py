@@ -124,7 +124,12 @@ class Cue(SCTE35Base):
         return json.dumps(self.get(), indent=4)
 
     @staticmethod
-    def _mk_bits(data):
+    def fix_bad_b64(data):
+        while len(data) % 4 !=0:
+            data=data+'='
+        return data
+
+    def _mk_bits(self,data):
         """
         cue._mk_bits Converts
         Hex and Base64 strings into bytes.
@@ -148,7 +153,7 @@ class Cue(SCTE35Base):
             if data[:2].lower() == "fc":
                 return bytes.fromhex(data)
         try:
-            return b64decode(data)
+            return b64decode(self.fix_bad_b64(data))
         except (LookupError, TypeError, ValueError):
             return data
 

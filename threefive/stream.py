@@ -13,15 +13,23 @@ logger = logging.getLogger('stream')
 
 
 streamtype_map = {
-    "0x02": "MP2 Video",
-    "0x03": "MP2 Audio",
-    "0x04": "MP2 Audio",
-    "0x06": "PES Packets/Private Data",
-    "0x0f": "AAC Audio",
-    "0x1b": "AVC Video",
-    "0x81": "AC3 Audio ",
-    "0x86": "SCTE35 Data",
-    "0xc0": "Unknown",
+    0x00: "MPEG-2 Video",
+    0x01 : "H.264 Video",
+    0x02: "MP2 Video",
+    0x03: "MP2 Audio",
+    0x04: "MP2 Audio",
+    0x06: "PES Packets/Private Data",
+    0x0F: "AAC Audio",
+    0x15: "ID3 Timed Meta Data",
+    0x1B: "AVC Video",
+    0x80 : "MPEG-1 Audio",
+    0x81 : "MPEG-2 Audio",
+    0x82: "AC3 Audio ",
+    0x83 : "AAC Audio",
+    0x84 : "AAC HE v2 Audio",
+    0x86: "SCTE35 Data",
+    0xC0: "Unknown",
+    
 }
 
 
@@ -82,13 +90,12 @@ class ProgramInfo:
         # sorted_dict = {k:my_dict[k] for k in sorted(my_dict)})
         keys = sorted(self.streams)
         for k in keys:
-            vee = self.streams[k]
+            vee = int(self.streams[k],base=16)
             if vee in streamtype_map:
-                vee = f"{vee} {streamtype_map[vee]}"
+                vee = f"{hex(vee)} {streamtype_map[vee]}"
             else:
                 vee = f"{vee} Unknown"
             print2(f"\t\tPid: {k}[{hex(k)}]\tType: {vee}")
-        print2()
 
 
 class Pids:
@@ -163,6 +170,7 @@ class Stream:
         self.start = {}
         self.info = None
         self.the_program = None
+        self.the_scte35_pids = []
         self.pids = Pids()
         self.maps = Maps()
         self.pkt_num = 0
@@ -271,6 +279,15 @@ class Stream:
         self.the_program = the_program
         return self.decode(func)
 
+    def decode_pids(self, scte35_pids=[], func=show_cue):
+        """
+        Stream.decode_pids takes a list of SCTE-35 Pids parse
+        and an optional call back function to run when a Cue is found.
+        if scte35_pids is not set , all scte35 pids will be parsed.
+        """
+        self.the_scte35_pids = scte35_pids
+        return self.decode(func)
+
     def proxy(self, func=show_cue_stderr):
         """
         Stream.decode_proxy writes all ts packets are written to stdout
@@ -289,12 +306,15 @@ class Stream:
         parsed for SCTE-35.
         """
         self.info = True
-        for pkt in self._find_start():
+        data = self._tsdata.read(188*5000)
+        while data:
+            pkt =data[:188]
+            data = data[188:]
             self._parse_info(pkt)
         sopro = sorted(self.maps.prgm.items())
         for k, vee in sopro:
             if len(vee.streams.items()) > 0:
-                print2(f"Program: {k}")
+                print2(f"\nProgram: {k}")
                 vee.show()
         return True
 
@@ -395,18 +415,20 @@ class Stream:
         parse pts and store by program key
         in the dict Stream._pid_pts
         """
-        # if len(payload) > 13:
-        if self._has_pts(pkt[1], pkt[11]):
+
+        if self._pusi_flag(pkt):
             payload = self._parse_payload(pkt)
-            pts = (payload[9] & 14) << 29
-            pts |= payload[10] << 22
-            pts |= (payload[11] >> 1) << 15
-            pts |= payload[12] << 7
-            pts |= payload[13] >> 1
-            prgm = self.pid2prgm(pid)
-            self.maps.prgm_pts[prgm] = pts
-            if prgm not in self.start:
-                self.start[prgm] = pts
+            if len(payload) > 13:
+                if self._pts_flag(payload):
+                    pts = (payload[9] & 14) << 29
+                    pts |= payload[10] << 22
+                    pts |= (payload[11] >> 1) << 15
+                    pts |= payload[12] << 7
+                    pts |= payload[13] >> 1
+                    prgm = self.pid2prgm(pid)
+                    self.maps.prgm_pts[prgm] = pts
+                    if prgm not in self.start:
+                        self.start[prgm] = pts
 
     def _parse_payload(self, pkt):
         """
@@ -499,6 +521,8 @@ class Stream:
         """
         parse a scte35 cue from one or more packets
         """
+        if self.the_scte35_pids and pid not in self.the_scte35_pids:
+            return False
         pay = self._parse_payload(pkt)
         if not pay:
             return False

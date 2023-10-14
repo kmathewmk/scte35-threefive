@@ -34,6 +34,7 @@ class SpliceDescriptor(SCTE35Base):
         self.parse_id()
         self.provider_avail_id = None
         self.components = None
+        self.private_data = None
 
     def parse_tag_and_len(self):
         """
@@ -56,6 +57,7 @@ class SpliceDescriptor(SCTE35Base):
             #      if self.identifier != "CUEI":
             #          raise Exception('Identifier Is Not "CUEI"')
             self.bites = self.bites[4:]
+
 
     def encode(self, nbin=None):
         """
@@ -317,8 +319,16 @@ class SegmentationDescriptor(SpliceDescriptor):
         self.segment_num = bitbin.as_int(8)  # 1 byte
         self.segments_expected = bitbin.as_int(8)  # 1 byte
         if self.segmentation_type_id in [0x34, 0x36, 0x38, 0x3A]:
-            self.sub_segment_num = bitbin.as_int(8)  # 1 byte
-            self.sub_segments_expected = bitbin.as_int(8)  # 1 byte
+            # if sub_segment_num and sub_segments_expected
+            # are not available set both of them to zero
+            # This has been an issue at CBS and CNN just recently.
+            ssn = bitbin.as_int(8)
+            sse = bitbin.as_int(8)
+            if not ssn:
+                ssn =0
+                sse = 0
+            self.sub_segment_num = ssn  # 1 byte
+            self.sub_segments_expected = sse  # 1 byte
 
     def encode(self, nbin=None):
         """
@@ -387,13 +397,6 @@ class SegmentationDescriptor(SpliceDescriptor):
             self._chk_var(int, nbin.add_int, "sub_segment_num", 8)  # 1 byte
             self._chk_var(int, nbin.add_int, "sub_segments_expected", 8)  # 1 byte
 
-    def _encode_segments(self, nbin):
-        self._chk_var(int, nbin.add_int, "segment_num", 8)  # 1 byte
-        self._chk_var(int, nbin.add_int, "segments_expected", 8)  # 1 byte
-        if self.segmentation_type_id in [0x34, 0x36, 0x38, 0x3A]:
-            self._chk_var(int, nbin.add_int, "sub_segment_num", 8)  # 1 byte
-            self._chk_var(int, nbin.add_int, "sub_segments_expected", 8)  # 1 byte
-
 
 # map of known descriptors and associated classes
 descriptor_map = {
@@ -402,18 +405,17 @@ descriptor_map = {
     2: SegmentationDescriptor,
     3: TimeDescriptor,
     4: AudioDescriptor,
+
 }
 
 
 def splice_descriptor(bites):
     """
-    splice_descriptor reads the
-    descriptor tag and decodes and
-    returns an instance self._descriptor_map[tag]
+    replaced splice_descriptor
     """
     tag = bites[0]
     if tag not in descriptor_map:
-        return False
+        return  SpliceDescriptor(bites)
     spliced = descriptor_map[tag](bites)
     spliced.decode()
     return spliced
