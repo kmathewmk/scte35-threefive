@@ -17,6 +17,8 @@ NORM = "\033[27m\033[0m"
 NORM = "\033[0m"
 BLUE = "\033[36;1;51m"
 
+B = "\033[7;1m"
+U="\033[m"
 mapped = {
     "base64": "encode",
     "bytes": "get_bytes",
@@ -71,44 +73,46 @@ HELP = f"""
 
 {REV}    Keywords      {NORM}
 
-   {REV} sixfix   {NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM} threefive sixfix video.ts
+   {REV} sixfix   {NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM} threefive {B} sixfix {U} video.ts
 
    {REV} xml      {NORM}{BLUE}\tParse a SCTE-35 Cue string or mpegts stream and output xml: {NORM}
 
-     {BLUE}\tParse base64 SCTE-35 string and output xml: {NORM} threefive xml'/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-     {BLUE}\tParse a mpegts stream for scte35 and output xml: {NORM} threefive xml video.ts
+     {BLUE}\tParse base64 SCTE-35 string and output xml: {NORM} threefive {B} xml {U}'/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+     {BLUE}\tParse a mpegts stream for scte35 and output xml: {NORM} threefive {B} xml {U} video.ts
 
-   {REV} packets {NORM}{BLUE}\tPrint raw SCTE-35 packets from mpegts video:{NORM} threefive packets video.ts
+   {REV} packets {NORM}{BLUE}\tPrint raw SCTE-35 packets from mpegts video:{NORM} threefive {B} packets {U} video.ts
 
-   {REV} show    {NORM}{BLUE}\tProbe mpegts video:{NORM}     threefive show video.ts
+   {REV} show    {NORM}{BLUE}\tProbe mpegts video:{NORM}     threefive {B} show {U} video.ts
 
-   {REV} pts     {NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}    threefive pts video.ts
+   {REV} pts     {NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}    threefive {B} pts {U} video.ts
 
-   {REV} proxy   {NORM}{BLUE}\tParse a stream, write raw video to stdout:{NORM} threefive proxy https://example.com/video.ts
+   {REV} proxy   {NORM}{BLUE}\tParse a stream, write raw video to stdout:{NORM} threefive {B} proxy {U} https://example.com/video.ts
 
-   {REV} sidecar {NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive sidecar https://example.com/video.ts
+   {REV} sidecar {NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
+
+   {REV} inject with at {NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
 
    {REV} encode  {NORM}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM}
 
-    {BLUE}\tLoad JSON to base64:{NORM}  threefive encode < json.json
-    {BLUE}\tLoad JSON to hex:{NORM} threefive encode hex  < json.json
-    {BLUE}\tLoad JSON to xml:{NORM}  threefive encode xml < json.json
+    {BLUE}\tLoad JSON to base64:{NORM}  threefive {B} encode {U} < json.json
 
-    {BLUE}\tLoad xml to hex:{NORM}  cat xml.xml | threefive encode hex
-    {BLUE}\tLoad xml to base64:{NORM}  threefive encode  < xml.xml
-    {BLUE}\tLoad xml to json:{NORM}  cat xml.xml | threefive encode json
+    {BLUE}\tLoad JSON to hex:{NORM} threefive {B} encode {U} {B} hex {U} < json.json
 
-    {BLUE}\tBase64 to bytes:{NORM} threefive encode bytes  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-    {BLUE}\tBase64 to hex:{NORM} threefive encode hex  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-    {BLUE}\tBase64 to xml:{NORM} threefive encode xml  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+    {BLUE}\tLoad JSON to xml:{NORM}  threefive {B} encode {U} {B} xml {U} < json.json
 
-    {BLUE}\tHex to base64:{NORM} threefive encode base64 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-    {BLUE}\tHex to xml:{NORM} threefive encode xml 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-    {BLUE}\tHex to int:{NORM} threefive encode int 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+    {BLUE}\tLoad xml to hex:{NORM}  cat xml.xml | threefive {B} encode {U} {B} hex {U}
 
-  {REV} version {NORM}{BLUE}\tShow version:{NORM} threefive version
+    {BLUE}\tBase64 to bytes:{NORM} threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-  {REV} Help    {NORM} {BLUE}\tHelp:{NORM}  threefive help
+    {BLUE}\tBase64 to hex:{NORM} threefive {B} encode {U} {B} hex {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+
+    {BLUE}\tBase64 to xml:{NORM} threefive {B} encode {U} {B} xml {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+
+    {BLUE}\tHex to int:{NORM} threefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+
+  {REV} version {NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
+
+  {REV} Help    {NORM} {BLUE}\tHelp:{NORM}  threefive {B} help {U}
 """
 
 
