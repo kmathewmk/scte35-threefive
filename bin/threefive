@@ -94,21 +94,21 @@ HELP = f"""
 
    {REV} encode  {NORM}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM}
 
-    {BLUE}\tLoad JSON to base64:{NORM}  threefive {B} encode {U} < json.json
+   {BLUE}\tLoad JSON to base64:{NORM}  threefive {B} encode {U} < json.json
 
-    {BLUE}\tLoad JSON to hex:{NORM} threefive {B} encode {U} {B} hex {U} < json.json
+   {BLUE}\tLoad JSON to hex:{NORM} threefive {B} encode {U} {B} hex {U} < json.json
 
-    {BLUE}\tLoad JSON to xml:{NORM}  threefive {B} encode {U} {B} xml {U} < json.json
+   {BLUE}\tLoad JSON to xml:{NORM}  threefive {B} encode {U} {B} xml {U} < json.json
 
-    {BLUE}\tLoad xml to hex:{NORM}  cat xml.xml | threefive {B} encode {U} {B} hex {U}
+   {BLUE}\tLoad xml to hex:{NORM}  cat xml.xml | threefive {B} encode {U} {B} hex {U}
 
-    {BLUE}\tBase64 to bytes:{NORM} threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+   {BLUE}\tBase64 to bytes:{NORM} threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-    {BLUE}\tBase64 to hex:{NORM} threefive {B} encode {U} {B} hex {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+   {BLUE}\tBase64 to hex:{NORM} threefive {B} encode {U} {B} hex {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-    {BLUE}\tBase64 to xml:{NORM} threefive {B} encode {U} {B} xml {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+   {BLUE}\tBase64 to xml:{NORM} threefive {B} encode {U} {B} xml {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-    {BLUE}\tHex to int:{NORM} threefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+   {BLUE}\tHex to int:{NORM} threefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
 
   {REV} version {NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
 
