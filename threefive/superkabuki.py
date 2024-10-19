@@ -9,7 +9,6 @@ from new_reader import reader
 from iframes import IFramer
 from .stream import Stream
 from .cue import Cue
-from .commands import TimeSignal
 from .stuff import print2
 from .crc import crc32
 from .bitn import NBin
@@ -57,6 +56,7 @@ class SuperKabuki(Stream):
         self.sidecar_file = args["sidecar"]
         self._tsdata = reader(args["input"])
         self.pid2int(args["scte35_pid"])
+        # self.time_signals = args.time_signals
         super().__init__(self.infile)
 
     def pid2int(self, pid):
@@ -106,11 +106,17 @@ class SuperKabuki(Stream):
         self.pmt_header = pkt[:head_size]
 
     def open_output(self):
+        """
+        open_output open output file
+        """
         print2(f"\nOutput File:\t{self.outfile}")
         if isinstance(self.outfile, str):
             self.outfile = open(self.outfile, "wb")
 
     def pad_pkt(self, pkt):
+        """
+        pad_pkt add padding to packets
+        """
         pad = b"\xff"
         self._parse_pmt_header(pkt)
         if self.pmt_payload is not None:
