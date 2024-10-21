@@ -6,9 +6,9 @@
 <br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
 <br>
 
-## Latest version is v2.4.83 _Released 10/21/2024_
+## Latest version is v2.4.85 _Released 10/21/2024_
 
-### New Stuff in threefive v2.4.83
+### New Stuff in threefive v2.4.85
 * Fix for #121 MiD upid encoding
 * MPEGTS Packet Injection in the cli.
 
