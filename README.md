@@ -6,11 +6,13 @@
 <br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
 <br>
 
-## Latest version is v2.4.85 _Released 10/21/2024_
+## Latest version is v2.4.85 
+_Released 10/21/2024_
 
 ### New Stuff in threefive v2.4.85
 * Fix for #121 MiD upid encoding
-* MPEGTS Packet Injection in the cli.
+* MPEGTS Packet Injection in the cli via sidecar file.
+    * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
 
 ### New Stuff in threefive v2.4.81
 * [__sixfix__](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : ffmpeg turns SCTE-35 streams to bin data (0x06), sixfix switches them back to SCTE-35 (0x86).
@@ -19,7 +21,7 @@
 
 * [A minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
 
-### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
+### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser now converts Base64 or Hex Cues into Base64, Bytes, Hex, Integer and Xml.
 [![image](https://github.com/user-attachments/assets/d3d3e168-5e6a-4e2d-8688-0fdf4c319176)
 ](https://iodisco.com/cgi-bin/scte35parser)
 
