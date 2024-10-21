@@ -217,19 +217,18 @@ class Mid(Upid):
             self.upid_value.append(mid_upid)
         return self.upid_name, self.upid_value
 
+
     def encode(self, nbin, seg_upid):
         """
         encode Mid Upid
         """
-        self.upid_value = seg_upid
-        for mid_upid in self.upid_value:
+        for mid_upid in seg_upid:
             nbin.add_int(mid_upid["upid_type"], 8)
             nbin.add_int(mid_upid["upid_length"], 8)
             the_upid = upid_map[mid_upid["upid_type"]][1](
                 None, mid_upid["upid_type"], mid_upid["upid_length"]
             )
-            the_upid.upid_value = mid_upid["segmentation_upid"]
-            the_upid.encode(nbin)
+            the_upid.encode(nbin, mid_upid["segmentation_upid"])
 
     def xml(self):
         """
