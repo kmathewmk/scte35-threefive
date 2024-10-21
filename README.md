@@ -5,7 +5,12 @@
 <br> `Parses` __SCTE-35__ from  `files`, `http(s)`, `Multicast`, `UDP` and even `stdin` _( you can pipe to it)_. 
 <br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
 <br>
-# Super Kabuki SCTE-35 Packet injection coming in 2.4.83!
+
+## Latest version is v2.4.83 _Released 10/21/2024_
+
+### New Stuff in threefive v2.4.83
+* Fix for #121 MiD upid encoding
+* MPEGTS Packet Injection in the cli.
 
 ### New Stuff in threefive v2.4.81
 * [__sixfix__](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : ffmpeg turns SCTE-35 streams to bin data (0x06), sixfix switches them back to SCTE-35 (0x86).
