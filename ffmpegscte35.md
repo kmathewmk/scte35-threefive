@@ -7,7 +7,7 @@
 threefive sixfix video.ts
 ```
 * the output video will be named sixfixed-video.ts
-    
+* [threefive can handle ffmpeg rewriting SCTE-35 packets](https://github.com/futzu/SCTE-35/blob/master/ffrewrite.md)    
 ### When transcoding video containing SCTE-35 wiith ffmpeg make sure to retain the original PTS and iframe locations.
 * use -copyts
 * use -muxpreload 0 -muxdelay 0
