@@ -1,16 +1,18 @@
  <h1>threefive is the SCTE-35 cli tool</h1>
    <br>
 
-* [Help](#help) Display threefive help
+* [Help](#help) Display threefive help.
 * [Parse](#parse) Decode SCTE-35 Strings and MPEGTS
 * [Sixfix](#sixfix) sixfix converts Ffmpeg bin data streams back to SCTE-35.
 * [Encode](#encode) JSON and XML as inputs for encoding to SCTE-35.
 * [Xml](#xml) Xml as an output format for SCTE-35 Cues from strings and mpegts streams.
-* [Version](#version) Display threefive version
-* [Show](#show)  Show MPEGTS Stream information
-* [PTS](#pts) Print PTS from MPEGTS Streams
-* [Packets](#packets) Print Raw SCTE-35 packets
-* [Sidecar](#sidecar) Create SCTE-35 sidecar files from MPEGTS
+* [Version](#version) Display threefive version.
+* [Show](#show)  Show MPEGTS Stream information.
+* [PTS](#pts) Print PTS from MPEGTS Streams.
+* [Packets](#packets) Print Raw SCTE-35 packets.
+* [Sidecar](#sidecar) Create SCTE-35 sidecar files from MPEGTS.
+* [Inject](#inject) Inject mpegts packets. 
+
 
 
 ## `Help`
@@ -259,6 +261,23 @@ a@slow:~$ cat sidecar.txt
 19.251189,/DAWAAAAAAAAAP/wBQb+ABp7ugAAs6FQDw==
 20.218822,/DAWAAAAAAAAAP/wBQb+ABvbpAAAoT8LNA==
 ```
+
+* [More on sidecar files](https://github.com/futzu/SCTE-35/blob/master/sidecar.md) 
+
+
+[top](#threefive-is-the-scte-35-cli-tool)
+
+___
+
+## `Inject`
+* Keyword `inject` `with` `at` inject SCTe-35 packets into MPEGTS video.
+* format threefive inject [input mpegts] with [sidecar file] at [pid of new SCTE-35 stream]
+```
+threefive inject video.ts with sidecar.txt at 555
+```
+* Output file will be named `superkabuki-video.ts`
+  
+* [More on sidecar files](https://github.com/futzu/SCTE-35/blob/master/sidecar.md) 
 
 [top](#threefive-is-the-scte-35-cli-tool)
 
