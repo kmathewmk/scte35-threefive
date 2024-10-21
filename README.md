@@ -21,9 +21,8 @@ _Released 10/21/2024_
 
 * [A minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
 
-### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser now converts Base64 or Hex Cues into Base64, Bytes, Hex, Integer and Xml.
-[![image](https://github.com/user-attachments/assets/d3d3e168-5e6a-4e2d-8688-0fdf4c319176)
-](https://iodisco.com/cgi-bin/scte35parser)
+### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
+
 
 ___
 
@@ -87,14 +86,11 @@ a@slow:~/threefive$
 * [__Parse SCTE-35 programmatically__](https://github.com/futzu/scte35parser-threefive/blob/master/prog.md) with __threefive__ </i>(write some code)</i>
      * SCTE-35 code [__Examples__](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
      *  [How to Use __threefive.Cue__](https://github.com/futzu/SCTE35_threefive/blob/master/basic.md)
-     * [Howto write a minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
-
+     * [How to write a minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
      * [__Trigger on SCTE-35 Events__](https://github.com/futzu/scte35parser-threefive/blob/master/trigger.md) using __threefive.Stream__
      * Automatic __AES decryption__ with [threefive.Segment](https://github.com/futzu/SCTE35_threefive/blob/master/segment.md)
      * Display SCTE-35 Data as [__WebVTT__ subtitles in Video](https://github.com/futzu/SCTE35_threefive/blob/master/examples/stream/cue2vtt.py)
-
 * [Experimental Dash SCTE-214 Support Now available in threefive 2.4.81 ](https://github.com/futzu/SCTE35-threefive/blob/master/dash.md) (_updated 10/15/2024_)
-
 * [__Encoding__](https://github.com/futzu/scte35parser-threefive/blob/master/Encoding.md)
     *  [__Encoding | more__ ](https://github.com/futzu/scte35parser-threefive/blob/master/EncodingPipeMore.md)
     *  [JSON to SCTE-35 Encoding](https://github.com/futzu/SCTE35_threefive/blob/master/cliencde.md)
@@ -102,10 +98,6 @@ a@slow:~/threefive$
 
 
 </details>
-
-![image](https://github.com/user-attachments/assets/79182075-62e7-4330-b998-6ec382566218)
-
- 
  
  <details><summary>Cue Class</summary>
 
@@ -592,6 +584,7 @@ private_data = b'threefive kicks ass'
 
 </details>
 
+![image](https://github.com/user-attachments/assets/79182075-62e7-4330-b998-6ec382566218)
 
 
 
@@ -601,6 +594,7 @@ private_data = b'threefive kicks ass'
 
  Powered by threefive
 ---
+
  
 <br>⚡ [x9k3](https://github.com/futzu/x9k3): SCTE-35 HLS Segmenter and Cue Inserter.
 <br>⚡ [sideways](https://github.com/futzu/sideways) inject SCTE-35 into HLS via manifest manipulation.
@@ -613,6 +607,9 @@ private_data = b'threefive kicks ass'
 <br>⚡ [POIS Server](https://github.com/scunning1987/pois_reference_server) is Super Cool.
 <br>⚡ [bpkio-cli](https://pypi.org/project/bpkio-cli/): A command line interface to the broadpeak.io APIs. 
 <br>⚡ [amt-play ](https://github.com/vivoh-inc/amt-play) uses x9k3.
+
+[![image](https://github.com/user-attachments/assets/d3d3e168-5e6a-4e2d-8688-0fdf4c319176)
+](https://iodisco.com/cgi-bin/scte35parser)
 
 
  threefive | more
