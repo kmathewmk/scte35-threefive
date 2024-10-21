@@ -4,7 +4,7 @@
 * threefive parses both stream type 0x86 and 0x6.
 * the threefive cli tool can convert the stream type back to 0x86 
 ```rebol
-        threefive sixfix video.ts
+threefive sixfix video.ts
 ```
 * the output video will be named sixfixed-video.ts
     
@@ -12,13 +12,13 @@
 * use -copyts
 * use -muxpreload 0 -muxdelay 0
 ```rebol
-     ffmpeg -copyts -i video.ts [other ffmpeg stuff] -muxpreload 0 -muxdelay 0 outvideo.ts
+ffmpeg -copyts -i video.ts [other ffmpeg stuff] -muxpreload 0 -muxdelay 0 outvideo.ts
 ```
 
 ### How to retain SCTE-35 when using ffmpeg to segment HLS. 
 * create a sidecar file of the SCTE-35 Cues
-```sh
-        threefive sidecar video.ts
+```smalltalk
+threefive sidecar video.ts
 ```
 
 * segment with ffmpeg
