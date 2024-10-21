@@ -45,7 +45,7 @@ pypy3 -mpip install threefive
 * [Super Cool Examples](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
    
 ---
-* [Answers to Some Common Problems with ffmpeg and SCTE-35](https://github.com/futzu/SCTE35-threefive/blob/master/examples/ffmpegscte35.md)
+* [Answers to Some Common Problems with ffmpeg and SCTE-35](https://github.com/futzu/SCTE35-threefive/blob/master/ffmpegscte35.md)
 
 <details><summary>Versions and Releases</summary>
 
