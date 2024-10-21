@@ -1,11 +1,11 @@
-# threefive is a SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder and SCTE-35 converter.
+# threefive is a SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 <br> `Parses` __SCTE-35__ from multiple streams in `MPEGTS` and `Multiple Program Transport Streams` 
 <br> `Parses` __SCTE-35__ from  Cues encoded in`Base64`, `Bytes`, `Hex`, `Integers`.
 <br> `Parses` __SCTE-35__ from  `files`, `http(s)`, `Multicast`, `UDP` and even `stdin` _( you can pipe to it)_. 
 <br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
+<br>`Encodes` __SCTE-35__ to Base64, Bytes, Hex, Integer, Json ,Xml, or MPEGTS packets.
 <br>
-
 ## Latest version is v2.4.85 
 _Released 10/21/2024_
 
@@ -81,6 +81,7 @@ a@slow:~/threefive$
      * [Create](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sidecar) SCTE-35 __Sidecar files__ from MPEGTS
      * [Encode](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#encode) __JSON or Xml to SCTE-35__
      * [Convert](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#encode) __Convert SCTE-35 formats to other SCTE-35 formats__
+     * [Inject](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#inject) __Inject SCTE-35 packets into MPEGTS__
 
 
 * [__Parse SCTE-35 programmatically__](https://github.com/futzu/scte35parser-threefive/blob/master/prog.md) with __threefive__ </i>(write some code)</i>
