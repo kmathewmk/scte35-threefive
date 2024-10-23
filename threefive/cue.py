@@ -164,11 +164,19 @@ class Cue(SCTE35Base):
         except (LookupError, TypeError, ValueError):
             return data
 
+    def _mk_load(self,data):
+        bites = self.bites
+        self.encode()
+        return bites 
+
     def _mk_bits(self, data):
         """
         cue._mk_bits Converts
         Hex and Base64 strings into bytes.
         """
+        if isinstance(data,dict):
+            if self.load(data):
+               return self._mk_load(data)
         if isinstance(data, bytes):
             return self.idxsplit(data, b"\xfc")
         if isinstance(data, int):
@@ -179,9 +187,7 @@ class Cue(SCTE35Base):
         data.strip()
         if data[0] in ['<','{']:
              if self.load(data):
-                bites = self.bites
-                self.encode()
-                return bites
+               return self._mk_load(data)
         return self._b64_bits(data)
 
     def _mk_descriptors(self, bites):
