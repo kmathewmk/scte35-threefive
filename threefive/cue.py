@@ -28,6 +28,7 @@ from .crc import crc32
 from .xml import Node, XmlParser
 from .segmentation import table22
 
+
 class Cue(SCTE35Base):
     """
     The threefive.Splice class handles parsing
@@ -63,12 +64,12 @@ class Cue(SCTE35Base):
         data may be packet bites or encoded string
         packet_data is a instance passed from a Stream instance
         """
+        self.descriptors = []
+        self.info_section = SpliceInfoSection()
+        self.command = None
         self.bites = None
         if data:
             self.bites = self._mk_bits(data)
-        self.info_section = SpliceInfoSection()
-        self.command = None
-        self.descriptors = []
         self.packet_data = packet_data
         self.dash_data = None
 
@@ -85,8 +86,8 @@ class Cue(SCTE35Base):
         self.descriptors = []
         while bites:
             bites = self.mk_info_section(bites)
-            bites=self._set_splice_command(bites)
-            bites= self._mk_descriptors(bites)
+            bites = self._set_splice_command(bites)
+            bites = self._mk_descriptors(bites)
             crc = hex(int.from_bytes(bites[0:4], byteorder="big"))
             self.info_section.crc = crc
             return True
@@ -158,7 +159,7 @@ class Cue(SCTE35Base):
         bites = int.to_bytes(data, length, byteorder="big")
         return bites
 
-    def _hex_bits(self,data):
+    def _hex_bits(self, data):
         try:
             i = int(data, 16)
             i_len = i.bit_length() >> 3
@@ -171,11 +172,19 @@ class Cue(SCTE35Base):
                 return bytes.fromhex(data)
         return False
 
-    def _b64_bits(self,data):
+    def _b64_bits(self, data):
         try:
             return b64decode(self.fix_bad_b64(data))
         except (LookupError, TypeError, ValueError):
             return data
+
+    @staticmethod
+    def dbl_split(data, mark):
+        """
+        dbl_split split bytes on mark twice
+        return mark + split bytes on mark twice
+        """
+        return mark + data.split(mark)[-1].split(mark)[-1]
 
     def _mk_bits(self, data):
         """
@@ -183,12 +192,20 @@ class Cue(SCTE35Base):
         Hex and Base64 strings into bytes.
         """
         if isinstance(data, bytes):
-            return self.idxsplit(data, b"\xfc")
+            return self.dbl_split(data, b"\xfc")
         if isinstance(data, int):
             return self._int_bits(data)
-        hex_bits=self._hex_bits(data)
+        hex_bits = self._hex_bits(data)
         if hex_bits:
             return hex_bits
+        if isinstance(data, str):
+            if data[0] in ["<", "{"]:
+                data.strip()
+                if self.load(data):
+                    bites = self.bites
+                    self.encode()
+                    return bites
+
         return self._b64_bits(data)
 
     def _mk_descriptors(self, bites):
@@ -227,7 +244,7 @@ class Cue(SCTE35Base):
         iscl = self.info_section.splice_command_length
         cmd_bites = bites[:iscl]
         self.command = command_map[sct](cmd_bites)
-        self.command.command_length= iscl
+        self.command.command_length = iscl
 
         self.command.decode()
         del self.command.bites
@@ -378,6 +395,7 @@ class Cue(SCTE35Base):
         self.load_info_section(stuff)
         self.load_command(stuff)
         self.load_descriptors(stuff["descriptors"])
+        self.encode()
         return True
 
     # Dash
@@ -412,7 +430,7 @@ class Cue(SCTE35Base):
             "DTMFDescriptor": DtmfDescriptor,
             "TimeDescriptor": TimeDescriptor,
         }
-        for k,v in dmap.items():
+        for k, v in dmap.items():
             if k in stuff:
                 dscptr = v()
                 dscptr.from_xml(stuff)
@@ -420,7 +438,7 @@ class Cue(SCTE35Base):
 
     def _xml_event_signal(self, stuff):
         self.dash_data = {}
-        for x in ["EventStream", "Event", "Signal","Binary"]:
+        for x in ["EventStream", "Event", "Signal", "Binary"]:
             if x in stuff:
                 self.dash_data[x] = stuff[x]
 
@@ -441,7 +459,7 @@ class Cue(SCTE35Base):
                 self._xml_splice_descriptor(dstuff)
             # Self.encode() will calculate lengths and types and such
             self.encode()
-        #self.show()
+        # self.show()
 
     def _binary_xml(self):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
@@ -450,14 +468,14 @@ class Cue(SCTE35Base):
         sig_node.add_child(bin_node)
         return sig_node
 
-    def _mk_descriptor_xml(self,sis):
+    def _mk_descriptor_xml(self, sis):
         """
         _mk_descriptor_xml make xml nodes for descriptors.
         """
         for d in self.descriptors:
-            if d.has('segmentation_type_id'):
-               # if d.segmentation_type_id in table22:
-                sis.add_comment(f'{table22[d.segmentation_type_id]}')
+            if d.has("segmentation_type_id"):
+                # if d.segmentation_type_id in table22:
+                sis.add_comment(f"{table22[d.segmentation_type_id]}")
             sis.add_child(d.xml())
         return sis
 
@@ -469,7 +487,7 @@ class Cue(SCTE35Base):
         if binary:
             return self._binary_xml()
         sis = self.info_section.xml()
-       # if not self.command:
+        # if not self.command:
         #    raise Exception("\033[7mA Splice Command is Required\033[27m")
         cmd = self.command.xml()
         sis.add_child(cmd)
