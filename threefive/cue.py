@@ -4,26 +4,12 @@ threefive.Cue Class
 
 from base64 import b64decode, b64encode
 import json
-from .stuff import print2
+from .stuff import print2, dbl_split
 from .bitn import NBin
 from .base import SCTE35Base
 from .section import SpliceInfoSection
-from .commands import (
-    command_map,
-    BandwidthReservation,
-    PrivateCommand,
-    SpliceInsert,
-    SpliceNull,
-    TimeSignal,
-)
-from .descriptors import (
-    splice_descriptor,
-    descriptor_map,
-    SegmentationDescriptor,
-    AvailDescriptor,
-    DtmfDescriptor,
-    TimeDescriptor,
-)
+from .commands import command_map
+from .descriptors import descriptor_map, splice_descriptor
 from .crc import crc32
 from .xml import Node, XmlParser
 from .segmentation import table22
@@ -178,13 +164,6 @@ class Cue(SCTE35Base):
         except (LookupError, TypeError, ValueError):
             return data
 
-    @staticmethod
-    def dbl_split(data, mark):
-        """
-        dbl_split split bytes on mark twice
-        return mark + split bytes on mark twice
-        """
-        return mark + data.split(mark)[-1].split(mark)[-1]
 
     def _mk_bits(self, data):
         """
@@ -192,7 +171,7 @@ class Cue(SCTE35Base):
         Hex and Base64 strings into bytes.
         """
         if isinstance(data, bytes):
-            return self.dbl_split(data, b"\xfc")
+            return dbl_split(data, b"\xfc")
         if isinstance(data, int):
             return self._int_bits(data)
         hex_bits = self._hex_bits(data)
@@ -205,7 +184,6 @@ class Cue(SCTE35Base):
                     bites = self.bites
                     self.encode()
                     return bites
-
         return self._b64_bits(data)
 
     def _mk_descriptors(self, bites):
@@ -406,33 +384,37 @@ class Cue(SCTE35Base):
             self.info_section.from_xml(stuff)
 
     def _mk_from_map(self, a_map, stuff):
-        for key in a_map.keys():
-            if key in stuff:
-                made = a_map[key]()
+        for k,v in a_map.items():
+            if k in stuff:
+                made = command_map[v]()
                 made.from_xml(stuff)
                 return made
         return False
 
+
+
     def _xml_splice_command(self, stuff):
         cmap = {
-            "BandwidthReservation": BandwidthReservation,
-            "PrivateCommand": PrivateCommand,
-            "SpliceInsert": SpliceInsert,
-            "SpliceNull": SpliceNull,
-            "TimeSignal": TimeSignal,
+            "BandwidthReservation": 7,
+            "PrivateCommand": 255,
+            "SpliceInsert": 5,
+            "SpliceNull": 0,
+            "TimeSignal": 6,
         }
         self.command = self._mk_from_map(cmap, stuff)
 
+
     def _xml_splice_descriptor(self, stuff):
         dmap = {
-            "SegmentationDescriptor": SegmentationDescriptor,
-            "AvailDescriptor": AvailDescriptor,
-            "DTMFDescriptor": DtmfDescriptor,
-            "TimeDescriptor": TimeDescriptor,
+            "SegmentationDescriptor": 2,
+            "AvailDescriptor": 0,
+            "DTMFDescriptor": 1,
+            "TimeDescriptor": 3,
+
         }
         for k, v in dmap.items():
             if k in stuff:
-                dscptr = v()
+                dscptr = descriptor_map[v]()
                 dscptr.from_xml(stuff)
                 self.descriptors.append(dscptr)
 
@@ -474,7 +456,6 @@ class Cue(SCTE35Base):
         """
         for d in self.descriptors:
             if d.has("segmentation_type_id"):
-                # if d.segmentation_type_id in table22:
                 sis.add_comment(f"{table22[d.segmentation_type_id]}")
             sis.add_child(d.xml())
         return sis
