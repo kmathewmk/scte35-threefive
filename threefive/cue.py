@@ -9,7 +9,7 @@ from .bitn import NBin
 from .base import SCTE35Base
 from .section import SpliceInfoSection
 from .commands import command_map
-from .descriptors import splice_descriptor, descriptor_map  
+from .descriptors import splice_descriptor, descriptor_map
 from .crc import crc32
 from .xml import Node, XmlParser
 from .segmentation import table22
@@ -49,12 +49,13 @@ class Cue(SCTE35Base):
         data may be packet bites or encoded string
         packet_data is a instance passed from a Stream instance
         """
+        self.command = None
+
+        self.descriptors = []
+        self.info_section = SpliceInfoSection()
         self.bites = None
         if data:
             self.bites = self._mk_bits(data)
-        self.info_section = SpliceInfoSection()
-        self.command = None
-        self.descriptors = []
         self.packet_data = packet_data
         self.dash_data = None
 
@@ -175,6 +176,12 @@ class Cue(SCTE35Base):
         hex_bits=self._hex_bits(data)
         if hex_bits:
             return hex_bits
+        data.strip()
+        if data[0] in ['<','{']:
+             if self.load(data):
+                bites = self.bites
+                self.encode()
+                return bites
         return self._b64_bits(data)
 
     def _mk_descriptors(self, bites):
@@ -361,9 +368,11 @@ class Cue(SCTE35Base):
         if "command" not in stuff:
             print2("\033[7mA splice command is required\033[27m")
             return False
+
         self.load_info_section(stuff)
         self.load_command(stuff)
         self.load_descriptors(stuff["descriptors"])
+        self.encode()
         return True
 
     # Dash
@@ -372,7 +381,7 @@ class Cue(SCTE35Base):
         if "SpliceInfoSection" in stuff:
             self.info_section = SpliceInfoSection()
             self.info_section.from_xml(stuff)
-            
+
     def _mk_from_map(self, a_map, stuff):
         for k,v in a_map.items():
             if k in stuff:
@@ -383,21 +392,21 @@ class Cue(SCTE35Base):
 
     def _xml_splice_command(self, stuff):
         cmap = {
-            "BandwidthReservation": 7, 
-            "PrivateCommand": 255, 
-            "SpliceInsert": 5, 
-            "SpliceNull": 0, 
-            "TimeSignal": 6, 
+            "BandwidthReservation": 7,
+            "PrivateCommand": 255,
+            "SpliceInsert": 5,
+            "SpliceNull": 0,
+            "TimeSignal": 6,
         }
         self.command = self._mk_from_map(cmap, stuff)
 
     def _xml_splice_descriptor(self, stuff):
         dmap = {
             "SegmentationDescriptor": 2,
-            "AvailDescriptor": 0, 
-            "DTMFDescriptor": 1, 
-            "TimeDescriptor": 3, 
-            
+            "AvailDescriptor": 0,
+            "DTMFDescriptor": 1,
+            "TimeDescriptor": 3,
+
         }
         for k, v in dmap.items():
             if k in stuff:
