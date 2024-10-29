@@ -1,3 +1,5 @@
+> HLS Manifest and Segment SCTE-35 Parser coming in v2.4.87.  
+
 # threefive is a SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 <br> `Parses` __SCTE-35__ from multiple streams in `MPEGTS` and `Multiple Program Transport Streams` 
