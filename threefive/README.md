@@ -12,6 +12,8 @@
 * [section.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/section.py) `threefive.SpliceInfoSection` class.
 * [segment.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/segment.py) `threefive.Segment` class.
 * [segmentation.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/segmentation.py)  `lookup tables` for the  `threefive.SegmentationDescriptor` class.
+* [showcues.py](https://github.com/futzu/threefive/blob/master/threefive/showcues.py) `showcues HLS SCTE-35 Parser classes and cli()` function.
+
 * [sixfix.py](https://github.com/futzu/threefive/blob/master/threefive/sixfix.py) `threefive.sixfix ` function.
 * [smoketest.py](https://github.com/futzu/threefive/blob/master/threefive/smoketest.py) `threefive.smoke` function.
 
