@@ -1,5 +1,5 @@
 """
-fixsix.py
+sixfix.py
 """
 
 import io
@@ -24,15 +24,16 @@ class PreFix(Stream):
 
     def decode(self, func=passed):
         super().decode(func=passed)
-        fixsix = self.pids.maybe_scte35
-        if fixsix:
-            print("fixing these pids", fixsix)
-        return fixsix
+        sixed = self.pids.maybe_scte35
+        if sixed:
+            print("fixing these pids", sixed)
+        return sixed
 
 
 class SixFix(Stream):
     """
-    FixSix fixes bin data streams with SCTE-35 to 0x86 SCTE-35 streams
+    SixFix class
+    fixes bin data streams with SCTE-35 to 0x86 SCTE-35 streams
     """
 
     CUEI_DESCRIPTOR = b"\x05\x04CUEI"
@@ -52,11 +53,11 @@ class SixFix(Stream):
                 pkt = pkt[:4] + self.pmt_payload
         return pkt
 
-    def convert_pid(self):
+    def convert_pids(self):
         """
-        Stream.decode_proxy writes all ts packets are written to stdout
-        for piping into another program like mplayer.
-        SCTE-35 cues are printed to stderr.
+        convert_pids
+        changes the stream type to 0x86 and replaces
+        the existing PMT as it writes packets to the outfile
         """
         active = io.BytesIO()
         pkt_count = 0
@@ -168,16 +169,16 @@ class SixFix(Stream):
 
 def sixfix(arg):
     """
-    fixsix converts 0x6 bin data mpegts streams
+    sixfix converts 0x6 bin data mpegts streams
     that contain SCTE-35 data to stream type 0x86
     """
     s1 = PreFix(arg)
-    six2fix = s1.decode(func=passed)
-    if not six2fix:
+    sixed = s1.decode(func=passed)
+    if not sixed:
         print2("No bin data SCTE-35 streams were found.")
     else:
         s2 = SixFix(arg)
-        s2.con_pids = six2fix
+        s2.con_pids = sixed
         s2.convert_pid()
         print2(f'Wrote: sixfixed-{arg.rsplit("/")[-1]}')
 
