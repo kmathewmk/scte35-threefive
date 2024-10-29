@@ -11,6 +11,7 @@ from new_reader import reader
 from threefive import Cue, Stream, print2, decode, version
 from threefive.sixfix import sixfix
 from threefive.superkabuki import SuperKabuki
+from threefive.showcues import cli
 
 REV = "\033[7;1m"
 NORM = "\033[27m\033[0m"
@@ -61,45 +62,47 @@ def mk_sidecar(cue):
 
 
 HELP = f"""
-{B}   decode    {U}
+{U}    decode    {U}
 
-    {BLUE}base64: {NORM}\tthreefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-    {BLUE}hex: {NORM}\tthreefive '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
-    {BLUE}files: {NORM}\tthreefive myvideo.ts
-    {BLUE}stdin: {NORM}\tcat myvideo.ts | threefive
-    {BLUE}http(s): {NORM}\tthreefive https://futzu.com/xaa.ts
-    {BLUE}udp: {NORM}\tthreefive udp://127.0.0.1:3535
-    {BLUE}multicast:{NORM}threefive udp://@235.35.3.5:3535
+        {BLUE}base64: {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+        {BLUE}hex: {NORM}\tthreefive '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
+        {BLUE}files: {NORM}\tthreefive myvideo.ts
+        {BLUE}stdin: {NORM}\tcat myvideo.ts | threefive
+        {BLUE}http(s): {NORM}threefive https://futzu.com/xaa.ts
+        {BLUE}udp: {NORM}\tthreefive udp://127.0.0.1:3535
+        {BLUE}multicast:{NORM}threefive udp://@235.35.3.5:3535
 
-{B}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM}
+{U}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM}
 
-    {BLUE}Base64 to bytes:{NORM}\tthreefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-    {BLUE}Base64 to hex:{NORM}\tthreefive {B} encode {U} {B} hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
-    {BLUE}Base64 to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
-    {BLUE}Hex to int:{NORM}   \tthreefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-    {BLUE}JSON to base64:{NORM}\tthreefive {B} encode {U} < json.json
-    {BLUE}JSON to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U} < json.json
-    {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive {B} encode {U} {B} hex {U}
+        {BLUE}Base64 to bytes:{NORM}threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+        {BLUE}Base64 to hex:{NORM}\tthreefive {B} encode {U} {B} hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
+        {BLUE}Base64 to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
+        {BLUE}Hex to int:{NORM}   \tthreefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+        {BLUE}JSON to base64:{NORM}\tthreefive {B} encode {U} < json.json
+        {BLUE}JSON to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U} < json.json
+        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive {B} encode {U} {B} hex {U}
 
-{B}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
+{U}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
 
-{B}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} packets {U} udp://@235.35.3.5:3535
+{U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} packets {U} udp://@235.35.3.5:3535
 
-{B}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B} proxy {U} https://example.com/video.ts
+{U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B} proxy {U} https://example.com/video.ts
 
-{B}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B} pts {U} video.ts
+{U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B} pts {U} video.ts
 
-{B}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} show {U} video.ts
+{U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} show {U} video.ts
 
-{B}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
+{U}    showcues {U}{NORM}{BLUE}\tParse SCTE-35 from HLS:{NORM}  threefive {B} showcues {U} video.m3u8
 
-{B}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} sixfix {U} video.ts
+{U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
 
-{B}    xml      {U}{NORM}{BLUE}\tParse an mpegts stream and output xml: {NORM} threefive {B} xml {U} video.ts
+{U}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} sixfix {U} video.ts
 
-{B}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
+{U}    xml      {U}{NORM}{BLUE}\tParse an mpegts stream and output xml: {NORM} threefive {B} xml {U} video.ts
 
-{B}    help     {U}{NORM} {BLUE}\tHelp:{NORM}  threefive {B} help {U}
+{U}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
+
+{U}    help     {U}{NORM} {BLUE}\tHelp:{NORM}  threefive {B} help {U}
 """
 
 
@@ -168,12 +171,19 @@ def superkabuki():
     print("threefive inject {infile} with {sidecar_file} at {pid}")
     return False
 
+def showcues():
+    """
+    showcues exec showcues cli()
+    """
+    cli()
+    
 
 print_map = {
     "help": print_help,
     "version": print_version,
     "encode": json_load,
     "inject": superkabuki,
+    "showcues": showcues,
 }
 
 
