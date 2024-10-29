@@ -1,6 +1,8 @@
-> HLS Manifest and Segment SCTE-35 Parser coming in v2.4.87.  
+> threefive parses SCTE-35 from HLS, DASH, MPEGTS, Base64, Bytes, Dict, Hex, Integer, Json amd Xml.
 
-# threefive is a SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
+# threefive is the Highest Rated SCTE-35 tool. Ever.  
+
+# SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 <br> `Parses` __SCTE-35__ from multiple streams in `MPEGTS` and `Multiple Program Transport Streams` 
 <br> `Parses` __SCTE-35__ from  Cues encoded in`Base64`, `Bytes`, `Hex`, `Integers`.
