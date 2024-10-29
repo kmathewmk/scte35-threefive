@@ -11,14 +11,14 @@ with open("threefive/version.py","r", encoding="utf-8") as latest:
 setuptools.setup(
     name="threefive",
     version=version,
-    author="Adrian and a Cast of Thousands.",
+    author="Adrian of Doom, and the Fine Folks at Fu Corp.",
     author_email="spam@iodisco.com",
-    description="The Undisputed Heavyweight Champion of SCTE-35.",
+    description="The Undisputed Heavyweight Champion of SCTE-35. The Belts have been Unified.",
     long_description=readme,
     long_description_content_type="text/markdown",
     url="https://github.com/futzu/threefive",
     install_requires=[
-        'iframes >= 0.0.7',
+        'm3ufu >= 0.0.89',
         'new_reader >= 0.1.11',
         "pyaes",
     ],
