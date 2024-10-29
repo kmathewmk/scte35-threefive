@@ -285,7 +285,7 @@ threefive inject video.ts with sidecar.txt at 555
 ___
 
 ## `HLS`
-* keyword `hls` -- parse MPEGTS and AAC HLS manifests and Segments for SCTE-35
+* keyword `hls`  parse MPEGTS and AAC HLS manifests and Segments for SCTE-35
 ```smalltalk
 threefive hls https://example.com/master.m3u8
 ```
@@ -304,7 +304,7 @@ ___
 
 ## `Proxy`
 
-* keyword `proxy` - parse the SCTE-35 from a stream and write it to stdout (for piping to ffmpeg and such)
+* keyword `proxy`  parse the SCTE-35 from a stream and write it to stdout (for piping to ffmpeg and such)
 ```smalltalk
 threefive proxy https://example.com/video.ts | ffmpeg -i - {ffmpeg commands}
 ```
