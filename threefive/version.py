@@ -2,4 +2,4 @@
 threefive.version
 from the cli tool run: threefive version
 """
-version='2.4.87'
+version='2.4.89'
