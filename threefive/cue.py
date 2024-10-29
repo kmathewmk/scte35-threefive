@@ -175,7 +175,7 @@ class Cue(SCTE35Base):
     def _mk_load(self,data):
         bites = self.bites
         self.encode()
-        return bites 
+        return bites
 
     def _mk_bits(self, data):
         """
@@ -430,7 +430,7 @@ class Cue(SCTE35Base):
         self._xml_splice_command(stuff)
         self.info_section.splice_command_type = self.command.command_type
         self._xml_splice_descriptors(stuff)
-        
+
     def from_xml(self, stuff):
         """
         build_cue takes the data put into the stuff dict
