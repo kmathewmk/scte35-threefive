@@ -73,6 +73,7 @@ a@slow:~/threefive$
 
 
 * [__threefive On The Command Line__](https://github.com/futzu/scte35parser-threefive/blob/master/cli.md)
+     * [HLS](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#hls) __Parse HLS Manifests and Segments for SCTE-35__
      * [Decode](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#parse) __SCTE-35 Strings and MPEGTS__
      * [Sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) __Fix SCTE-35 stremss mangled by Ffmpeg__ (bin data)
      * [XML](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) __for SCTE-35 Data and MPEGTS streams__ 
