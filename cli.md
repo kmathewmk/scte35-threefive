@@ -2,6 +2,7 @@
    <br>
 
 * [Help](#help) Display threefive help.
+* [HLS](#hls) Parse HLS for SCTE-35.
 * [Parse](#parse) Decode SCTE-35 Strings and MPEGTS
 * [Sixfix](#sixfix) sixfix converts Ffmpeg bin data streams back to SCTE-35.
 * [Encode](#encode) JSON and XML as inputs for encoding to SCTE-35.
@@ -282,6 +283,24 @@ threefive inject video.ts with sidecar.txt at 555
 [top](#threefive-is-the-scte-35-cli-tool)
 
 ___
+
+## `HLS`
+* keyword `hls` -- parse MPEGTS and AAC HLS manifests and Segments for SCTE-35
+```smalltalk
+threefive hls https://example.com/master.m3u8
+```
+<details><summary> output  </summary>
+	
+![image](https://github.com/user-attachments/assets/176bcd7c-43d5-4d67-a0ff-45813b3718f7)
+
+
+</details>
+
+
+[top](#threefive-is-the-scte-35-cli-tool)
+
+___
+
 
 ## `Proxy`
 
