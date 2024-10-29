@@ -10,12 +10,13 @@
 <br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
 <br>`Encodes` __SCTE-35__ to Base64, Bytes, Hex, Integer, Json ,Xml, or MPEGTS packets.
 <br>
-## Latest version is v2.4.87
+## Latest version is v2.4.89
 _Released 10/29/2024_
 
-### New Stuff in threefive v2.4.87
-* A Cue instance can now be initialized with base64,bytes,dict,hex, hex literal, Json or xml.
-* HLS MAnifest and Segment SCTE-35 parsing added to threefive cli. 
+### New Stuff in threefive v2.4.89
+* Fixed __iframes import error__
+* A __Cue__ instance can now be initialized with __base64, bytes, dict,hex, hex literal, Json, or xml.__
+* __HLS__ Manifest and Segment SCTE-35 parsing added to __threefive cli.__ 
 
 ### New Stuff in threefive v2.4.85
 * Fix for #121 MiD upid encoding
