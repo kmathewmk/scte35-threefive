@@ -93,6 +93,16 @@ class Cue(SCTE35Base):
             del spliced.bites
             self.descriptors.append(spliced)
 
+    def _get_dash_data(self,scte35_dict):
+        if self.dash_data:
+            scte35_dict["dash_data"] = self.dash_data
+        return scte35_dict
+
+    def _get_packet_data(self,scte35_dict):
+        if self.packet_data:
+            scte35_dict["packet_data"] = self.packet_data.get()
+        return scte35_dict
+
     def get(self):
         """
         Cue.get returns the SCTE-35 Cue
@@ -104,10 +114,8 @@ class Cue(SCTE35Base):
                 "command": self.command.get(),
                 "descriptors": self.get_descriptors(),
             }
-            if self.dash_data:
-                scte35["dash_data"] = self.dash_data
-            if self.packet_data:
-                scte35["packet_data"] = self.packet_data.get()
+            scte35 = self._get_dash_data(scte35)
+            scte35 = self._get_packet_data(scte35)
             return scte35
         return False
 
@@ -174,20 +182,16 @@ class Cue(SCTE35Base):
         cue._mk_bits Converts
         Hex and Base64 strings into bytes.
         """
-        if isinstance(data,dict):
-            if self.load(data):
-               return self._mk_load(data)
         if isinstance(data, bytes):
-            return self.idxsplit(data, b"\xfc")
+            return self.idxsplit(self.idxsplit(data, b"\xfc"),b"\xfc")
         if isinstance(data, int):
             return self._int_bits(data)
+        if isinstance(data,dict) or data[0] in ['{','<']:
+            if self.load(data):
+                return self._mk_load(data)
         hex_bits=self._hex_bits(data)
         if hex_bits:
             return hex_bits
-        data.strip()
-        if data[0] in ['<','{']:
-             if self.load(data):
-               return self._mk_load(data)
         return self._b64_bits(data)
 
     def _mk_descriptors(self, bites):
@@ -374,7 +378,6 @@ class Cue(SCTE35Base):
         if "command" not in stuff:
             print2("\033[7mA splice command is required\033[27m")
             return False
-
         self.load_info_section(stuff)
         self.load_command(stuff)
         self.load_descriptors(stuff["descriptors"])
@@ -388,10 +391,10 @@ class Cue(SCTE35Base):
             self.info_section = SpliceInfoSection()
             self.info_section.from_xml(stuff)
 
-    def _mk_from_map(self, a_map, stuff):
+    def _xml_from_map(self, a_map,b_map, stuff):
         for k,v in a_map.items():
             if k in stuff:
-                made = command_map[v]()
+                made = b_map[v]()
                 made.from_xml(stuff)
                 return made
         return False
@@ -404,21 +407,17 @@ class Cue(SCTE35Base):
             "SpliceNull": 0,
             "TimeSignal": 6,
         }
-        self.command = self._mk_from_map(cmap, stuff)
+        self.command = self._xml_from_map(cmap, command_map, stuff)
 
-    def _xml_splice_descriptor(self, stuff):
+    def _xml_splice_descriptors(self, stuff):
         dmap = {
             "SegmentationDescriptor": 2,
             "AvailDescriptor": 0,
             "DTMFDescriptor": 1,
             "TimeDescriptor": 3,
-
         }
-        for k, v in dmap.items():
-            if k in stuff:
-                dscptr = descriptor_map[v]()
-                dscptr.from_xml(stuff)
-                self.descriptors.append(dscptr)
+        for dstuff in stuff["descriptors"]:
+            self.descriptors.append(self._xml_from_map(dmap, descriptor_map ,dstuff))
 
     def _xml_event_signal(self, stuff):
         self.dash_data = {}
@@ -426,6 +425,12 @@ class Cue(SCTE35Base):
             if x in stuff:
                 self.dash_data[x] = stuff[x]
 
+    def _xml_assemble(self,stuff):
+        self._xml_splice_info_section(stuff)
+        self._xml_splice_command(stuff)
+        self.info_section.splice_command_type = self.command.command_type
+        self._xml_splice_descriptors(stuff)
+        
     def from_xml(self, stuff):
         """
         build_cue takes the data put into the stuff dict
@@ -436,29 +441,23 @@ class Cue(SCTE35Base):
             self.bites = self._mk_bits(stuff["Binary"]["binary"])
             self.decode()
         else:
-            self._xml_splice_info_section(stuff)
-            self._xml_splice_command(stuff)
-            self.info_section.splice_command_type = self.command.command_type
-            for dstuff in stuff["descriptors"]:
-                self._xml_splice_descriptor(dstuff)
+            self._xml_assemble(stuff)
             # Self.encode() will calculate lengths and types and such
             self.encode()
-        #self.show()
 
-    def _binary_xml(self):
+    def _xml_binary(self):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
         sig_node = Node("Signal", attrs=sig_attrs)
         bin_node = Node("Binary", value=self.encode())
         sig_node.add_child(bin_node)
         return sig_node
 
-    def _mk_descriptor_xml(self,sis):
+    def _xml_mk_descriptor(self,sis):
         """
         _mk_descriptor_xml make xml nodes for descriptors.
         """
         for d in self.descriptors:
             if d.has('segmentation_type_id'):
-               # if d.segmentation_type_id in table22:
                 sis.add_comment(f'{table22[d.segmentation_type_id]}')
             sis.add_child(d.xml())
         return sis
@@ -469,12 +468,12 @@ class Cue(SCTE35Base):
         which can be edited as needed or printed.
         """
         if binary:
-            return self._binary_xml()
+            return self._xml_binary()
         sis = self.info_section.xml()
        # if not self.command:
         #    raise Exception("\033[7mA Splice Command is Required\033[27m")
         cmd = self.command.xml()
         sis.add_child(cmd)
-        sis = self._mk_descriptor_xml(sis)
+        sis = self._xml_mk_descriptor(sis)
         sis.mk()
         return sis
