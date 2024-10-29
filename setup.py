@@ -18,6 +18,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/futzu/threefive",
     install_requires=[
+        'iframes >= 0.0.7',
         'm3ufu >= 0.0.89',
         'new_reader >= 0.1.11',
         "pyaes",
