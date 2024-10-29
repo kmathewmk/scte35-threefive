@@ -92,7 +92,7 @@ HELP = f"""
 
 {U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} show {U} video.ts
 
-{U}    showcues {U}{NORM}{BLUE}\tParse SCTE-35 from HLS:{NORM}  threefive {B} showcues {U} video.m3u8
+{U}    hls      {U}{NORM}{BLUE}\tParse SCTE-35 from HLS:{NORM}  threefive {B} hls {U} video.m3u8
 
 {U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
 
@@ -171,19 +171,19 @@ def superkabuki():
     print("threefive inject {infile} with {sidecar_file} at {pid}")
     return False
 
-def showcues():
+def hls():
     """
-    showcues exec showcues cli()
+    hls exec showcues cli()
     """
     cli()
-    
+
 
 print_map = {
     "help": print_help,
     "version": print_version,
     "encode": json_load,
     "inject": superkabuki,
-    "showcues": showcues,
+    "hls": hls,
 }
 
 
