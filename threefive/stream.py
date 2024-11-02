@@ -473,7 +473,6 @@ class Stream:
             return self._parse_sdt(pay)
         return False
 
-
     def _parse_info(self, pkt):
         """
         _parse_info parses the packet for tables
@@ -487,7 +486,7 @@ class Stream:
     def _parse(self, pkt):
         cue = False
         pid = self._parse_info(pkt)
-        #self._parse_cc(pkt, pid)
+        # self._parse_cc(pkt, pid)
         if self._pcr_flag(pkt):
             self._parse_pcr(pkt, pid)
         if self._pusi_flag(pkt):
@@ -496,7 +495,7 @@ class Stream:
             cue = self._parse_scte35(pkt, pid)
         return cue
 
-    def _pid_has_scte35(self,pid):
+    def _pid_has_scte35(self, pid):
         if pid in self.pids.scte35 or pid in self.pids.maybe_scte35:
             return True
         return False
@@ -529,7 +528,6 @@ class Stream:
             return cue
         return False
 
-
     def _strip_scte35_pes(self, pkt):
         pay = self._parse_payload(pkt)
         if self.SCTE35_PES_START in pay:
@@ -539,7 +537,7 @@ class Stream:
             pay = pay[peslen:]
         return pay
 
-    def _mk_scte35_payload(self,pkt,pid):
+    def _mk_scte35_payload(self, pkt, pid):
         pay = self._strip_scte35_pes(pkt)
         if not pay:
             return False
@@ -556,7 +554,7 @@ class Stream:
         """
         parse a scte35 cue from one or more packets
         """
-        pay = self._mk_scte35_payload(pkt,pid)
+        pay = self._mk_scte35_payload(pkt, pid)
         if not pay:
             return False
         seclen = self._parse_length(pay[1], pay[2])
@@ -626,8 +624,8 @@ class Stream:
             idx += chunk_size
         return True
 
-    def _mk_pmt_payload(self,pay,pid):
-        seclen=False
+    def _mk_pmt_payload(self, pay, pid):
+        seclen = False
         program_number = False
         pay = self._chk_partial(pay, pid, self.PMT_TID)
         if not pay:
@@ -638,14 +636,13 @@ class Stream:
         program_number = self._parse_program(pay[3], pay[4])
         if self.the_program and (program_number != self.the_program):
             return False
-        return pay,seclen,program_number
+        return pay, seclen, program_number
 
-    
     def _parse_pmt(self, pay, pid):
         """
         parse program maps for streams
         """
-        pay,seclen,program_number = self._mk_pmt_payload(pay,pid)
+        pay, seclen, program_number = self._mk_pmt_payload(pay, pid)
         if not program_number:
             return False
         pcr_pid = self._parse_pid(pay[8], pay[9])
