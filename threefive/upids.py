@@ -217,7 +217,6 @@ class Mid(Upid):
             self.upid_value.append(mid_upid)
         return self.upid_name, self.upid_value
 
-
     def encode(self, nbin, seg_upid):
         """
         encode Mid Upid
