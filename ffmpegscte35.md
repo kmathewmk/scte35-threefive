@@ -15,11 +15,22 @@ threefive sixfix video.ts
 ffmpeg -copyts -i video.ts [other ffmpeg stuff] -muxpreload 0 -muxdelay 0 outvideo.ts
 ```
 
-### How to retain SCTE-35 when using ffmpeg to segment HLS. 
-* create a sidecar file of the SCTE-35 Cues
+### How to retain SCTE-35 when using ffmpeg to segment ABR HLS Live. 
+* __This can be done in realtime on live streams__
+* create a sidecar file of the SCTE-35 Cues with `threefive proxy`
+* pipe the MPEGTS from threefive to ffmpeg
+* Create renditions and master.m3u8 with ffmpeg
+
 ```smalltalk
-threefive sidecar video.ts
+threefive proxy video.ts | ffmpeg -copyts -i - [..ffmpeg stuff..] master.m3u8
 ```
 
-* segment with ffmpeg
-* Use [sideways](https://github.com/futzu/sideways) to inject SCTE-35 back into the HLS
+* Start  [sideways](https://github.com/futzu/sideways) to inject SCTE-35 back into the HLS
+
+```smalltalk
+sideways -i master.m3u8 -s sidecar.txt -o output_dir
+```
+* sideways will process the renditions from the master.m3u8 and add SCTE-35 Cues from the sidecar file live.
+*  SCTE-35 is translated to HLS tags. __All SCTE-35 HLS Tags are Supported__. 
+*  SCTE-35 is added to new manifest files in output_dir
+*  Original segments from ffmpeg are used. Segments are split if needed for Cue Outs. 
