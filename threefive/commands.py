@@ -99,12 +99,9 @@ class PrivateCommand(SpliceCommand):
         """
         create XML Node of type PrivateCommand
         """
-        attrs = {
-            "identifier": self.identifier
-        }
+        attrs = {"identifier": self.identifier}
         pc = Node("PrivateCommand", attrs=attrs)
-        pc.add_child(Node("PrivateBytes",
-                          value=self.private_bytes.hex()))
+        pc.add_child(Node("PrivateBytes", value=self.private_bytes.hex()))
         return pc
 
     def from_xml(self, stuff):
@@ -112,10 +109,9 @@ class PrivateCommand(SpliceCommand):
         load a PrivateCommand from XML
         """
         self.identifier = stuff["PrivateCommand"]["identifier"]
-        if ("PrivateBytes" in stuff and
-            "private_bytes" in stuff["PrivateBytes"]):
-            self.private_bytes = bytes.fromhex((
-                stuff["PrivateBytes"]["private_bytes"]))
+        if "PrivateBytes" in stuff and "private_bytes" in stuff["PrivateBytes"]:
+            self.private_bytes = bytes.fromhex((stuff["PrivateBytes"]["private_bytes"]))
+
 
 class SpliceNull(SpliceCommand):
     """
@@ -129,6 +125,7 @@ class SpliceNull(SpliceCommand):
 
     def xml(self):
         return Node("SpliceNull")
+
 
 class TimeSignal(SpliceCommand):
     """
@@ -179,8 +176,9 @@ class TimeSignal(SpliceCommand):
         self._chk_var(bool, nbin.add_flag, "time_specified_flag", 1)
         if self.time_specified_flag:
             nbin.reserve(6)
-            if not isinstance(self.pts_time,float):
-                raise ValueError("\033[7mA float for pts_time for the splice command is required.\033[27m"
+            if not isinstance(self.pts_time, float):
+                raise ValueError(
+                    "\033[7mA float for pts_time for the splice command is required.\033[27m"
                 )
             nbin.add_int(int(self.as_ticks(self.pts_time)), 33)
         else:
@@ -196,13 +194,14 @@ class TimeSignal(SpliceCommand):
             ts.add_child(st)
         return ts
 
-    def from_xml(self,stuff):
+    def from_xml(self, stuff):
         """
         load a TimeSignal from XML
         """
         if "SpliceTime" in stuff:
-            self.load(stuff['SpliceTime'])
+            self.load(stuff["SpliceTime"])
             self.time_specified_flag = True
+
 
 class SpliceInsert(TimeSignal):
     """
@@ -306,8 +305,8 @@ class SpliceInsert(TimeSignal):
             "event_id_compliance_flag": self.event_id_compliance_flag,
             "avail_num": self.avail_num,
             "avails_expected": self.avails_expected,
-            'out_of_network_indicator': self.out_of_network_indicator,
-            'unique_program_id': self.unique_program_id,
+            "out_of_network_indicator": self.out_of_network_indicator,
+            "unique_program_id": self.unique_program_id,
         }
         for k, v in si_attrs.items():
             if v is None:
@@ -327,7 +326,7 @@ class SpliceInsert(TimeSignal):
             si.add_child(bd)
         return si
 
-    def from_xml(self,stuff):
+    def from_xml(self, stuff):
         """
         load a SpliceInsert from XML
         """
@@ -344,6 +343,7 @@ class SpliceInsert(TimeSignal):
             self.duration_flag = True
             self.break_auto_return = stuff["BreakDuration"]["auto_return"]
         self.avails_expected = bool(self.avails_expected)
+
 
 # table 7
 command_map = {
