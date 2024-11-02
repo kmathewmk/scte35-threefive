@@ -20,7 +20,7 @@ NORM = "\033[0m"
 BLUE = "\033[36;1;51m"
 
 B = "\033[7;1m"
-U="\033[m"
+U = "\033[m"
 mapped = {
     "base64": "encode",
     "bytes": "get_bytes",
@@ -73,31 +73,15 @@ HELP = f"""
         {BLUE}udp: {NORM}\tthreefive udp://127.0.0.1:3535
         {BLUE}multicast:{NORM}threefive udp://@235.35.3.5:3535
 
-{U}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM}
-
-        {BLUE}Base64 to bytes:{NORM}threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-        {BLUE}Base64 to hex:{NORM}\tthreefive {B} encode {U} {B} hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
-        {BLUE}Base64 to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
-        {BLUE}Hex to int:{NORM}   \tthreefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-        {BLUE}JSON to base64:{NORM}\tthreefive {B} encode {U} < json.json
-        {BLUE}JSON to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U} < json.json
-        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive {B} encode {U} {B} hex {U}
+{U}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM} threefive {B} encode help {U}
 
 {U}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
 
-{U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} packets {U} udp://@235.35.3.5:3535
+{U}    hls      {U}{NORM}{BLUE}\tParse  SCTE-35 from HLS:{NORM}  threefive {B} hls help {U}
 
-{U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B} proxy {U} https://example.com/video.ts
+                  {BLUE}\tHLS SCTE-35 Encoding{U} threefive {B} hls encode help{U}
 
-{U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B} pts {U} video.ts
-
-{U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} show {U} video.ts
-
-{U}    hls      {U}{NORM}{BLUE}\tParse SCTE-35 from HLS:{NORM}  threefive {B} hls {U} video.m3u8
-
-                                        {BLUE} See extended help {U} threefive {B} hls help{U} 
-                
-{U}    sideways {U}{NORM}{BLUE}\tAdd SCTE-35 from a sidecar file to existing ABR HLS :{NORM}  threefive {B} sideways help{U}
+{U}    mpegts   {U}{NORM}{BLUE}\tFunctions for mpegts  (packet, proxy, pts, show):{NORM}  threefive {B} mpegts {U} help
 
 {U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
 
@@ -129,11 +113,35 @@ def print_version():
     sys.exit()
 
 
+def encode_help():
+    print(
+        f"""
+
+        {BLUE}Base64 to bytes:{NORM}threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+
+        {BLUE}Base64 to hex:{NORM}\tthreefive {B} encode {U} {B} hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
+
+        {BLUE}Base64 to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
+
+        {BLUE}Hex to int:{NORM}   \tthreefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+
+        {BLUE}JSON to base64:{NORM}\tthreefive {B} encode {U} < json.json
+
+        {BLUE}JSON to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U} < json.json
+
+        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive {B} encode {U} {B} hex {U}
+    """
+    )
+
+
 def json_load():
     """
     json_load is used by encode
     """
     cmdlist = list(mapped.keys()) + ["encode"]
+    if "help" in sys.argv:
+        encode_help()
+        sys.exit()
     json = False
     arglist = [arg for arg in sys.argv[1:] if arg not in cmdlist]
     if not arglist:
@@ -176,14 +184,12 @@ def superkabuki():
     print("threefive inject {infile} with {sidecar_file} at {pid}")
     return False
 
-print_map = {
-    "sideways":sidecli,
-    "hls": hlscli,
-    "help": print_help,
-    "version": print_version,
-    "encode": json_load,
-    "inject": superkabuki,
-}
+
+def hls():
+    if "encode" in sys.argv:
+        sidecli()
+    else:
+        hlscli()
 
 
 def no_op(cue):
@@ -260,13 +266,56 @@ def to_xml(this):
 
 
 func_map = {
-    "pts": pts_chk,
-    "show": show_chk,
-    "packets": packet_chk,
-    "proxy": proxy_chk,
-    "sidecar": sidecar_chk,
     "xml": to_xml,
     "sixfix": sixfix,
+}
+
+
+def mhelp():
+    print(
+        f"""
+
+    {U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive mpegts {B} packets {U} udp://@235.35.3.5:3535
+
+    {U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive mpegts{B} proxy {U} https://example.com/video.ts
+
+    {U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive mpegts{B} pts {U} video.ts
+
+    {U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive mpegts{B} show {U} video.ts
+"""
+    )
+
+
+def mpegts():
+    mpegts_map = {
+        "help": mhelp,
+        "pts": pts_chk,
+        "show": show_chk,
+        "packets": packet_chk,
+        "proxy": proxy_chk,
+        "sidecar": sidecar_chk,
+    }
+
+    sys.argv.remove("mpegts")
+    for k, v in mpegts_map.items():
+        if k in sys.argv:
+            if k in ["help"]:
+                mhelp()
+            else:
+                args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
+                for mo in args:
+                    print(k, "HIT")
+                    v(mo)
+            sys.exit()
+
+
+print_map = {
+    "encode": json_load,
+    "mpegts": mpegts,
+    "hls": hls,
+    "help": print_help,
+    "version": print_version,
+    "inject": superkabuki,
 }
 
 
@@ -288,15 +337,15 @@ def chk_func_map():
         if k in sys.argv:
             args = [arg for arg in sys.argv[1:] if arg not in func_map]
             for mo in args:
-                print(k,"HIT")
+                print(k, "HIT")
                 v(mo)
             sys.exit()
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        chk_func_map()
         chk_print_map()
+        chk_func_map()
         for arg in sys.argv[1:]:
             decode(arg)
     else:
