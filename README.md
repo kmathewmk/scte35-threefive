@@ -1,16 +1,24 @@
-> threefive parses SCTE-35 from HLS, DASH, MPEGTS, Base64, Bytes, Dict, Hex, Integer, Json amd Xml.
-
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
 
 # SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-<br> `Parses` __SCTE-35__ from multiple streams in `MPEGTS` and `Multiple Program Transport Streams` 
-<br> `Parses` __SCTE-35__ from  Cues encoded in`Base64`, `Bytes`, `Hex`, `Integers`.
-<br> `Parses` __SCTE-35__ from  `files`, `http(s)`, `Multicast`, `UDP` and even `stdin` _( you can pipe to it)_. 
-<br> `Parses` __SCTE-35__ from streams converted to `bin data` ( _type 0x06_ ) by `ffmpeg`.
-<br>`Encodes` __SCTE-35__ to Base64, Bytes, Hex, Integer, Json ,Xml, or MPEGTS packets.
+| This                  |   is Supported by threefive                                                  |
+|-----------------------|------------------------------------------------------------------------------|
+| __SCTE-35 Decode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
+| __SCTE-35 Encode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
+| __Protocols__             | `file`, `stdin`, `Http(s)`, `UDP`, `Multicast`.                              |
+| __MPEGTS__                | `Multi-program`,`Multi-stream`, `Multi-pid`, `multi-packet SCTE-35`|
+| __Stream Types__          |  `0x86 SCTE-35`, `0x06 Binary Data`                           |
+| __XML/Dash__                | `xml`, `xml+bin`, `SCTE-35 2023r1` Schemas                                   |
+| __HLS__                 | `MPEGTS`, Audio only `AAC`                                                   |
+| __HLS Tags__            | `#EXT-OATCLS-SCTE35`,`#EXT-X-CUE-*`,`#EXT-X-DATERANGE`,`#EXT-X-SCTE35`       |
+
+
 <br>
+
 ## Latest version is v2.4.89
+
+
 _Released 10/29/2024_
 
 ### New Stuff in threefive v2.4.89
