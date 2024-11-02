@@ -41,6 +41,7 @@ def crc32(data):
         )
     return crc
 
+
 def crc32hex(data):
     """
     crc32hex crc32 returned as hex
