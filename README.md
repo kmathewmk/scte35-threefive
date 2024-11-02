@@ -1,8 +1,7 @@
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
+ SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-# SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
-
-| This                  |   is Supported by threefive                                                  |
+|        These             |  are Supported by threefive                                                  |
 |-----------------------|------------------------------------------------------------------------------|
 | __SCTE-35 Decode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
 | __SCTE-35 Encode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
