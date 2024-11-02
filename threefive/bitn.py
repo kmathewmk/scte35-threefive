@@ -149,11 +149,11 @@ class NBin:
         and appends it to self.nbits
         via self.add_int
         """
-        if isinstance(hex_str,str):
+        if isinstance(hex_str, str):
             dehexed = int(hex_str, 16)
         # just in case hex_str is an int....
         else:
-            dehexed=hex_str
+            dehexed = hex_str
         self.add_int(dehexed, bit_len)
 
     def add_flag(self, flg, bit_len=1):
