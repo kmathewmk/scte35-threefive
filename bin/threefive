@@ -11,7 +11,8 @@ from new_reader import reader
 from threefive import Cue, Stream, print2, decode, version
 from threefive.sixfix import sixfix
 from threefive.superkabuki import SuperKabuki
-from threefive.showcues import cli
+from threefive.showcues import cli as hlscli
+from sideways import cli as sidecli
 
 REV = "\033[7;1m"
 NORM = "\033[27m\033[0m"
@@ -94,6 +95,10 @@ HELP = f"""
 
 {U}    hls      {U}{NORM}{BLUE}\tParse SCTE-35 from HLS:{NORM}  threefive {B} hls {U} video.m3u8
 
+                                        {BLUE} See extended help {U} threefive {B} hls help{U} 
+                
+{U}    sideways {U}{NORM}{BLUE}\tAdd SCTE-35 from a sidecar file to existing ABR HLS :{NORM}  threefive {B} sideways help{U}
+
 {U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
 
 {U}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} sixfix {U} video.ts
@@ -171,19 +176,13 @@ def superkabuki():
     print("threefive inject {infile} with {sidecar_file} at {pid}")
     return False
 
-def hls():
-    """
-    hls exec showcues cli()
-    """
-    cli()
-
-
 print_map = {
+    "sideways":sidecli,
+    "hls": hlscli,
     "help": print_help,
     "version": print_version,
     "encode": json_load,
     "inject": superkabuki,
-    "hls": hls,
 }
 
 
@@ -289,14 +288,15 @@ def chk_func_map():
         if k in sys.argv:
             args = [arg for arg in sys.argv[1:] if arg not in func_map]
             for mo in args:
+                print(k,"HIT")
                 v(mo)
             sys.exit()
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        chk_print_map()
         chk_func_map()
+        chk_print_map()
         for arg in sys.argv[1:]:
             decode(arg)
     else:
