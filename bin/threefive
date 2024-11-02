@@ -81,21 +81,15 @@ HELP = f"""
                 
                 {BLUE}hls:       {NORM}threefive  {B} hls{U}  https://example.com/master.m3u8
 
-{U}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to JSON,XML,Base64,Hex,Int or Bytes:{NORM} threefive {B} encode {U} {B}help {U}
+{U}    encode   {U}{BLUE}\tLoad {U}JSON, XML, Base64 or Hex{BLUE} and encode to {U} JSON, XML,Base64, Hex, Int or Bytes {BLUE}:{NORM} threefive {B} encode {U} {B}help {U}
+
+{U}    hls {U}{NORM}{BLUE}\tHLS{U} decode{BLUE} SCTE-35:{NORM}  threefive {B} hls {U} {B}help {U}
+
+{U}             {BLUE}\tHLS {U}encode {BLUE} SCTE-35:{U} threefive {B} hls{U} {B} encode {U} {B}help{U}
 
 {U}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
 
-{U}    hls      {U}{NORM}{BLUE}\tParse  SCTE-35 from HLS:{NORM}  threefive {B} hls {U} {B}help {U}
-
-            {BLUE}\tHLS SCTE-35 Encoding{U} threefive {B} hls{U} {B} encode {U} {B}help{U}
-
-{U}    mpegts   {U}{NORM}{BLUE}\tFunctions for mpegts  (packet, proxy, pts, show):{NORM}  threefive {B} mpegts {U} {B}help{U}
-
-{U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} sidecar {U} https://example.com/video.ts
-
-{U}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} sixfix {U} video.ts
-
-{U}    xml      {U}{NORM}{BLUE}\tParse an mpegts stream and output xml: {NORM} threefive {B} xml {U} video.ts
+{U}    mpegts   {U}{NORM}{BLUE}\tFunctions for mpegts  ( {NORM}packet, proxy, pts, sidecar, sixfix show, xml {BLUE} ) :{NORM} threefive {B} mpegts {U} {B}help{U}
 
 {U}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
 
@@ -275,7 +269,6 @@ def to_xml(this):
 
 func_map = {
     "xml": to_xml,
-    "sixfix": sixfix,
 }
 
 
@@ -283,13 +276,20 @@ def mhelp():
     print(
         f"""
 
-    {U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B}mpegts{U} {B} packets {U} udp://@235.35.3.5:3535
+    {U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} mpegts {U} {B} packets {U} udp://@235.35.3.5:3535
 
-    {U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B}mpegts{U} {B} proxy {U} https://example.com/video.ts
+    {U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B} mpegts {U} {B} proxy {U} https://example.com/video.ts
 
-    {U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B}mpegts {U} {B} pts {U} video.ts
+    {U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B} mpegts {U} {B} pts {U} video.ts
 
-    {U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B}mpegts {U} {B} show {U} video.ts
+    {U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} mpegts {U} {B} sidecar {U} https://example.com/video.ts
+
+    {U}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} mpegts {U} {B} sixfix {U} video.ts
+
+    {U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} mpegts {U} {B} show {U} video.ts
+
+    {U}    xml      {U}{NORM}{BLUE}\tParse an mpegts stream and output xml: {NORM} threefive {B} mpegts {U} {B} xml {U} video.ts
+
 """
     )
 
@@ -299,9 +299,11 @@ def mpegts():
         "help": mhelp,
         "pts": pts_chk,
         "show": show_chk,
+        "sixfix": sixfix,
         "packets": packet_chk,
         "proxy": proxy_chk,
         "sidecar": sidecar_chk,
+        "xml": to_xml,
     }
 
     sys.argv.remove("mpegts")
@@ -318,9 +320,9 @@ def mpegts():
 
 
 print_map = {
+    "hls": hls,
     "encode": json_load,
     "mpegts": mpegts,
-    "hls": hls,
     "help": print_help,
     "version": print_version,
     "inject": superkabuki,
@@ -345,7 +347,6 @@ def chk_func_map():
         if k in sys.argv:
             args = [arg for arg in sys.argv[1:] if arg not in func_map]
             for mo in args:
-                print(k, "HIT")
                 v(mo)
             sys.exit()
 
