@@ -1,7 +1,5 @@
 """
-
 showcues.py
-
 """
 
 import datetime
@@ -1000,17 +998,17 @@ showcues
 
     To display this help:
 
-	showcues help
+	threefive hls help
 
 
 [ Input ]
 
-	showcues takes an m3u8 URI as input.
+	threefive hls takes an m3u8 URI as input.
 
     	M3U8 formats supported:
 
         	* master  ( When a master.m3u8 used,
-                           showcues parses the first rendition it finds )
+                           threefive hls parses the first rendition it finds )
         	* rendition
 
     	Segment types supported:
@@ -1037,7 +1035,7 @@ showcues
 
 [ SCTE-35 ]
 
-    showcues displays SCTE-35 Embedded Cues as well as SCTE-35 HLS Tags.
+    threefive hls displays SCTE-35 Embedded Cues as well as SCTE-35 HLS Tags.
 
     Supported SCTE-35:
 
@@ -1060,7 +1058,7 @@ showcues
 
     	running the command:
 
-        	showcues profile
+        	threefive hls profile
 
     	will generate a default profile and write a file named sc.profile
     	in the current working directory.
@@ -1095,7 +1093,7 @@ showcues
 
 
 
-    		Edit the file as needed and then run showcues.
+    		Edit the file as needed and then run threefive hls.
 
 
 [ Profile Formatting Rules ]
@@ -1127,7 +1125,7 @@ showcues
 
 [ Cool Features ]
 
-    * showcues can resume when started in the middle of an ad break.
+    * threefive hls can resume when started in the middle of an ad break.
 
             2023-10-13T05:59:50.24Z Resuming Ad Break
             2023-10-13T05:59:50.34Z Setting Break Timer to 17.733
@@ -1152,11 +1150,11 @@ showcues
 
 	* Show this help:
 
-		showcues help
+		threefive hls help
 
 	* Generate a new sc.profile
 
-		showcues profile
+		threefive hls profile
 
 	* parse an m3u8
 
