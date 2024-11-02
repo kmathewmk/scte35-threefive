@@ -4,7 +4,7 @@ xml.py  The Node class for converting to xml,
         and several helper functions
 """
 
-from xml.sax.saxutils import escape,unescape
+from xml.sax.saxutils import escape, unescape
 from new_reader import reader
 
 
@@ -61,9 +61,9 @@ def val2xml(val):
         return str(val).lower()
     if isinstance(val, (int, float)):
         return str(val)
-    if isinstance(val,str):
-        if val.lower()[:2]=="0x":
-            return str(int(val,16))
+    if isinstance(val, str):
+        if val.lower()[:2] == "0x":
+            return str(int(val, 16))
     return escape(val)
 
 
@@ -83,14 +83,6 @@ def mk_xml_attrs(attrs):
     a dict of xml friendly keys and values
     """
     return "".join([f' {key2xml(k)}="{val2xml(v)}"' for k, v in attrs.items()])
-
-
-special_char_map = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-}
 
 
 class Node:
@@ -203,6 +195,7 @@ class Comment(Node):
 
     See also Node.add_comment:
     """
+
     def mk(self, obj=None):
         if obj is None:
             obj = self
@@ -243,7 +236,7 @@ class XmlParser:
         <name>value</name>
 
         """
-        if value not in [None, ""]:
+        if value:
             stuff[self.active][un_camel(self.active)] = unescape(value)
         return stuff
 
@@ -259,13 +252,12 @@ class XmlParser:
         mk_attrs parses the current node for attributes
         and stores them in self.stuff[self.active]
         """
-        if '!--' in node:
+        if "!--" in node:
             return False
-        node= node.replace("='",'="').replace("' ",'" ')
+        node = node.replace("='", '="').replace("' ", '" ')
         attrs = [x for x in node.split(" ") if "=" in x]
         parsed = {
-            x.split('="')[0]: unescape(x.split('="')[1].split('"')[0])
-            for x in attrs
+            x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
         }
         it = iter_attrs(parsed)
         return it
