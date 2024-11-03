@@ -183,7 +183,7 @@ def superkabuki():
                 supak.apply_args(args)
                 supak.encode()
                 return True
-    print("threefive mpegts inject {infile} with {sidecar_file} at {pid}")
+    print("threefive inject{infile} with {sidecar_file} at {pid}")
     return False
 
 
