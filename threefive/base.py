@@ -5,6 +5,7 @@ the class SCTE35Base.
 
 import json
 from .bitn import NBin
+from .stuff import print2
 from .xml import Node
 
 
@@ -32,11 +33,11 @@ class SCTE35Base:
         var_value = self.__dict__[var_name]
         if var_value is None:
             err_mesg = (
-                f"\033[7m{var_name} is not set, it should be type {var_type}\033[27m"
+                f"\033[7m{var_name} is not set, it should be {bit_count} bit(s) and type {var_type}\033[27m"
             )
             raise ValueError(err_mesg)
         if not isinstance(var_value, var_type):
-            err_mesg = f' \033[7m{var_name} is "{var_value}", it should be type {var_type}\033[27m\n '
+            err_mesg = f' \033[7m{var_name} is "{var_value}", it should be type {var_type}\033[27m and {bit_count} bit(s),\n '
             raise ValueError(err_mesg)
         nbin_method(var_value, bit_count)
 
@@ -88,6 +89,18 @@ class SCTE35Base:
         """
         return json.dumps(self.get(), indent=4)
 
+    def json(self):
+        """
+        json returns self as kv_clean'ed json
+        """
+        return self.get_json()
+
+    def show(self):
+        """
+        show prints self as json to stderr (2)
+        """
+        print2(self.get_json())
+        
     def kv_clean(self):
         """
         kv_clean removes items from a dict if the value is None
@@ -103,7 +116,6 @@ class SCTE35Base:
             if isinstance(val, (bytes, bytearray)):
                 val = list(val)
             return val
-
         return {k: b2l(v) for k, v in vars(self).items() if v is not None}
 
     def has(self, what):
@@ -151,4 +163,4 @@ class SCTE35Base:
             for k, v in stuff.items():
                 if self.has(k):
                     self.__dict__[k] = v
-        # self.__dict__.update(stuff)
+        #self.__dict__.update(stuff)
