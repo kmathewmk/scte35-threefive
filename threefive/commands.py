@@ -180,6 +180,7 @@ class TimeSignal(SpliceCommand):
                 raise ValueError(
                     "\033[7mA float for pts_time for the splice command is required.\033[27m"
                 )
+            self.pts_time = round(self.pts_time,6)
             nbin.add_int(int(self.as_ticks(self.pts_time)), 33)
         else:
             nbin.reserve(7)
@@ -190,8 +191,10 @@ class TimeSignal(SpliceCommand):
         """
         ts = Node("TimeSignal")
         if self.has("pts_time"):
-            st = Node("SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)})
-            ts.add_child(st)
+            if self.pts_time:
+                self.pts_time=round(self.pts_time,6)
+                st = Node("SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)})
+                ts.add_child(st)
         return ts
 
     def from_xml(self, stuff):
