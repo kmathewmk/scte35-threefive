@@ -174,6 +174,11 @@ class Cue(SCTE35Base):
             return data
 
     def _mk_load(self, data):
+        """
+        _mk_load sets self.bytes when loading
+       data. Encode is called to set missing fields
+       when possible and re-calc the length vars and crc.
+        """
         bites = self.bites
         self.encode()
         return bites
@@ -236,12 +241,6 @@ class Cue(SCTE35Base):
         self.command.decode()
         del self.command.bites
         return bites[iscl:]
-
-    def show(self):
-        """
-        Cue.show prints the Cue as JSON
-        """
-        print2(self.get_json())
 
     # encode related
 
