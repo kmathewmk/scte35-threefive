@@ -1,3 +1,7 @@
+### `Heads up!` 
+ I'm about to release the __super tuned threefive cli__. I've already __added XML support__, __repairing SCTE-35 streams converted to 0x6 bin data by ffmpeg, SCTE-35 MPEGTS packet injection, HLS SCTE-35 Decoding, HLS SCTE-35 Encoding__ with __all known SCTE-35 HLS tags__, and conversion for __all known SCTE-35 formats__. If it is SCTE-35, the cli can do it. 
+
+
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
  SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
@@ -16,7 +20,6 @@
 <br>
 
 ## Latest version is v2.4.89
-
 
 _Released 10/29/2024_
 
