@@ -78,7 +78,7 @@ HELP = f"""
                 {BLUE}udp:       {NORM}threefive udp://127.0.0.1:3535
 
                 {BLUE}multicast: {NORM}threefive udp://@235.35.3.5:3535
-                
+
                 {BLUE}hls:       {NORM}threefive  {B} hls{U}  https://example.com/master.m3u8
 
 {U}    encode   {U}{BLUE}\tLoad {U}JSON, XML, Base64 or Hex{BLUE} and encode to {U} JSON, XML,Base64, Hex, Int or Bytes {BLUE}:{NORM} threefive {B} encode {U} {B}help {U}
@@ -183,7 +183,7 @@ def superkabuki():
                 supak.apply_args(args)
                 supak.encode()
                 return True
-    print("threefive inject {infile} with {sidecar_file} at {pid}")
+    print("threefive mpegts inject {infile} with {sidecar_file} at {pid}")
     return False
 
 
