@@ -1,4 +1,5 @@
 ![image](https://github.com/user-attachments/assets/b1a05827-7650-4a87-8e97-f9a15eccfac2)
+* _threefive will run on any OS that supports python 3.6 or higher_.
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
  SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
