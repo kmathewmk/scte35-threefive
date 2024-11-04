@@ -22,25 +22,19 @@
 ## Latest version is v2.4.89
 _Released 10/29/2024_
 
-### New Stuff in threefive v2.4.89
-* Fixed __iframes import error__
+### New Stuff in threefive
 * A __Cue__ instance can now be initialized with __base64, bytes, dict,hex, hex literal, Json, or xml.__
 * __HLS__ Manifest and Segment SCTE-35 parsing added to __threefive cli.__ 
-
-### New Stuff in threefive v2.4.85
-* Fix for #121 MiD upid encoding
-* MPEGTS Packet Injection in the cli via sidecar file.
+* MPEGTS Packet Injection added to the __threefive cli.__.
     * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
-
-### New Stuff in threefive v2.4.81
 * [__sixfix__](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : ffmpeg turns SCTE-35 streams to bin data (0x06), sixfix switches them back to SCTE-35 (0x86).
-  
 * [__Xml__](https://github.com/futzu/SCTE35-threefive/blob/master/dash.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) ( DASH SCTE-214)
-
 * [A minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
 
+
 ### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
-<br>
+ [![image](https://github.com/user-attachments/assets/6343b069-721f-43d0-be10-759587f5c14f)](ttps://iodisco.com/scte35)
+
 
 ___
 
