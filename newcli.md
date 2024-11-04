@@ -3,40 +3,8 @@
 ## Decode SCTE-35
 <details><summary><B>threefive decode help</B></summary>
 
-* Here's how to decode SCTE-35 from MPEGTS, HLS, Base64, Hex, Files, Stdin.
- 
-base64:    
-```js
-threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-```
-hex:       
-```js
-threefive '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
-```
-files:
-```js
-threefive myvideo.ts
-```
-stdin:     
-```js
-cat myvideo.ts | threefive
-```
-http(s):
-```js   
-threefive https://futzu.com/xaa.ts
-```
-udp:
-```js       
-threefive udp://127.0.0.1:3535
-```
-multicast:
-```js
-threefive udp://@235.35.3.5:3535
-```
-hls:
-```js
-threefive   hls  https://example.com/master.m3u8
-```
+* __Here's how to decode SCTE-35 from MPEGTS, HLS, Base64, Hex, Files, Stdin__
+![image](https://github.com/user-attachments/assets/b646d89e-c318-4449-a2da-728520776f86)
 
 
 </details>
@@ -48,38 +16,7 @@ threefive   hls  https://example.com/master.m3u8
 
 *  Load JSON, XML, Base64 or Hex and encode to  JSON, XML,Base64, Hex, Int or Bytes : threefive  encode  help 
     * encode can be used to convert from one SCTE-35 format to another.
-
-Base64 to bytes:
-```js
-threefive  encode   bytes   '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-```
-Base64 to hex:  
-```js
-threefive  encode   hex   '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
-```
-Base64 to xml: 
-```js
-threefive  encode   xml   '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
-```
-Hex to int:     
-```js
-threefive  encode   int  0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-```
-        \
-JSON to base64: 
-```js
-threefive  encode  < json.json
-```
-
-JSON to xml:    
-```js
-threefive  encode   xml  < json.json
-```
-        
-xml to hex:     
-```js
-cat xml.xml | threefive  encode   hex 
-```
+![image](https://github.com/user-attachments/assets/3e61dc4c-7072-4617-9f9a-796e871faf18)
 
 </details>
 
