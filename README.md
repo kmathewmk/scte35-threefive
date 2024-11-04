@@ -1,26 +1,9 @@
->if you work for Roku, the EPG on the Roku Channel needs some help.
->Y'all get in touch, I can fix it.
-
+![image](https://github.com/user-attachments/assets/b1a05827-7650-4a87-8e97-f9a15eccfac2)
 
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
  SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-|        These             |  are Supported by threefive                                                  |
-|-----------------------|------------------------------------------------------------------------------|
-| __SCTE-35 Decode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
-| __SCTE-35 Encode__ Formats| `MpegTS`, `Base64`, `Bytes`, `Dict`, `Hex`,`Int`, `Json`, `Xml`.             |
-| __Protocols__             | `file`, `stdin`, `Http(s)`, `UDP`, `Multicast`.                              |
-| __MPEGTS__                | `Multi-program`,`Multi-stream`, `Multi-pid`, `multi-packet SCTE-35`|
-| __Stream Types__          |  `0x86 SCTE-35`, `0x06 Binary Data`                           |
-| __XML/Dash__                | `xml`, `xml+bin`, `SCTE-35 2023r1` Schemas                                   |
-| __HLS__                 | `MPEGTS`, Audio only `AAC`                                                   |
-| __HLS Tags__            | `#EXT-OATCLS-SCTE35`,`#EXT-X-CUE-*`,`#EXT-X-DATERANGE`,`#EXT-X-SCTE35`       |
-
-
-<br>
-
-## Latest version is v2.4.89
-_Released 10/29/2024_
+### Latest version is v2.4.89
 
 ### New Stuff in threefive
 * A __Cue__ instance can now be initialized with __base64, bytes, dict,hex, hex literal, Json, or xml.__
@@ -33,12 +16,16 @@ _Released 10/29/2024_
 
 
 ### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
- [![image](https://github.com/user-attachments/assets/ec5192f3-8484-4f85-87ab-f9d72374c666)
-](ttps://iodisco.com/scte35)
-
 
 # Documentation
 #### 
+      
+* Latest docs are always available in the python shell
+```py3
+
+>>>> from threefive import TimeSignal
+>>>> help(TimeSignal)
+```
 
 ### Install
 * python3
@@ -54,8 +41,9 @@ pypy3 -mpip install threefive
 
   
 * [Super Cool Examples](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
+
+* New! [threefive: more OO than you know](https://github.com/futzu/threefive/blob/master/oo.md)
    
----
 * [Answers to Some Common Problems with ffmpeg and SCTE-35](https://github.com/futzu/SCTE35-threefive/blob/master/ffmpegscte35.md)
 
 <details><summary>Versions and Releases</summary>
@@ -77,7 +65,6 @@ a@slow:~/threefive$
 ---
 ![image](https://github.com/user-attachments/assets/caac5f33-204e-47c7-bcdb-1e2d05fdaefb)
 
-
 </details>
 
 
@@ -96,6 +83,7 @@ a@slow:~/threefive$
 
 
 * [__Parse SCTE-35 programmatically__](https://github.com/futzu/scte35parser-threefive/blob/master/prog.md) with __threefive__ </i>(write some code)</i>
+     * New! [threefive: more OO than you know](https://github.com/futzu/threefive/blob/master/oo.md)
      * SCTE-35 code [__Examples__](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
      *  [How to Use __threefive.Cue__](https://github.com/futzu/SCTE35_threefive/blob/master/basic.md)
      * [How to write a minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
@@ -106,8 +94,6 @@ a@slow:~/threefive$
 * [__Encoding__](https://github.com/futzu/scte35parser-threefive/blob/master/Encoding.md)
     *  [__Encoding | more__ ](https://github.com/futzu/scte35parser-threefive/blob/master/EncodingPipeMore.md)
     *  [JSON to SCTE-35 Encoding](https://github.com/futzu/SCTE35_threefive/blob/master/cliencde.md)
-      
-
 
 </details>
  
@@ -442,7 +428,7 @@ ___
 
 <details><summary>Custom charsets for UPIDS aka upids.charset</summary>
 
-\
+
 `Specify a charset for Upid data by setting threefive.upids.charset` [`issue #55`](https://github.com/futzu/scte35-threefive/issues/55)
 
 * default charset is ascii
@@ -620,9 +606,6 @@ private_data = b'threefive kicks ass'
 <br>⚡ [bpkio-cli](https://pypi.org/project/bpkio-cli/): A command line interface to the broadpeak.io APIs. 
 <br>⚡ [amt-play ](https://github.com/vivoh-inc/amt-play) uses x9k3.
 
-[![image](https://github.com/user-attachments/assets/d3d3e168-5e6a-4e2d-8688-0fdf4c319176)
-](https://iodisco.com/cgi-bin/scte35parser)
-
 
  threefive | more
  ---
@@ -632,4 +615,9 @@ private_data = b'threefive kicks ass'
 <br>⚡ [Issues and Bugs and Feature Requests](https://github.com/futzu/scte35-threefive/issues) will be considered. Please don't make me regret it. 
 <br>⚡ `NEW!` __threefive__ now has experimental DVB DAS Support `ETSI TS 103 752-1` <br><br>
 
-![image](https://github.com/user-attachments/assets/b1a05827-7650-4a87-8e97-f9a15eccfac2)
+ [![image](https://github.com/user-attachments/assets/ec5192f3-8484-4f85-87ab-f9d72374c666)
+](ttps://iodisco.com/scte35)
+
+
+
+
