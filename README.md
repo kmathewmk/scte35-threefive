@@ -1,5 +1,4 @@
 ![image](https://github.com/user-attachments/assets/b1a05827-7650-4a87-8e97-f9a15eccfac2)
-* _threefive is developed and tested on OpenBSD and Debian Sid._ 
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
  SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
@@ -19,7 +18,9 @@
 
 # Documentation
 #### 
-      
+* _threefive is developed and tested on OpenBSD and Debian Sid._ 
+ <br>
+    
 * Latest docs are always available in the python shell
 ```py3
 
@@ -615,8 +616,7 @@ private_data = b'threefive kicks ass'
 <br>⚡ [Issues and Bugs and Feature Requests](https://github.com/futzu/scte35-threefive/issues) will be considered. Please don't make me regret it. 
 <br>⚡ `NEW!` __threefive__ now has experimental DVB DAS Support `ETSI TS 103 752-1` <br><br>
 
- [![image](https://github.com/user-attachments/assets/ec5192f3-8484-4f85-87ab-f9d72374c666)
-](ttps://iodisco.com/scte35)
+ [![image](https://github.com/user-attachments/assets/ec5192f3-8484-4f85-87ab-f9d72374c666)](https://iodisco.com/scte35)
 
 
 
