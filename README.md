@@ -1,3 +1,6 @@
+>if you work for Roku, the EPG on the Roku Channel needs some help.
+>Y'all get in touch, I can fix it.
+
 ### `Heads up!` 
  I'm about to release the __super tuned threefive cli__. I've already __added XML support__, __repairing SCTE-35 streams converted to 0x6 bin data by ffmpeg, SCTE-35 MPEGTS packet injection, HLS SCTE-35 Decoding, HLS SCTE-35 Encoding__ with __all known SCTE-35 HLS tags__, and conversion for __all known SCTE-35 formats__. If it is SCTE-35, the cli can do it. 
 
