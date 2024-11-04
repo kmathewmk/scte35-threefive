@@ -33,10 +33,9 @@ _Released 10/29/2024_
 
 
 ### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
- [![image](https://github.com/user-attachments/assets/6343b069-721f-43d0-be10-759587f5c14f)](ttps://iodisco.com/scte35)
+ [![image](https://github.com/user-attachments/assets/ec5192f3-8484-4f85-87ab-f9d72374c666)
+](ttps://iodisco.com/scte35)
 
-
-___
 
 # Documentation
 #### 
