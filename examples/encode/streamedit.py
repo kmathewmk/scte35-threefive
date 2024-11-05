@@ -11,10 +11,8 @@ pypy3 streamedit.py https://futzu.com/xaa.ts | pypy3 -c 'import threefive; three
 
 """
 
-
 from functools import partial
 import sys
-
 from threefive import Stream
 
 
@@ -155,14 +153,14 @@ class Stream2(Stream):
         and then re-encodes the SCTE35 Cue.
         """
         print("BEFORE:", file=sys.stderr)
-        cue.to_stderr()
+        cue.show()
         cue.info_section.pts_adjustment = 109.55  # Changed
         cue.command.unique_program_id = 999  # Changed
         if cue.descriptors:
             cue.descriptors[0].identifier = "FUEI"  # Changed
         cue.encode()
         print("AFTER:\n", file=sys.stderr)
-        cue.to_stderr()
+        cue.show()
 
     def repack_pkt(self, pkt, cue):
         """
@@ -177,7 +175,7 @@ class Stream2(Stream):
         new_payload = cue.bites
         new_pkt = header + new_payload
         new_pkt += (self._PACKET_SIZE - len(new_pkt)) * self._PAD
-        sys.stdout.buffer.write(new_pkt)
+        return new_pkt
 
     def edit_scte35(self):
         """
@@ -189,9 +187,8 @@ class Stream2(Stream):
             for pkt in iter(partial(self._tsdata.read, self._PACKET_SIZE), b""):
                 cue = self._parse(pkt)
                 if cue:
-                    self.repack_pkt(pkt, cue)
-                else:
-                    sys.stdout.buffer.write(pkt)
+                    pkt = self.repack_pkt(pkt, cue)
+                sys.stdout.buffer.write(pkt)
         self._tsdata.close()
 
 
