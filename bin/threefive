@@ -63,37 +63,40 @@ def mk_sidecar(cue):
 
 
 HELP = f"""
-{U}    decode    {U}
+threefive                    {U}
 
-                {BLUE}base64:    {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+{U}{B}    decode    {U}{BLUE}  base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+                
+                {BLUE}hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
+                
+                {BLUE}files:     {NORM} threefive myvideo.ts
+                
+                {BLUE}stdin:     {NORM} cat myvideo.ts | threefive
+                
+                {BLUE}http(s):   {NORM} threefive https://futzu.com/xaa.ts
+                
+                {BLUE}udp:       {NORM} threefive udp://127.0.0.1:3535
+                
+                {BLUE}multicast: {NORM} threefive udp://@235.35.3.5:3535
+                
+                {BLUE}hls:       {NORM} threefive hls https://example.com/master.m3u8
 
-                {BLUE}hex:       {NORM}threefive '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
+{U}{B}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to  
+                JSON, XML, Base64, Hex, Int or Bytes:{NORM} threefive encode help 
 
-                {BLUE}files:     {NORM}threefive myvideo.ts
+{U}{B}    hls      {U}{NORM}{BLUE}\tHLS decode SCTE-35:{NORM} threefive hls help
 
-                {BLUE}stdin:     {NORM}cat myvideo.ts | threefive
+                {BLUE}HLS encode SCTE-35:{U} threefive hls encode help{U}
 
-                {BLUE}http(s):   {NORM}threefive https://futzu.com/xaa.ts
+{U}{B}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file
+                at pid:{NORM} threefive inject video.ts with sidecar.txt at 333
 
-                {BLUE}udp:       {NORM}threefive udp://127.0.0.1:3535
+{U}{B}    mpegts   {U}{NORM}{BLUE}\tFunctions for MPEGTS (packet, proxy,
+                pts, sidecar, sixfix show, xml):{NORM} threefive mpegts help
 
-                {BLUE}multicast: {NORM}threefive udp://@235.35.3.5:3535
+{U}{B}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive version 
 
-                {BLUE}hls:       {NORM}threefive  {B} hls{U}  https://example.com/master.m3u8
-
-{U}    encode   {U}{BLUE}\tLoad {U}JSON, XML, Base64 or Hex{BLUE} and encode to {U} JSON, XML,Base64, Hex, Int or Bytes {BLUE}:{NORM} threefive {B} encode {U} {B}help {U}
-
-{U}    hls {U}{NORM}{BLUE}\tHLS{U} decode{BLUE} SCTE-35:{NORM}  threefive {B} hls {U} {B}help {U}
-
-{U}             {BLUE}\tHLS {U}encode {BLUE} SCTE-35:{U} threefive {B} hls{U} {B} encode {U} {B}help{U}
-
-{U}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}  threefive {B} inject {U} video.ts {B} with {U} sidecar.txt {B} at {U} 333
-
-{U}    mpegts   {U}{NORM}{BLUE}\tFunctions for mpegts  ( {NORM}packet, proxy, pts, sidecar, sixfix show, xml {BLUE} ) :{NORM} threefive {B} mpegts {U} {B}help{U}
-
-{U}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive {B} version {U}
-
-{U}    help     {U}{NORM} {BLUE}\tHelp:{NORM}  threefive {B} help {U}
+{U}{B}    help     {U}{NORM} {BLUE}\tHelp:{NORM} threefive help
 """
 
 
@@ -119,19 +122,19 @@ def encode_help():
     print(
         f"""
 
-        {BLUE}Base64 to bytes:{NORM}threefive {B} encode {U} {B} bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+        {BLUE}Base64 to bytes:{NORM}threefive  encode  bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-        {BLUE}Base64 to hex:{NORM}\tthreefive {B} encode {U} {B} hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
+        {BLUE}Base64 to hex:{NORM}\tthreefive  encode hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
 
-        {BLUE}Base64 to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
+        {BLUE}Base64 to xml:{NORM}\tthreefive  encode xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
 
-        {BLUE}Hex to int:{NORM}   \tthreefive {B} encode {U} {B} int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+        {BLUE}Hex to int:{NORM}   \tthreefive  encode  int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
 
-        {BLUE}JSON to base64:{NORM}\tthreefive {B} encode {U} < json.json
+        {BLUE}JSON to base64:{NORM}\tthreefive  encode {U} < json.json
 
-        {BLUE}JSON to xml:{NORM}\tthreefive {B} encode {U} {B} xml {U} < json.json
+        {BLUE}JSON to xml:{NORM}\tthreefive  encode  xml {U} < json.json
 
-        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive {B} encode {U} {B} hex {U}
+        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive  encode hex {U}
     """
     )
 
@@ -183,7 +186,7 @@ def superkabuki():
                 supak.apply_args(args)
                 supak.encode()
                 return True
-    print("threefive inject{infile} with {sidecar_file} at {pid}")
+    print("threefive mpegts inject {infile} with {sidecar_file} at {pid}")
     return False
 
 
