@@ -179,7 +179,7 @@ def sixfix(arg):
     else:
         s2 = SixFix(arg)
         s2.con_pids = sixed
-        s2.convert_pid()
+        s2.convert_pids()
         print2(f'Wrote: sixfixed-{arg.rsplit("/")[-1]}')
 
 
