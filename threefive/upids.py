@@ -9,7 +9,7 @@ cyclomatic complexity 1.625
 
 
 """
-
+from .bitn import BitBin, NBin
 from .xml import Node
 
 charset = "ascii"  # this isn't a constant pylint.
@@ -24,7 +24,7 @@ class Upid:
     Upid base class handles URI UPIDS
     """
 
-    def __init__(self, bitbin=None, upid_type=0, upid_length=37):
+    def __init__(self, bitbin=None, upid_type=0, upid_length=0):
         self.bitbin = bitbin
         self.upid_type = upid_type
         self.upid_name = upid_map[upid_type][0]
@@ -43,8 +43,20 @@ class Upid:
         """
         encode Upid
         """
-        self.upid_value = seg_upid.encode("utf8")
+        self.upid_value = seg_upid.encode()
         nbin.add_bites(self.upid_value)
+
+    def redecode(self,seg_upid):
+        """
+        redecode is for decoding complex xml upids
+        before encodingto another format.
+        """
+        if isinstance(seg_upid,str):
+            self.bitbin=BitBin(bytes.fromhex(seg_upid))
+            return self.decode()
+        else:
+            self.upid_value = seg_upid
+        return self.upid_name, self.upid_value
 
     def xml(self):
         """
@@ -53,8 +65,24 @@ class Upid:
         ud_attrs = {
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": "hexbinary",
+
         }
+        #nbin = NBin()
+        #self.encode(nbin, self.upid_value)
         return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value)
+
+    def complexml(self):
+        """
+        complexml return a upid xml node for complex upids
+        """
+        ud_attrs = {
+            "segmentation_upid_type": self.upid_type,
+            "segmentation_upid_format": "hexbinary",
+
+        }
+        nbin = NBin()
+        self.encode(nbin, self.upid_value)
+        return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex())
 
 
 class NoUpid(Upid):
@@ -127,12 +155,18 @@ class Atsc(Upid):
         """
         encode Atsc
         """
-        self.upid_value = seg_upid
+        _, self.upid_value=self.redecode(seg_upid)
         nbin.add_int(self.upid_value["TSID"], 16)
         nbin.add_int(self.upid_value["reserved"], 2)
         nbin.add_int(self.upid_value["end_of_day"], 5)
         nbin.add_int(self.upid_value["unique_for"], 9)
         nbin.add_bites(self.upid_value["content_id"].encode("utf-8"))
+
+    def xml(self):
+        """
+        xml return xml node
+        """
+        return self.complexml()
 
 
 class Eidr(Upid):
@@ -158,14 +192,19 @@ class Eidr(Upid):
         """
         encode Eidr Upid
         """
+        _, self.upid_value=self.redecode(seg_upid)
         # switch to compact binary format
-        self.upid_value = seg_upid
-
         nbin.add_hex(self.upid_value[:6], 16)
         substring = self.upid_value[6:]
         for i in substring:
             hexed = f"0x{i}"
             nbin.add_hex(hexed, 4)
+
+    def xml(self):
+        """
+        xml return xml node
+        """
+        return self.complexml()
 
 
 class Isan(Upid):
@@ -280,12 +319,18 @@ class Mpu(Upid):
         """
         encode MPU Upids
         """
-        self.upid_value = seg_upid
+        _, self.upid_value=self.redecode(seg_upid)
         bit_len = self.bit_length
-        fm = bytes(self.upid_value["format_identifier"].encode("utf8"))
-        nbin.add_bites(fm)
+        nbin.add_bites(bytes(self.upid_value["format_identifier"], "utf8"))
         bit_len -= 32
         nbin.add_hex(self.upid_value["private_data"], bit_len)
+
+    def xml(self):
+        """
+        xml return xml node
+        """
+        return self.complexml()
+
 
 
 class Umid(Upid):
@@ -309,10 +354,18 @@ class Umid(Upid):
         """
         encode Umid Upid
         """
-        self.upid_value = seg_upid
+        _, self.upid_value=self.redecode(seg_upid)
+        self.redecode()
         chunks = self.upid_value.split(".")
         for chunk in chunks:
             nbin.add_hex(chunk, 32)
+
+    def xml(self):
+        """
+        xml return xml node
+        """
+        return self.complexml()
+
 
 
 # segmentation_upid_type : [name, class, length]
