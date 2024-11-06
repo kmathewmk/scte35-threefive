@@ -66,23 +66,23 @@ HELP = f"""
 threefive                    {U}
 
 {U}{B}    decode    {U}{BLUE}  base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-                
+
                 {BLUE}hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
-                
+
                 {BLUE}files:     {NORM} threefive myvideo.ts
-                
+
                 {BLUE}stdin:     {NORM} cat myvideo.ts | threefive
-                
+
                 {BLUE}http(s):   {NORM} threefive https://futzu.com/xaa.ts
-                
+
                 {BLUE}udp:       {NORM} threefive udp://127.0.0.1:3535
-                
+
                 {BLUE}multicast: {NORM} threefive udp://@235.35.3.5:3535
-                
+
                 {BLUE}hls:       {NORM} threefive hls https://example.com/master.m3u8
 
-{U}{B}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to  
-                JSON, XML, Base64, Hex, Int or Bytes:{NORM} threefive encode help 
+{U}{B}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to
+                JSON, XML, Base64, Hex, Int or Bytes:{NORM} threefive encode help
 
 {U}{B}    hls      {U}{NORM}{BLUE}\tHLS decode SCTE-35:{NORM} threefive hls help
 
@@ -94,7 +94,7 @@ threefive                    {U}
 {U}{B}    mpegts   {U}{NORM}{BLUE}\tFunctions for MPEGTS (packet, proxy,
                 pts, sidecar, sixfix show, xml):{NORM} threefive mpegts help
 
-{U}{B}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive version 
+{U}{B}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive version
 
 {U}{B}    help     {U}{NORM} {BLUE}\tHelp:{NORM} threefive help
 """
