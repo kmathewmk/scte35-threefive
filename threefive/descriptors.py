@@ -166,7 +166,7 @@ class AvailDescriptor(SpliceDescriptor):
         self._chk_var(int, nbin.add_int, "provider_avail_id", 32)
         return nbin.bites
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         Create a Node describing the AvailDescriptor
         """
@@ -218,7 +218,7 @@ class DtmfDescriptor(SpliceDescriptor):
             d_c += 1
         return nbin.bites
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         Create a Node describing a DTMFDescriptor
         """
@@ -274,7 +274,7 @@ class TimeDescriptor(SpliceDescriptor):
         self._chk_var(int, nbin.add_int, "utc_offset", 16)
         return nbin.bites
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         create a Node describing a TimeDescriptor
         """
@@ -475,7 +475,7 @@ class SegmentationDescriptor(SpliceDescriptor):
                 nbin.add_int(0, 8)
                 nbin.add_int(0, 8)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         Create a Node describing a SegmentationDescriptor
         """
