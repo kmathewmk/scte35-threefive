@@ -3,9 +3,22 @@
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
  SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-### Latest version is v2.4.89
+## Latest version is v2.4.90 
+* pre-release
+* Complex Upid Xml fix for [#123](https://github.com/futzu/threefive/issues/123)
+* [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
+* Added a  __HLS SCTE-35 Parser__  to the cli that __will blow your damn mind__.  
+* Added a __HLS SCTE-35 Encoder__ to the cli. Add SCTE-35 to ABR HLS Live.
+* Multiple small Xml fixes.
+* Updated examples.
+* Cyclomatic Complexity Score  A (2.2348993288590604)
+* 3399 lines of code, 1630 lines of comments
+----
+## Latest stable version is v2.4.89
+
 
 ### New Stuff in threefive
+
 * A __Cue__ instance can now be initialized with __base64, bytes, dict,hex, hex literal, Json, or xml.__
 * __HLS__ Manifest and Segment SCTE-35 parsing added to __threefive cli.__ 
 * MPEGTS Packet Injection added to the __threefive cli.__.
