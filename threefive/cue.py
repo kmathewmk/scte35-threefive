@@ -189,9 +189,11 @@ class Cue(SCTE35Base):
        data. Encode is called to set missing fields
        when possible and re-calc the length vars and crc.
         """
-        bites = self.bites
-        self.encode()
-        return bites
+        if self.load(data):
+            bites = self.bites
+            self.encode()
+            return bites
+        return data
 
     def _mk_bits(self, data):
         """
@@ -199,15 +201,13 @@ class Cue(SCTE35Base):
         Hex and Base64 strings into bytes.
         """
         if isinstance(data, bytes):
-            return self.idxsplit(self.idxsplit(data, b"\xfc"), b"\xfc")
+            return self.idxsplit(data, b"\xfc")
         if isinstance(data, int):
             return self._int_bits(data)
         if isinstance(data, dict):
-            if self.load(data):
-                return self._mk_load(data)
+            return self._mk_load(data)
         if isinstance(data,Node):
-            if self.load(data.mk()):
-                return self._mk_load(data)
+            return self._mk_load(data)
         if isinstance(data,str):
             return self._str_bits(data)
 
