@@ -113,7 +113,8 @@ class Node:
             self.name = ":".join((ns, name))
         self.value = value
         if self.value:
-            self.value = escape(self.value)
+            if isinstance(self.value, str):
+                self.value = escape(self.value)
         self.attrs = attrs
         self.children = []
         self.depth = 0
