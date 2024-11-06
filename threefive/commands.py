@@ -58,7 +58,7 @@ class BandwidthReservation(SpliceCommand):
         BandwidthReservation.decode method
         """
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         create XML Node of type BandwidthReservation
         """
@@ -95,7 +95,7 @@ class PrivateCommand(SpliceCommand):
         nbin.add_bites(self.private_bytes)
         return nbin.bites
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         create XML Node of type PrivateCommand
         """
@@ -123,7 +123,7 @@ class SpliceNull(SpliceCommand):
         self.command_type = 0
         self.name = "Splice Null"
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         return Node("SpliceNull")
 
 
@@ -180,20 +180,22 @@ class TimeSignal(SpliceCommand):
                 raise ValueError(
                     "\033[7mA float for pts_time for the splice command is required.\033[27m"
                 )
-            self.pts_time = round(self.pts_time,6)
+            self.pts_time = round(self.pts_time, 6)
             nbin.add_int(int(self.as_ticks(self.pts_time)), 33)
         else:
             nbin.reserve(7)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return TimeSignal as an xml node
         """
         ts = Node("TimeSignal")
         if self.has("pts_time"):
             if self.pts_time:
-                self.pts_time=round(self.pts_time,6)
-                st = Node("SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)})
+                self.pts_time = round(self.pts_time, 6)
+                st = Node(
+                    "SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)}
+                )
                 ts.add_child(st)
         return ts
 
@@ -297,7 +299,7 @@ class SpliceInsert(TimeSignal):
         nbin.forward(6)
         nbin.add_int(self.as_ticks(self.break_duration), 33)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return the SpliceInsert instance as an xml node.
         """
