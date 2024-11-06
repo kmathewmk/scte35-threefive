@@ -27,9 +27,9 @@ def atoif(value):
     """
     atoif converts ascii to (int|float)
     """
-    if isinstance(value,(int,float)):
+    if isinstance(value, (int, float)):
         return value
-    if isinstance(value,str):
+    if isinstance(value, str):
         if "." in value:
             try:
                 value = float(value)
@@ -459,6 +459,25 @@ class CuePuller:
         """
         return f"{NSUB}{self.hls_pts}: {self.pts}"
 
+    def _set_out(self,line,head):
+        if line.startswith("#EXT-X-CUE-OUT") and self.cue_state in [None, "IN"]:
+            self.reset_break()
+            self.cue_state = "OUT"
+            self.break_timer = 0.0
+            if ":" in line:
+                self.break_duration = atoif(line.split(":")[1])
+            self.to_sidecar(self.pts, line)
+            self.clear()
+            print(f"{head}{self.dur_stuff()}{NSUB}{self.media_stuff()}\n")
+
+    def _set_in(self,line,head):
+        if line.startswith("#EXT-X-CUE-IN") and self.cue_state == "CONT":
+            self.cue_state = "IN"
+            self.to_sidecar(self.pts, line)
+            self.clear()
+            print(f"{head}{self.diff_stuff()}{NSUB}{self.media_stuff()}\n")
+            self.reset_break()
+            
     def set_cue_state(self, cue, line):
         """
         set_cue_state determines cue_state
@@ -469,27 +488,11 @@ class CuePuller:
         self.last_cue = cue.encode()
         if "CONT" not in line:
             head = f"\n{iso8601()}{REV}{line}{NORM}{self.pts_stuff()} (Splice Point)"
-            if line.startswith("#EXT-X-CUE-IN") and self.cue_state == "CONT":
-                self.cue_state = "IN"
-                self.to_sidecar(self.pts, line)
-                self.clear()
-                print(f"{head}{self.diff_stuff()}{NSUB}{self.media_stuff()}\n")
-                self.reset_break()
-                return line
-            if line.startswith("#EXT-X-CUE-OUT") and self.cue_state in [None, "IN"]:
-                self.reset_break()
-                self.cue_state = "OUT"
-                self.break_timer = 0.0
-                if ":" in line:
-                    self.break_duration = atoif(line.split(":")[1])
-                self.to_sidecar(self.pts, line)
-                self.clear()
-                print(f"{head}{self.dur_stuff()}{NSUB}{self.media_stuff()}\n")
-                return line
+            self._set_in(line,head)
+            self._set_out(line,head)
         if "CONT" in line and self.cue_state in ["OUT", "CONT"]:
             self.to_sidecar(self.pts, line)
             self.cue_state = "CONT"
-            return line
         return line
 
     def invalid(self, line):
@@ -543,9 +546,7 @@ class CuePuller:
             except:
                 self.break_duration = None
         if self.break_duration:
-            print(
-                f"{iso8601()}{REV}Break Duration {NORM}to {self.break_duration}\n"
-            )
+            print(f"{iso8601()}{REV}Break Duration {NORM}to {self.break_duration}\n")
             time.sleep(0.1)
 
     def chk_x_cue_out_cont(self, tags, line):
