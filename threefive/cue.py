@@ -181,7 +181,7 @@ class Cue(SCTE35Base):
             hex_bits = self._hex_bits(data)
             if hex_bits:
                 return hex_bits
-        return self._b64_bits(data)        
+        return self._b64_bits(data)
 
     def _mk_load(self, data):
         """
@@ -376,7 +376,7 @@ class Cue(SCTE35Base):
         no_cmd raises an exception if no splice command.
         """
         raise Exception("\033[7mA splice command is required\033[27m")
-    
+
     def load(self, stuff):
         """
         Cue.load loads SCTE35 data for encoding.
