@@ -459,7 +459,7 @@ class CuePuller:
         """
         return f"{NSUB}{self.hls_pts}: {self.pts}"
 
-    def _set_out(self,line,head):
+    def _set_out(self, line, head):
         if line.startswith("#EXT-X-CUE-OUT") and self.cue_state in [None, "IN"]:
             self.reset_break()
             self.cue_state = "OUT"
@@ -470,14 +470,14 @@ class CuePuller:
             self.clear()
             print(f"{head}{self.dur_stuff()}{NSUB}{self.media_stuff()}\n")
 
-    def _set_in(self,line,head):
+    def _set_in(self, line, head):
         if line.startswith("#EXT-X-CUE-IN") and self.cue_state == "CONT":
             self.cue_state = "IN"
             self.to_sidecar(self.pts, line)
             self.clear()
             print(f"{head}{self.diff_stuff()}{NSUB}{self.media_stuff()}\n")
             self.reset_break()
-            
+
     def set_cue_state(self, cue, line):
         """
         set_cue_state determines cue_state
@@ -488,8 +488,8 @@ class CuePuller:
         self.last_cue = cue.encode()
         if "CONT" not in line:
             head = f"\n{iso8601()}{REV}{line}{NORM}{self.pts_stuff()} (Splice Point)"
-            self._set_in(line,head)
-            self._set_out(line,head)
+            self._set_in(line, head)
+            self._set_out(line, head)
         if "CONT" in line and self.cue_state in ["OUT", "CONT"]:
             self.to_sidecar(self.pts, line)
             self.cue_state = "CONT"
