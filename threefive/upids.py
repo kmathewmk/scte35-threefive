@@ -61,17 +61,23 @@ class Upid:
             self.upid_value = seg_upid
         return self.upid_name, self.upid_value
 
+    def _xml_format_attr(self):
+        """
+        _xml_format_attr sets segmentation_upid_format
+        """
+        if self.upid_type in [0x03,0x07,0x09,0x0e]:
+            return 'text'
+        return 'hexbinary'
+
     def xml(self):
         """
         xml return a upid xml node
         """
         ud_attrs = {
             "segmentation_upid_type": self.upid_type,
-            "segmentation_upid_format": "hexbinary",
+            "segmentation_upid_format": self._xml_format_attr(),
 
         }
-        #nbin = NBin()
-        #self.encode(nbin, self.upid_value)
         return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value)
 
     def complexml(self):
@@ -80,8 +86,7 @@ class Upid:
         """
         ud_attrs = {
             "segmentation_upid_type": self.upid_type,
-            "segmentation_upid_format": "hexbinary",
-
+            "segmentation_upid_format": self._xml_format_attr(),
         }
         if "format_identifier" in self.upid_value:
             ud_attrs["format_identifier"] =int.from_bytes(self.upid_value['format_identifier'].encode(),byteorder="big")
