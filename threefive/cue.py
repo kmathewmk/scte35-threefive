@@ -165,7 +165,7 @@ class Cue(SCTE35Base):
                 data = data[2:]
             if data[:2].lower() == "fc":
                 return bytes.fromhex(data)
-        return b''
+        return b""
 
     def _b64_bits(self, data):
         try:
@@ -173,7 +173,7 @@ class Cue(SCTE35Base):
         except (LookupError, TypeError, ValueError):
             return data
 
-    def _str_bits(self,data):
+    def _str_bits(self, data):
         try:
             self.load(data)
             return self._mk_load(data)
@@ -185,9 +185,9 @@ class Cue(SCTE35Base):
 
     def _mk_load(self, data):
         """
-        _mk_load sets self.bytes when loading
-       data. Encode is called to set missing fields
-       when possible and re-calc the length vars and crc.
+         _mk_load sets self.bytes when loading
+        data. Encode is called to set missing fields
+        when possible and re-calc the length vars and crc.
         """
         if self.load(data):
             bites = self.bites
@@ -206,9 +206,9 @@ class Cue(SCTE35Base):
             return self._int_bits(data)
         if isinstance(data, dict):
             return self._mk_load(data)
-        if isinstance(data,Node):
+        if isinstance(data, Node):
             return self._mk_load(data.mk())
-        if isinstance(data,str):
+        if isinstance(data, str):
             return self._str_bits(data)
 
     def _mk_descriptors(self, bites):
@@ -481,7 +481,7 @@ class Cue(SCTE35Base):
             sis.add_child(d.xml())
         return sis
 
-    def xml(self, binary=False):
+    def xml(self, ns="scte35", binary=False):
         """
         xml returns a threefive.Node instance
         which can be edited as needed or printed.
