@@ -9,6 +9,7 @@ cyclomatic complexity 1.625
 
 
 """
+
 from .bitn import BitBin, NBin
 from .xml import Node
 
@@ -46,16 +47,16 @@ class Upid:
         self.upid_value = seg_upid.encode()
         nbin.add_bites(self.upid_value)
 
-    def redecode(self,seg_upid):
+    def redecode(self, seg_upid):
         """
         redecode is for decoding complex xml upids
         before encodingto another format.
         """
-        if isinstance(seg_upid,str):
+        if isinstance(seg_upid, str):
             try:
-                self.bitbin=BitBin(bytes.fromhex(seg_upid))
+                self.bitbin = BitBin(bytes.fromhex(seg_upid))
             except ValueError:
-                self.bitbin=BitBin(seg_upid.encode())
+                self.bitbin = BitBin(seg_upid.encode())
             return self.decode()
         else:
             self.upid_value = seg_upid
@@ -65,18 +66,17 @@ class Upid:
         """
         _xml_format_attr sets segmentation_upid_format
         """
-        if self.upid_type in [0x03,0x07,0x09,0x0e]:
-            return 'text'
-        return 'hexbinary'
+        if self.upid_type in [0x03, 0x07, 0x09, 0x0E]:
+            return "text"
+        return "hexbinary"
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return a upid xml node
         """
         ud_attrs = {
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": self._xml_format_attr(),
-
         }
         return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value)
 
@@ -89,7 +89,9 @@ class Upid:
             "segmentation_upid_format": self._xml_format_attr(),
         }
         if "format_identifier" in self.upid_value:
-            ud_attrs["format_identifier"] =int.from_bytes(self.upid_value['format_identifier'].encode(),byteorder="big")
+            ud_attrs["format_identifier"] = int.from_bytes(
+                self.upid_value["format_identifier"].encode(), byteorder="big"
+            )
         nbin = NBin()
         self.encode(nbin, self.upid_value)
         return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex())
@@ -112,7 +114,7 @@ class NoUpid(Upid):
         """
         nbin.forward(0)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return a upid xml node
         """
@@ -165,14 +167,14 @@ class Atsc(Upid):
         """
         encode Atsc
         """
-        _, self.upid_value=self.redecode(seg_upid)
+        _, self.upid_value = self.redecode(seg_upid)
         nbin.add_int(self.upid_value["TSID"], 16)
         nbin.add_int(self.upid_value["reserved"], 2)
         nbin.add_int(self.upid_value["end_of_day"], 5)
         nbin.add_int(self.upid_value["unique_for"], 9)
         nbin.add_bites(self.upid_value["content_id"].encode("utf-8"))
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return xml node
         """
@@ -202,7 +204,7 @@ class Eidr(Upid):
         """
         encode Eidr Upid
         """
-        _, self.upid_value=self.redecode(seg_upid)
+        _, self.upid_value = self.redecode(seg_upid)
         # switch to compact binary format
         nbin.add_hex(self.upid_value[:6], 16)
         substring = self.upid_value[6:]
@@ -210,7 +212,7 @@ class Eidr(Upid):
             hexed = f"0x{i}"
             nbin.add_hex(hexed, 4)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return xml node
         """
@@ -278,7 +280,7 @@ class Mid(Upid):
             )
             the_upid.encode(nbin, mid_upid["segmentation_upid"])
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return a upid xml node
 
@@ -329,18 +331,17 @@ class Mpu(Upid):
         """
         encode MPU Upids
         """
-        _, self.upid_value=self.redecode(seg_upid)
+        _, self.upid_value = self.redecode(seg_upid)
         bit_len = self.bit_length
         nbin.add_bites(bytes(self.upid_value["format_identifier"], "utf8"))
         bit_len -= 32
         nbin.add_hex(self.upid_value["private_data"], bit_len)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return xml node
         """
         return self.complexml()
-
 
 
 class Umid(Upid):
@@ -364,18 +365,17 @@ class Umid(Upid):
         """
         encode Umid Upid
         """
-        _, self.upid_value=self.redecode(seg_upid)
+        _, self.upid_value = self.redecode(seg_upid)
         self.redecode()
         chunks = self.upid_value.split(".")
         for chunk in chunks:
             nbin.add_hex(chunk, 32)
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml return xml node
         """
         return self.complexml()
-
 
 
 # segmentation_upid_type : [name, class, length]
