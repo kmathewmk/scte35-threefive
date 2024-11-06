@@ -165,13 +165,23 @@ class Cue(SCTE35Base):
                 data = data[2:]
             if data[:2].lower() == "fc":
                 return bytes.fromhex(data)
-        return False
+        return b''
 
     def _b64_bits(self, data):
         try:
             return b64decode(self.fix_bad_b64(data))
         except (LookupError, TypeError, ValueError):
             return data
+
+    def _str_bits(self,data):
+        try:
+            self.load(data)
+            return self._mk_load(data)
+        except:
+            hex_bits = self._hex_bits(data)
+            if hex_bits:
+                return hex_bits
+        return self._b64_bits(data)        
 
     def _mk_load(self, data):
         """
@@ -192,13 +202,14 @@ class Cue(SCTE35Base):
             return self.idxsplit(self.idxsplit(data, b"\xfc"), b"\xfc")
         if isinstance(data, int):
             return self._int_bits(data)
-        if isinstance(data, dict) or data[0] in ["{", "<"]:
+        if isinstance(data, dict):
             if self.load(data):
                 return self._mk_load(data)
-        hex_bits = self._hex_bits(data)
-        if hex_bits:
-            return hex_bits
-        return self._b64_bits(data)
+        if isinstance(data,Node):
+            if self.load(data.mk()):
+                return self._mk_load(data)
+        if isinstance(data,str):
+            return self._str_bits(data)
 
     def _mk_descriptors(self, bites):
         """
@@ -252,6 +263,8 @@ class Cue(SCTE35Base):
         dscptr_bites = self._unloop_descriptors()
         dll = len(dscptr_bites)
         self.info_section.descriptor_loop_length = dll
+        if not self.command:
+            self.no_cmd()
         cmd_bites = self.command.encode()
         cmdl = self.command.command_length = len(cmd_bites)
         self.info_section.splice_command_length = cmdl
@@ -336,11 +349,12 @@ class Cue(SCTE35Base):
         if 'command_type' is included,
         the command instance will be created.
         """
-        if "command" in stuff:
-            cmd = stuff["command"]
-            if "command_type" in cmd:
-                self.command = command_map[cmd["command_type"]]()
-                self.command.load(cmd)
+        if "command" not in stuff:
+            self.no_cmd()
+        cmd = stuff["command"]
+        if "command_type" in cmd:
+            self.command = command_map[cmd["command_type"]]()
+            self.command.load(cmd)
 
     def load_descriptors(self, dlist):
         """
@@ -357,6 +371,12 @@ class Cue(SCTE35Base):
                 dscptr.load(dstuff)
                 self.descriptors.append(dscptr)
 
+    def no_cmd(self):
+        """
+        no_cmd raises an exception if no splice command.
+        """
+        raise Exception("\033[7mA splice command is required\033[27m")
+    
     def load(self, stuff):
         """
         Cue.load loads SCTE35 data for encoding.
@@ -376,8 +396,7 @@ class Cue(SCTE35Base):
                 return True
             stuff = json.loads(stuff)
         if "command" not in stuff:
-            print2("\033[7mA splice command is required\033[27m")
-            return False
+            self.no_cmd()
         self.load_info_section(stuff)
         self.load_command(stuff)
         self.load_descriptors(stuff["descriptors"])
