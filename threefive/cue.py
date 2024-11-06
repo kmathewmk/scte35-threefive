@@ -207,7 +207,7 @@ class Cue(SCTE35Base):
         if isinstance(data, dict):
             return self._mk_load(data)
         if isinstance(data,Node):
-            return self._mk_load(data)
+            return self._mk_load(data.mk())
         if isinstance(data,str):
             return self._str_bits(data)
 
