@@ -52,7 +52,10 @@ class Upid:
         before encodingto another format.
         """
         if isinstance(seg_upid,str):
-            self.bitbin=BitBin(bytes.fromhex(seg_upid))
+            try:
+                self.bitbin=BitBin(bytes.fromhex(seg_upid))
+            except ValueError:
+                self.bitbin=BitBin(seg_upid.encode())
             return self.decode()
         else:
             self.upid_value = seg_upid
