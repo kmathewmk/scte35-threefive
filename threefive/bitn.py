@@ -119,6 +119,8 @@ class NBin:
         add_bites appends plus_bites
         to self.bites
         """
+        if isinstance(plus_bites,int):            
+            plus_bites=bytes.fromhex(hex(plus_bites)[2:])
         self.bites += plus_bites
 
     #  if self.idx % 8 == 0:
