@@ -179,7 +179,7 @@ class SpliceInfoSection(SCTE35Base):
         self._encode_splice_command(nbin)
         return nbin.bites
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml create xml node for splice info section
         """
