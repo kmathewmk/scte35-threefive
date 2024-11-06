@@ -32,9 +32,7 @@ class SCTE35Base:
         """
         var_value = self.__dict__[var_name]
         if var_value is None:
-            err_mesg = (
-                f"\033[7m{var_name} is not set, it should be {bit_count} bit(s) and type {var_type}\033[27m"
-            )
+            err_mesg = f"\033[7m{var_name} is not set, it should be {bit_count} bit(s) and type {var_type}\033[27m"
             raise ValueError(err_mesg)
         if not isinstance(var_value, var_type):
             err_mesg = f' \033[7m{var_name} is "{var_value}", it should be type {var_type}\033[27m and {bit_count} bit(s),\n '
@@ -100,7 +98,7 @@ class SCTE35Base:
         show prints self as json to stderr (2)
         """
         print2(self.get_json())
-        
+
     def kv_clean(self):
         """
         kv_clean removes items from a dict if the value is None
@@ -116,6 +114,7 @@ class SCTE35Base:
             if isinstance(val, (bytes, bytearray)):
                 val = list(val)
             return val
+
         return {k: b2l(v) for k, v in vars(self).items() if v is not None}
 
     def has(self, what):
@@ -126,7 +125,7 @@ class SCTE35Base:
             return True
         return False
 
-    def xml(self):
+    def xml(self, ns="scte35"):
         """
         xml default xml method will return
         all attributes, which is expressly allowed
@@ -163,4 +162,4 @@ class SCTE35Base:
             for k, v in stuff.items():
                 if self.has(k):
                     self.__dict__[k] = v
-        #self.__dict__.update(stuff)
+        # self.__dict__.update(stuff)
