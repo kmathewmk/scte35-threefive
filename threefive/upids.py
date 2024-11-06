@@ -83,6 +83,8 @@ class Upid:
             "segmentation_upid_format": "hexbinary",
 
         }
+        if "format_identifier" in self.upid_value:
+            ud_attrs["format_identifier"] =int.from_bytes(self.upid_value['format_identifier'].encode(),byteorder="big")
         nbin = NBin()
         self.encode(nbin, self.upid_value)
         return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex())
