@@ -497,7 +497,7 @@ class SegmentationDescriptor(SpliceDescriptor):
         sd = Node("SegmentationDescriptor", attrs=sd_attrs, ns=ns)
         the_upid = self.mk_the_upid()
         the_upid.upid_value = self.segmentation_upid
-        upid_node = the_upid.xml()
+        upid_node = the_upid.xml(ns=ns)
         if not self.delivery_not_restricted_flag:
             dr_attrs = {
                 "web_delivery_allowed_flag": self.web_delivery_allowed_flag,
