@@ -170,7 +170,7 @@ class AvailDescriptor(SpliceDescriptor):
         """
         Create a Node describing the AvailDescriptor
         """
-        ad = Node("AvailDescriptor", attrs={"providerAvailId": self.provider_avail_id})
+        ad = Node("AvailDescriptor", attrs={"providerAvailId": self.provider_avail_id}, ns=ns)
         return ad
 
     def from_xml(self, stuff):
@@ -227,7 +227,7 @@ class DtmfDescriptor(SpliceDescriptor):
             attrs={
                 "preroll": self.preroll,
                 "chars": "".join(self.dtmf_chars),
-            },
+            },ns=ns
         )
         return dd
 
@@ -284,7 +284,7 @@ class TimeDescriptor(SpliceDescriptor):
                 "tai_seconds": self.tai_seconds,
                 "tai_ns": self.tai_ns,
                 "utc_offset": self.utc_offset,
-            },
+            }, ns=ns
         )
         return td
 
@@ -494,7 +494,7 @@ class SegmentationDescriptor(SpliceDescriptor):
             sd_attrs["segmentation_duration"] = self.as_ticks(
                 self.segmentation_duration
             )
-        sd = Node("SegmentationDescriptor", attrs=sd_attrs)
+        sd = Node("SegmentationDescriptor", attrs=sd_attrs, ns=ns)
         the_upid = self.mk_the_upid()
         the_upid.upid_value = self.segmentation_upid
         upid_node = the_upid.xml()
@@ -505,9 +505,13 @@ class SegmentationDescriptor(SpliceDescriptor):
                 "archive_allowed_flag": self.archive_allowed_flag,
                 "device_restrictions": k_by_v(table20, self.device_restrictions),
             }
-            dr = Node("DeliveryRestrictions", attrs=dr_attrs)
+            dr = Node("DeliveryRestrictions", attrs=dr_attrs, ns=ns)
             sd.add_child(dr)
-        sd.add_comment(f"UPID: {upid_map[self.segmentation_upid_type][0]}")
+        comment=f"{upid_map[self.segmentation_upid_type][0]}"
+        if isinstance(self.segmentation_upid,dict):
+            if "format_identifier" in self.segmentation_upid:
+                comment+=f" ({self.segmentation_upid['format_identifier']})"
+        sd.add_comment(comment)
         if isinstance(upid_node, list):
             for node in upid_node:
                 sd.add_child(node)
@@ -515,22 +519,30 @@ class SegmentationDescriptor(SpliceDescriptor):
             sd.add_child(upid_node)
         return sd
 
+    def _xml_redecode(self, seg_upid):
+        """
+        redecode is for decoding complex xml upids
+        before encoding to another format.
+        """
+        if isinstance(seg_upid, str):
+            bites = b''
+            bitbin = None
+            try:
+                bites =bytes.fromhex(seg_upid)
+            except ValueError:
+                bites= seg_upid.encode()
+            bitbin = BitBin(bites)
+            self.segmentation_upid_length = len(bites)
+            the_upid = self.mk_the_upid(bitbin=bitbin)
+            self.segmentation_upid_type_name, self.segmentation_upid = the_upid.decode()
+
     def _upid_from_xml(self, stuff):
         if "SegmentationUpid" in stuff:
-            self.load(stuff["SegmentationUpid"])
-            upid_length = upid_map[self.segmentation_upid_type][2]
-            self.segmentation_upid_type_name = upid_map[self.segmentation_upid_type][0]
-            if upid_length:
-                self.segmentation_upid_length = upid_length
-                return True
-            if self.segmentation_upid:
-                self.segmentation_upid_length = len(
-                    self.segmentation_upid.lower().replace("0x", "")
-                )
-                return True
-            self.segmentation_upid = ""
-            self.segmentation_upid_length = 0
-        return False
+            seg_upid=stuff["SegmentationUpid"]["segmentation_upid"]
+            if "segmentation_upid_type" in stuff["SegmentationUpid"]:
+                self.segmentation_upid_type= stuff["SegmentationUpid"]["segmentation_upid_type"]
+                self.segmentation_upid_type_name = upid_map[self.segmentation_upid_type][0]
+            self._xml_redecode(seg_upid)
 
     def from_xml(self, stuff):
         """
