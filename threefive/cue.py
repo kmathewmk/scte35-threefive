@@ -477,7 +477,8 @@ class Cue(SCTE35Base):
         """
         for d in self.descriptors:
             if d.has("segmentation_type_id"):
-                sis.add_comment(f"{table22[d.segmentation_type_id]}")
+                comment = f"{table22[d.segmentation_type_id]}"
+                sis.add_comment(comment)
             sis.add_child(d.xml())
         return sis
 
