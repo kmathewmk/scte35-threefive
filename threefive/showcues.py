@@ -10,7 +10,7 @@ from m3ufu import M3uFu, TagParser, HEADER_TAGS
 from new_reader import reader
 from .segment import Segment
 from .cue import Cue
-
+from .stuff import print2
 
 REV = "\033[7m"
 NORM = "\033[27m"
@@ -62,11 +62,11 @@ class Scte35Profile:
         self.parse_manifests = True  # Parse m3u8 files for SCTE-35 HLS tags.
         self.hls_tags = [
             "#EXT-OATCLS-SCTE35",
-            "#EXT-X-CUE-OUT-CONT",
             "#EXT-X-DATERANGE",
             "#EXT-X-SCTE35",
-            "#EXT-X-CUE-IN",
             "#EXT-X-CUE-OUT",
+            "#EXT-X-CUE-OUT-CONT",
+            "#EXT-X-CUE-IN",
         ]  #  Parse these types of HLS SCTE-35 tags.
         self.command_types = [6, 5]  # Which SCTE-35 Commands to parse.
         self.descriptor_tags = [
@@ -76,24 +76,30 @@ class Scte35Profile:
         self.starts = [0x22, 0x30, 0x32, 0x34, 0x36, 0x44, 0x46]
         self.seg_type = 0x23
 
+    def _mk_line(self,k,v):
+        line = f"{k} = "
+        if isinstance(v, list):
+            for item in v:
+                if isinstance(item, int):
+                    line = f"{line}{hex(item)},"
+                else:
+                    line = f"{line}{item},"
+        if isinstance(v, bool):
+            line = f"{line}{v}"
+        if line.endswith(","):
+            line = line[:-1]
+        return line
+
     def write_profile(self, pro_file):
         """
-        write_profile writes sc.profile for editing.
+        write_profile writes .35rc for editing.
         """
         with open(pro_file, "w") as pro_f:
             for que, vee in vars(self).items():
-                line = f"{que} = "
-                if isinstance(vee, list):
-                    for item in vee:
-                        if isinstance(item, int):
-                            line = f"{line}{hex(item)},"
-                        else:
-                            line = f"{line}{item},"
-                if isinstance(vee, bool):
-                    line = f"{line}{vee}"
-                if line.endswith(","):
-                    line = line[:-1]
+                line=self._mk_line(que,vee)
                 pro_f.write(line + "\n")
+            print2("\ncreated .35rc\n")
+
 
     def show_profile(self, headline):
         """
@@ -124,7 +130,7 @@ class Scte35Profile:
 
     def format4profile(self, this, that):
         """
-        format4profile formats data read from sc.profile for internal use.
+        format4profile formats data read from .35rc for internal use.
         """
         if this is None or that is None:
             return
@@ -146,7 +152,7 @@ class Scte35Profile:
 
     def read_profile(self, pro_file):
         """
-        read_profile reads sc.profile
+        read_profile reads .35rc
         """
         try:
             with open(pro_file, "r") as pro_file:
@@ -336,10 +342,10 @@ class CuePuller:
 
     def __init__(self):
         self.media = deque()
-        self.sidecar = "sc.sidecar"
-        self.dumpfile = "sc.dump"
+        self.sidecar = "35.sidecar"
+        self.dumpfile = "35.dump"
         self.last_dump_line = None
-        self.m3u8 = "sc.m3u8"
+        self.m3u8 = "35.m3u8"
         self.base_uri = None
         self.iv = None
         self.key_uri = None
@@ -358,9 +364,9 @@ class CuePuller:
         self.cont_resume = False
         self.first_segment = True
         self.hls_pts = "HLS"
-        self.flat = "flat.m3u8"
+        self.flat = "35flat.m3u8"
         self.prof = Scte35Profile()
-        self.pro_file = "sc.profile"
+        self.pro_file = ".35rc"
         self.prof.read_profile(self.pro_file)
         self.clear_files()
 
@@ -587,19 +593,26 @@ class CuePuller:
                 return self.set_cue_state(tags["#EXT-X-SCTE35"]["CUE"], new_line)
         return self.invalid(line)
 
+    def _x_daterange_in_out(self, tag, dtags):
+        if scte35_tag in dtags:
+            cue = Cue(dtags[scte35_tag])
+            pts, new_line = self.prof.validate_cue(cue)
+            if pts and new_line:
+                return self.set_cue_state(
+                    tags["#EXT-X-DATERANGE"][scte35_tag], new_line
+                )
+        return False
+
+
     def chk_x_daterange(self, tags, line):
         """
         chk_x_daterange handles #EXT-X-DATERANGE tags.
         """
         self.show_tags(tags["#EXT-X-DATERANGE"])
         for scte35_tag in ["SCTE35-OUT", "SCTE35-IN"]:
-            if scte35_tag in tags["#EXT-X-DATERANGE"]:
-                cue = Cue(tags["#EXT-X-DATERANGE"][scte35_tag])
-                pts, new_line = self.prof.validate_cue(cue)
-                if pts and new_line:
-                    return self.set_cue_state(
-                        tags["#EXT-X-DATERANGE"][scte35_tag], new_line
-                    )
+            cue_state=self._x_daterange_in_out(scte35tag,tags["#EXT-X-DATERANGE"])
+            if cue_state:
+                return cue_state
         return self.invalid(line)
 
     def chk_x_oatcls(self, tags, line):
@@ -881,7 +894,7 @@ class CuePuller:
 
     def write_manifest(self):
         """
-        write_manifest write data to sc.m3u8
+        write_manifest write data to 35.m3u8
         with profile rules applied.
         """
         with open(self.m3u8, "w") as out:
@@ -966,7 +979,7 @@ def cli():
         sys.exit()
     if "profile" in sys.argv:
         scp = Scte35Profile()
-        scp.write_profile("sc.profile")
+        scp.write_profile(".35rc")
         sys.exit()
     with reader(sys.argv[-1]) as arg:
         variants = [line for line in arg if b"#EXT-X-STREAM-INF" in line]
@@ -1059,10 +1072,10 @@ showcues
 
         	threefive hls profile
 
-    	will generate a default profile and write a file named sc.profile
+    	will generate a default profile and write a file named .35rc
     	in the current working directory.
 
-        a@fu:~$ cat sc.profile
+        a@fu:~$ cat .35rc
 
 	expand_cues = False
 	parse_segments = False
@@ -1074,7 +1087,7 @@ showcues
 	starts = 0x22,0x30,0x32,0x34,0x36,0x44,0x46
 
 	( Integers are show in hex (base 16),
-	  base 10 unsigned integers can also be used in sc.profile )
+	  base 10 unsigned integers can also be used in .35rc )
 
       	expand_cues:	   set to True to show cues fully expanded as JSON
 
@@ -1114,13 +1127,13 @@ showcues
 	* Clobbered on start of showc ues
 
 	* Profile rules applied to the output:
-   	      *	sc.m3u8  - live playable rewrite of the m3u8
-    	      * sc.sidecar - list of ( pts, HLS SCTE-35 tag ) pairs
+   	      *	35.m3u8  - live playable rewrite of the m3u8
+    	      * 35.sidecar - list of ( pts, HLS SCTE-35 tag ) pairs
 
 	* Profile rules not applied to the output:
-    	      * sc.dump  -  all of the HLS SCTE-35 tags read.
-	      * sc.flat  - every time an m3u8 is reloaded,
-                           it's contents are appended to sc.flat.
+    	      * 35.dump  -  all of the HLS SCTE-35 tags read.
+	      * 35.flat  - every time an m3u8 is reloaded,
+                           it's contents are appended to 35.flat.
 
 [ Cool Features ]
 
@@ -1151,13 +1164,13 @@ showcues
 
 		threefive hls help
 
-	* Generate a new sc.profile
+	* Generate a new .35rc
 
 		threefive hls profile
 
 	* parse an m3u8
 
-    		showcues  https://example.com/out/v1/547e1b8d09444666ac810f6f8c78ca82/index.m3u8
+    		threefive hls  https://example.com/out/v1/547e1b8d09444666ac810f6f8c78ca82/index.m3u8
 
 """
 
