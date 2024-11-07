@@ -475,6 +475,16 @@ class SegmentationDescriptor(SpliceDescriptor):
                 nbin.add_int(0, 8)
                 nbin.add_int(0, 8)
 
+    def _xml_sub_segs(self,sd_attrs):
+        if self.segmentation_type_id in self.SUB_SEG_TYPES:
+            sd_attrs["sub_segment_num"] = self.sub_segment_num
+            sd_attrs["sub_segments_expected"] = self.sub_segments_expected
+        if self.segmentation_duration_flag:
+            sd_attrs["segmentation_duration"] = self.as_ticks(
+                self.segmentation_duration
+            )
+        return sd_attrs
+
     def xml(self, ns="scte35"):
         """
         Create a Node describing a SegmentationDescriptor
@@ -487,13 +497,7 @@ class SegmentationDescriptor(SpliceDescriptor):
             "segment_num": self.segment_num,
             "segments_expected": self.segments_expected,
         }
-        if self.segmentation_type_id in self.SUB_SEG_TYPES:
-            sd_attrs["sub_segment_num"] = self.sub_segment_num
-            sd_attrs["sub_segments_expected"] = self.sub_segments_expected
-        if self.segmentation_duration_flag:
-            sd_attrs["segmentation_duration"] = self.as_ticks(
-                self.segmentation_duration
-            )
+        sd_attrs = self._xml_sub_segs(sd_attrs)
         sd = Node("SegmentationDescriptor", attrs=sd_attrs, ns=ns)
         the_upid = self.mk_the_upid()
         the_upid.upid_value = self.segmentation_upid
@@ -508,9 +512,6 @@ class SegmentationDescriptor(SpliceDescriptor):
             dr = Node("DeliveryRestrictions", attrs=dr_attrs, ns=ns)
             sd.add_child(dr)
         comment=f"{upid_map[self.segmentation_upid_type][0]}"
-        if isinstance(self.segmentation_upid,dict):
-            if "format_identifier" in self.segmentation_upid:
-                comment+=f" ({self.segmentation_upid['format_identifier']})"
         sd.add_comment(comment)
         if isinstance(upid_node, list):
             for node in upid_node:
