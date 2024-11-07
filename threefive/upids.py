@@ -185,7 +185,7 @@ class Atsc(Upid):
         """
         xml return xml node
         """
-        return self.complexml()
+        return self.complexml(ns=ns)
 
 
 class Eidr(Upid):
@@ -223,7 +223,7 @@ class Eidr(Upid):
         """
         xml return xml node
         """
-        return self.complexml()
+        return self.complexml(ns=ns)
 
 
 class Isan(Upid):
@@ -348,7 +348,7 @@ class Mpu(Upid):
         """
         xml return xml node
         """
-        return self.complexml()
+        return self.complexml(ns=ns)
 
 
 class Umid(Upid):
@@ -382,7 +382,7 @@ class Umid(Upid):
         """
         xml return xml node
         """
-        return self.complexml()
+        return self.complexml(ns=ns)
 
 
 # segmentation_upid_type : [name, class, length]
