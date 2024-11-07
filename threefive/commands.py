@@ -62,7 +62,7 @@ class BandwidthReservation(SpliceCommand):
         """
         create XML Node of type BandwidthReservation
         """
-        return Node("BandwidthReservation")
+        return Node("BandwidthReservation",ns=ns)
 
 
 class PrivateCommand(SpliceCommand):
@@ -101,7 +101,7 @@ class PrivateCommand(SpliceCommand):
         """
         attrs = {"identifier": self.identifier}
         pc = Node("PrivateCommand", attrs=attrs)
-        pc.add_child(Node("PrivateBytes", value=self.private_bytes.hex()))
+        pc.add_child(Node("PrivateBytes", value=self.private_bytes.hex(),ns=ns))
         return pc
 
     def from_xml(self, stuff):
@@ -124,7 +124,7 @@ class SpliceNull(SpliceCommand):
         self.name = "Splice Null"
 
     def xml(self, ns="scte35"):
-        return Node("SpliceNull")
+        return Node("SpliceNull",ns=ns)
 
 
 class TimeSignal(SpliceCommand):
@@ -189,12 +189,13 @@ class TimeSignal(SpliceCommand):
         """
         xml return TimeSignal as an xml node
         """
-        ts = Node("TimeSignal")
+        ts = Node("TimeSignal",ns=ns)
         if self.has("pts_time"):
             if self.pts_time:
                 self.pts_time = round(self.pts_time, 6)
                 st = Node(
-                    "SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)}
+                    "SpliceTime", attrs={"pts_time": self.as_ticks(self.pts_time)},
+                    ns=ns,
                 )
                 ts.add_child(st)
         return ts
@@ -316,10 +317,10 @@ class SpliceInsert(TimeSignal):
         for k, v in si_attrs.items():
             if v is None:
                 raise ValueError(f"\033[7mSpliceInsert.{k} needs to be set\033[27m")
-        si = Node("SpliceInsert", attrs=si_attrs)
+        si = Node("SpliceInsert", attrs=si_attrs,ns=ns)
         if self.pts_time:
-            prgm = Node("Program")
-            st = Node("SpliceTime", attrs={"ptsTime": self.as_ticks(self.pts_time)})
+            prgm = Node("Program",ns=ns)
+            st = Node("SpliceTime", attrs={"ptsTime": self.as_ticks(self.pts_time)},ns=ns)
             prgm.add_child(st)
             si.add_child(prgm)
         if self.break_duration:
@@ -327,7 +328,7 @@ class SpliceInsert(TimeSignal):
                 "auto_return": self.break_auto_return,
                 "duration": self.as_ticks(self.break_duration),
             }
-            bd = Node("BreakDuration", attrs=bd_attrs)
+            bd = Node("BreakDuration", attrs=bd_attrs,ns=ns)
             si.add_child(bd)
         return si
 
