@@ -464,14 +464,14 @@ class Cue(SCTE35Base):
             # Self.encode() will calculate lengths and types and such
             self.encode()
 
-    def _xml_binary(self):
+    def _xml_binary(self,ns):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
         sig_node = Node("Signal", attrs=sig_attrs)
-        bin_node = Node("Binary", value=self.encode())
+        bin_node = Node("Binary", value=self.encode(),ns=ns)
         sig_node.add_child(bin_node)
         return sig_node
 
-    def _xml_mk_descriptor(self, sis):
+    def _xml_mk_descriptor(self, sis,ns):
         """
         _mk_descriptor_xml make xml nodes for descriptors.
         """
@@ -479,7 +479,7 @@ class Cue(SCTE35Base):
             if d.has("segmentation_type_id"):
                 comment = f"{table22[d.segmentation_type_id]}"
                 sis.add_comment(comment)
-            sis.add_child(d.xml())
+            sis.add_child(d.xml(ns=ns))
         return sis
 
     def xml(self, ns="scte35", binary=False):
@@ -488,12 +488,12 @@ class Cue(SCTE35Base):
         which can be edited as needed or printed.
         """
         if binary:
-            return self._xml_binary()
-        sis = self.info_section.xml()
+            return self._xml_binary(ns=ns)
+        sis = self.info_section.xml(ns=ns)
         # if not self.command:
         #    raise Exception("\033[7mA Splice Command is Required\033[27m")
-        cmd = self.command.xml()
+        cmd = self.command.xml(ns=ns)
         sis.add_child(cmd)
-        sis = self._xml_mk_descriptor(sis)
+        sis = self._xml_mk_descriptor(sis,ns)
         sis.mk()
         return sis
