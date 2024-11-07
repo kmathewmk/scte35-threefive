@@ -78,9 +78,18 @@ class Upid:
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": self._xml_format_attr(),
         }
-        return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value)
+        return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value,ns=ns)
 
-    def complexml(self):
+    def _extra_xml_attrs(self, ud):
+        if "format_identifier" in self.upid_value:
+            ud["format_identifier"] = int.from_bytes(
+            self.upid_value["format_identifier"].encode(), byteorder="big"
+            )
+        if "private_data" in self.upid_value:
+            ud["private_data"]=self.upid_value["private_data"]
+        return ud
+
+    def complexml(self, ns="scte35"):
         """
         complexml return a upid xml node for complex upids
         """
@@ -88,13 +97,11 @@ class Upid:
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": self._xml_format_attr(),
         }
-        if "format_identifier" in self.upid_value:
-            ud_attrs["format_identifier"] = int.from_bytes(
-                self.upid_value["format_identifier"].encode(), byteorder="big"
-            )
+        if isinstance(self.upid_value,dict):
+            ud_attrs = self._extra_xml_attrs(ud_attrs)
         nbin = NBin()
         self.encode(nbin, self.upid_value)
-        return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex())
+        return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex(),ns=ns)
 
 
 class NoUpid(Upid):
@@ -122,7 +129,7 @@ class NoUpid(Upid):
             "segmentation_upid_type": 0x0,
             "segmentation_upid_format": "hexbinary",
         }
-        return Node("SegmentationUpid", attrs=ud_attrs, value="")
+        return Node("SegmentationUpid", attrs=ud_attrs, value="",ns=ns)
 
 
 class AirId(Upid):
@@ -292,7 +299,7 @@ class Mid(Upid):
                 "name": u["upid_type_name"],
             }
             value = u["segmentation_upid"]
-            node = Node("SegmentationUpid", attrs=u_attrs, value=value)
+            node = Node("SegmentationUpid", attrs=u_attrs, value=value, ns=ns)
             mid_nodes.append(node)
         return mid_nodes
 
