@@ -5,7 +5,7 @@ threefve.upids
 
 classy Upids
 
-cyclomatic complexity 1.625
+cyclomatic complexity 1.65
 
 
 """
