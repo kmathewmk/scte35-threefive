@@ -27,22 +27,15 @@ def atoif(value):
     """
     atoif converts ascii to (int|float)
     """
-    if isinstance(value, (int, float)):
-        return value
     if isinstance(value, str):
-        if "." in value:
-            try:
-                value = float(value)
-                return value
-            except:
-                pass
-        else:
+        try:
+            value = float(value)
+        except:
             try:
                 value = int(value)
+            finally:
                 return value
-            except:
-                pass
-    return None
+    return value
 
 
 def iso8601():
@@ -207,24 +200,29 @@ class Scte35Profile:
             return line
         return line
 
+    def _line_from_dscptr(self,dscptr):
+        line = None
+        if dscptr.tag in self.descriptor_tags:
+            if dscptr.segmentation_type_id in self.starts:
+                self.seg_type = dscptr.segmentation_type_id + 1
+                if "segmentation_duration" in vars(dscptr):
+                    duration = dscptr.segmentation_duration
+                    line = f"#EXT-X-CUE-OUT:{duration}\n"
+                    return line
+            if dscptr.segmentation_type_id == self.seg_type:
+                line = "#EXT-X-CUE-IN\n"
+                self.seg_type = None
+        return line
+
     def validate_time_signal(self, cue):
         """
         validate_time_signal is named appropriately.
         """
-        line = None
         for dscptr in cue.descriptors:
-            if dscptr.tag in self.descriptor_tags:
-                if dscptr.segmentation_type_id in self.starts:
-                    self.seg_type = dscptr.segmentation_type_id + 1
-                    if "segmentation_duration" in vars(dscptr):
-                        duration = dscptr.segmentation_duration
-                        line = f"#EXT-X-CUE-OUT:{duration}\n"
-                        return line
-                if dscptr.segmentation_type_id == self.seg_type:
-                    line = "#EXT-X-CUE-IN\n"
-                    self.seg_type = None
-                    return line
-        return line
+            line = self._line_from_dscptr(dscptr)
+            if line:
+                return line
+        return None
 
 
 class Pane:
