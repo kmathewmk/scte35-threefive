@@ -7,7 +7,7 @@ SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 c
 ## Latest version is v2.4.90 
 * pre-release
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
-* Added a  __HLS SCTE-35 Parser__  to the __threefive cli.__. 
+* Added a  [__HLS SCTE-35 Parser__](https://github.com/futzu/threefive/blob/master/hlsparse.md)  to the __threefive cli.__. 
 * Added a __HLS SCTE-35 Encoder__ to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
     * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
@@ -68,6 +68,7 @@ a@slow:~/threefive$
 
 </details>
 
+# Cli
 
 * [__The New Cli__](https://github.com/futzu/threefive/blob/master/newcli.md)
    * [__Decode SCTE-35__](https://github.com/futzu/threefive/blob/master/newcli.md#decode-scte-35) 
@@ -79,6 +80,7 @@ a@slow:~/threefive$
    *  [__Encode SCTE-35 HLS__](https://github.com/futzu/threefive/blob/master/newcli.md#hls-encode-scte-35)
    *  [__MPEGTS__](https://github.com/futzu/threefive/blob/master/newcli.md#mpegts) (proy,pts,sidecar,sixfix,show,xml)
 
+# lib
 
 * [__Parse SCTE-35 programmatically__](https://github.com/futzu/scte35parser-threefive/blob/master/prog.md) with __threefive__ </i>(write some code)</i>
      * New! [threefive: more OO than you know](https://github.com/futzu/threefive/blob/master/oo.md)
