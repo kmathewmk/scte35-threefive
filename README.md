@@ -1,34 +1,20 @@
-![image](https://github.com/user-attachments/assets/b1a05827-7650-4a87-8e97-f9a15eccfac2)
-* _threefive will run on any OS that supports python 3.6 or higher_.
+[iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
+
+
 # threefive is the Highest Rated SCTE-35 tool. Ever.  
- SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
+SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 ## Latest version is v2.4.90 
 * pre-release
-* Complex Upid Xml fix for [#123](https://github.com/futzu/threefive/issues/123)
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
-* Added a  __HLS SCTE-35 Parser__  to the cli that __will blow your damn mind__.  
-* Added a __HLS SCTE-35 Encoder__ to the cli. Add SCTE-35 to ABR HLS Live.
-* Multiple small Xml fixes.
-* Updated examples.
-* Cyclomatic Complexity Score  A (2.2348993288590604)
-* 3399 lines of code, 1630 lines of comments
-----
-## Latest stable version is v2.4.89
-
-
-### New Stuff in threefive
-
-* A __Cue__ instance can now be initialized with __base64, bytes, dict,hex, hex literal, Json, or xml.__
-* __HLS__ Manifest and Segment SCTE-35 parsing added to __threefive cli.__ 
+* Added a  __HLS SCTE-35 Parser__  to the __threefive cli.__. 
+* Added a __HLS SCTE-35 Encoder__ to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
     * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
 * [__sixfix__](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : ffmpeg turns SCTE-35 streams to bin data (0x06), sixfix switches them back to SCTE-35 (0x86).
 * [__Xml__](https://github.com/futzu/SCTE35-threefive/blob/master/dash.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) ( DASH SCTE-214)
-* [A minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
+---
 
-
-### [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
 
 # Documentation
 #### 
@@ -83,22 +69,20 @@ a@slow:~/threefive$
 </details>
 
 
-* [__threefive On The Command Line__](https://github.com/futzu/scte35parser-threefive/blob/master/cli.md)
-     * [HLS](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#hls) __Parse HLS Manifests and Segments for SCTE-35__
-     * [Decode](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#parse) __SCTE-35 Strings and MPEGTS__
-     * [Sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) __Fix SCTE-35 stremss mangled by Ffmpeg__ (bin data)
-     * [XML](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) __for SCTE-35 Data and MPEGTS streams__ 
-     * [Print](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#show) __MPEGTS Stream__ information
-     * [Print](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#pts) __PTS__ from MPEGTS Streams
-     * [Print](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#packets) __Raw SCTE-35 packets__
-     * [Create](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sidecar) SCTE-35 __Sidecar files__ from MPEGTS
-     * [Encode](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#encode) __JSON or Xml to SCTE-35__
-     * [Convert](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#encode) __Convert SCTE-35 formats to other SCTE-35 formats__
-     * [Inject](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#inject) __Inject SCTE-35 packets into MPEGTS__
+* [__The New Cli__](https://github.com/futzu/threefive/blob/master/newcli.md)
+   * [__Decode SCTE-35__](https://github.com/futzu/threefive/blob/master/newcli.md#decode-scte-35) 
+        * Decode Base64,hex,files, json ,stdin, mpegts,hls, xml
+   * [__Encode SCTE-35__](https://github.com/futzu/threefive/blob/master/newcli.md#encode-scte-35)  
+        * Load JSON, XML, Base64 or Hex and encode to JSON, XML,Base64, Hex, Int or Bytes
+        * Encode can be used to convert from one SCTE-35 format to another
+   *  [__Decode SCTE-35 HLS__](https://github.com/futzu/threefive/blob/master/newcli.md#hls-decode-scte-35)
+   *  [__Encode SCTE-35 HLS__](https://github.com/futzu/threefive/blob/master/newcli.md#hls-encode-scte-35)
+   *  [__MPEGTS__](https://github.com/futzu/threefive/blob/master/newcli.md#mpegts) (proy,pts,sidecar,sixfix,show,xml)
 
 
 * [__Parse SCTE-35 programmatically__](https://github.com/futzu/scte35parser-threefive/blob/master/prog.md) with __threefive__ </i>(write some code)</i>
      * New! [threefive: more OO than you know](https://github.com/futzu/threefive/blob/master/oo.md)
+     * [A minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
      * SCTE-35 code [__Examples__](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
      *  [How to Use __threefive.Cue__](https://github.com/futzu/SCTE35_threefive/blob/master/basic.md)
      * [How to write a minimal Dash SCTE-35 mpd parser](https://github.com/futzu/SCTE35-threefive/blob/master/mpd_parser.md)
