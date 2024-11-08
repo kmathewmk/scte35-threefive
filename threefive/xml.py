@@ -4,8 +4,17 @@ xml.py  The Node class for converting to xml,
         and several helper functions
 """
 
+import re
 from xml.sax.saxutils import escape, unescape
 from new_reader import reader
+
+
+def rm_xmlattr(exemel,attr):
+    """
+    rm_xmlattr remove an attr from an xml string
+    """
+    reggie= re.compile(f'{attr}=".+?"')
+    return "".join(reggie.split(exemel))
 
 
 def t2s(v):
