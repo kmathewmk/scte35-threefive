@@ -22,99 +22,103 @@
 
 ## HLS Decode SCTE-35
 <details><summary><B>threefive hls help</B></summary>
+## The coolest new feature in the threefive cli is the HLS SCTE-35 parser.
 
-* Try it , you'll like it.  
-```js
-threefive   hls  https://example.com/master.m3u8
+
+```rebol
+2024-11-08T12:47:54.38Z  SCTE-35 
+                        Stream PTS: 70485.651111
+                        PreRoll: 3.300011
+                        Splice Point: 70488.951122
+                        Type: Time Signal
+                        Media: index_2_8638521.ts
+
+                                                                                
+2024-11-08T12:47:59.47Z  Skipped   #EXT-OATCLS-SCTE35:/DBAAAAAAyiYAAAABQb/6+8nkAAqAihDVUVJ/////3/
+/AAFyylgBFG1zbmJjX0VQMDAwMjEzOTAyNTg3IwcLr6+cHw==
+
+                        PTS: 70489.651111
+                        Media: index_2_8638523.ts
+
+                                                                                
+2024-11-08T12:47:59.47Z #EXT-X-CUE-OUT:60.068
+
+                        PTS: 70489.651111 (Splice Point)
+                        Duration: 60.068
+                        Media: index_2_8638523.ts
 ```
- 
-* SCTE-35 can be parsed from HLS from the segments and/or the manifests.
-* Single manifests and master.m3u8 manifests can be decoded.
-* All HLS SCTE-35 Tags are supported.
-* The parsing is configurable, you can choose which HLS SCTE-35 tags should be parsed.
-* Parsing SCTE-35 from the HLS segments can be enabled or disabled.
-* All MPEGTS HLS is supported as well as audio only AAC.
 
 
-* Simple answer
-```js
-  threefive hls  https://example.com/out/v1/547e1b8d09444666ac810f6f8c78ca82/index.m3u8
+The fine folks at [__tunein.com__](https://tunein.com) paid for the developement of __threefive hls__ and insisted it remain open and freely available to everyone. 
+
+you run it like this:
+
+```awk
+threefive hls https://example.com/master.m3u8
 ```
+[ __Help__ ]
 
-* The details
-```smalltalk
-
-
-[ Help ]
-
-    To display this help:
-
-        threefive hls help
-
+To display this help:
+```sed
+  threefive hls help
+```
 
 [ Input ]
 
-        threefive hls takes an m3u8 URI as input.
+__threefive hls__ takes an m3u8 URI as input.
 
-        M3U8 formats supported:
+ [ M3U8 formats ]
 
-                * master  ( When a master.m3u8 used,
-                           threefive hls parses the first rendition it finds )
-                * rendition
+* master  ( When a master.m3u8 used, threefive hls parses the first rendition it finds )
+* rendition
 
-        Segment types supported:
+[ Segment types ]
 
-                * AAC
-                * AC3
-                * MPEGTS
-                *codecs:
-                        * video
-                                * mpeg2, h.264, h.265
-                        * audio
-                                * mpeg2, aac, ac3, mp3
+* AAC
+* AC3
+* MPEGTS
+    * codecs:
+      * video
+        * mpeg2, h.264, h.265
+      * audio
+        * mpeg2, aac, ac3, mp3
 
-        Protocols supported:
+[ Protocols ]
 
-                * file
-                * http(s)
-                * UDP
-                * Multicast
+  * file
+  * http(s)
+  * UDP
+  * Multicast
 
-        Encryption supported:
+ [ Encryption ]
 
-                * AES-128 (segments are automatically decrypted)
+ * AES-128 (segments are automatically decrypted)
 
-[ SCTE-35 ]
+[ HLS SCTE-35 Tags ]
 
-    threefive hls displays SCTE-35 Embedded Cues as well as SCTE-35 HLS Tags.
+threefive hls displays SCTE-35 Embedded Cues as well as SCTE-35 HLS Tags.
 
-    Supported SCTE-35:
+Supported:
 
-        * All Commands, Descriptors, and UPIDS
-          in the 2022-b SCTE-35 specification.
-
-    Supported HLS Tags.
-
-        * #EXT-OATCLS-SCTE35
-        * #EXT-X-CUE-OUT-CONT
-        * #EXT-X-DATERANGE
-        * #EXT-X-SCTE35
-        * #EXT-X-CUE-IN
-        * #EXT-X-CUE-OUT
+  * #EXT-OATCLS-SCTE35
+  * #EXT-X-CUE-OUT-CONT
+  * #EXT-X-DATERANGE
+  * #EXT-X-SCTE35
+  * #EXT-X-CUE-IN
+  * #EXT-X-CUE-OUT
 
 
-[ SCTE-35 Parsing Profiles ]
-
-        SCTE-35 parsing can be fine tuned by setting a parsing profile.
-
-        running the command:
-
-                threefive hls profile
-
-        will generate a default profile and write a file named sc.profile
-        in the current working directory.
-
-        a@fu:~$ cat sc.profile
+[ Profiles ]
+* A lot of companies have multiple SCTE-35 Tags and/or SCTE-35 embedded inthe segments. threefive hls allows you to set what you parse. This is tunable via a file called __.35rc__
+* to generate .35rc run the following
+```awk
+threefive hls profile
+```
+* it will creat .35rc in the current directory
+( Integers are show in hex (base 16),
+          base 10 unsigned integers can also be used in .35rc )
+```awk
+  a@fu:~$ cat .35rc
 
         expand_cues = False
         parse_segments = False
@@ -124,78 +128,149 @@ threefive   hls  https://example.com/master.m3u8
         command_types = 0x6,0x5
         descriptor_tags = 0x2
         starts = 0x22,0x30,0x32,0x34,0x36,0x44,0x46
+```
 
-        ( Integers are show in hex (base 16),
-          base 10 unsigned integers can also be used in sc.profile )
-
-        expand_cues:       set to True to show cues fully expanded as JSON
-
-        parse_segments:    set to true to enable parsing SCTE-35 from MPEGTS.
-
-        parse_manifests:   set to true to parse the m3u8 file for SCTE-35 HLS Tags.
-
-        hls_tags:          set which SCTE-35 HLS Tags to parse.
-
-        command_types:     set which Splice Commands to parse.
-
-        descriptor_tags:   set which Splice Descriptor Tags to parse.
-
-        starts:            set which Segmentation Type IDs to use to start breaks.
+expand_cues:       `set to True to show cues fully expanded as JSON`
 
 
+parse_segments:   `set to true to enable parsing SCTE-35 from MPEGTS.`
 
-                Edit the file as needed and then run threefive hls.
+parse_manifests:   `set to true to parse the m3u8 file for SCTE-35 HLS Tags.`
 
+hls_tags:       `set which SCTE-35 HLS Tags to parse.`
 
-[ Profile Formatting Rules ]
+command_types:     `set which Splice Commands to parse.`
 
-        * Values do not need to be quoted.
+descriptor_tags:   `set which Splice Descriptor Tags to parse.`
 
-        * Multiple values are separated by a commas.
+starts:           `set which Segmentation Type IDs to use to start breaks.`
 
-        * No partial line comments. Comments must be on a separate lines.
-
-        * Comments can be started with a # or //
-
-        * Integers can be base 10 or base 16
+_(Edit the file as needed and then run threefive hls from the same directory)_
 
 
-[ Output Files ]
+[ Profile Format ]
 
-        * Created in the current working directory
-        * Clobbered on start of showc ues
+* Values do not need to be quoted.
 
-        * Profile rules applied to the output:
-              * sc.m3u8  - live playable rewrite of the m3u8
-              * sc.sidecar - list of ( pts, HLS SCTE-35 tag ) pairs
+* Multiple values are separated by a commas
 
-        * Profile rules not applied to the output:
-              * sc.dump  -  all of the HLS SCTE-35 tags read.
-              * sc.flat  - every time an m3u8 is reloaded,
-                           it's contents are appended to sc.flat.
+* No partial line comments. Comments must be on a separate lines.
 
-[ Cool Features ]
+* Comments can be started with a # or //
+* Integers can be base 10 or base 16
 
-    * threefive hls can resume when started in the middle of an ad break.
+* __threefive hls__ genrates a few output files to make it easier to debug live HLS with SCTE-35
 
-            2023-10-13T05:59:50.24Z Resuming Ad Break
-            2023-10-13T05:59:50.34Z Setting Break Timer to 17.733
-            2023-10-13T05:59:50.44Z Setting Break Duration to 60.067
 
-    * mpegts streams are listed on start ( like ffprobe )
+[__Output Files__]
 
-            Program: 1
-                Service:
-                Provider:
-                Pid:    480
-                Pcr Pid:        481
-                Streams:
-                    Pid: 481[0x1e1]     Type: 0x1b AVC Video
-                    Pid: 482[0x1e2]     Type: 0xf AAC Audio
-                    Pid: 483[0x1e3]     Type: 0x86 SCTE35 Data
-                    Pid: 484[0x1e4]     Type: 252 Unknown
-                    Pid: 485[0x1e5]     Type: 0x15 ID3 Timed Meta Data
+* Created in the current working directory
+* __Output files aree Clobbered on start of threefive hls__
+* this is done to prevent old files from stacking up.
+*  If you want to keep a file, rename it before restarting __threefve hls__ 
+    * Profile rules applied to the output:
+        * __35.m3u8__  - live playable rewrite of the m3u8 
+        * __35.sidecar__ - list of ( pts, HLS SCTE-35 tag ) pairs
 
+* Profile rules not applied to the output:
+   * __35.dump__  -  all of the HLS SCTE-35 tags read.
+   * __35.flat__  - every time an m3u8 is reloaded, it's contents are appended to 35.flat.
+
+
+[  Cool Features  ]
+
+* ALL SCTE-35 HLS tags are supported.
+* SCTE-35 can be parsed from segments and manifests.
+
+* Automatic AES Decryption, you don't  have to do anything, __threefive hls __
+ __automatically detects and decrypts AES encrypted segments__ on the fly.
+
+
+*  Preroll and  splice point and diff of the splice point are displayed.
+```awk
+                                                                                
+2024-11-08T13:01:49.60Z  SCTE-35 
+                        Stream PTS: 71317.660444
+                        PreRoll: 4.090678
+                        Splice Point: 71321.751122
+                        Type: Time Signal
+                        Media: index_2_8638662.ts
+
+                             
+```
+
+* mpegts streams are listed on start ( like ffprobe )
+```awk
+  Program: 1
+
+        Service:  
+        Provider: 
+        Pid:      480
+        Pcr Pid:  481
+        Streams:
+          Pid           Type
+          481 [0x1e1]   0x1b    H.264
+          482 [0x1e2]   0xf     ADTS AAC 
+          483 [0x1e3]   0x86    SCTE-35
+          484 [0x1e4]   0xfc    KLV
+          485 [0x1e5]   0x15    ID
+```
+* profile settings are also displayed on start
+```awk
+
+
+Profile:
+
+    expand_cues = False
+
+    parse_segments = True
+
+    parse_manifests = True
+
+    hls_tags = ['#EXT-OATCLS-SCTE35', '#EXT-X-DATERANGE', '#EXT-X-SCTE35', '#EXT-X-CUE-OUT', '#EXT-X-CUE-OUT-CONT', '#EXT-X-CUE-IN']
+
+    command_types = ['0x5', '0x6']
+
+    descriptor_tags = ['0x2']
+
+    starts = ['0x22', '0x30', '0x32', '0x34', '0x36', '0x44', '0x46']
+
+    seg_type = ['']
+```
+* current wall time and PTS is displayed while threefive hls is parsing.
+```awk
+24-11-08T12:39:19.02Z  PTS  69935.651111 
+
+```
+* break duration and break progress are displayed during ad breaks
+```js
+2024-11-08T13:00:43.25Z  PTS  71253.384444  Break  203.967 / 270.035
+```
+* PTS is parsed directly from the HLS segments for accuracy.
+
+* threefive hls can resume when started in the middle of an ad break.
+```js
+2023-10-13T05:59:50.24Z Resuming Ad Break
+2023-10-13T05:59:50.34Z Setting Break Timer to 17.733
+2023-10-13T05:59:50.44Z Setting Break Duration to 60.067
+```
+
+[ Example Usage ]
+
+ * Show this help:
+```sed
+   threefive hls help
+```
+  * Generate a new .35rc
+```sed
+    threefive hls profile
+```
+* parse an m3u8
+```sed
+   threefive hls  https://example.com/out/v1/547e1b8d09444666ac810f6f8c78ca82/index.m3u8
+```
+
+ 
 
 [ Example Usage ]
 
