@@ -1,7 +1,19 @@
-[iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
+* _Can threefive handle SCTE-35 in MPEGTS?_
+* __Yes__.
 
+* _Can threefive inject SCTE-35 into MPEGTS?_
+* __Yes__.
 
-# threefive is the Highest Rated SCTE-35 tool. Ever.  
+* _Can threefive Parse SCTE-35 in HLS?_
+* __Yes__.
+* _Can threefive add SCTE-35 to existing HLS?_
+* __Yes__.
+
+* _Even ABR HLS?_
+*  __Yes.__
+
+# threefive is the industry leader in SCTE-35.
+
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 ## Latest version is v2.4.90 
@@ -14,6 +26,8 @@ SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 c
 * [__sixfix__](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : ffmpeg turns SCTE-35 streams to bin data (0x06), sixfix switches them back to SCTE-35 (0x86).
 * [__Xml__](https://github.com/futzu/SCTE35-threefive/blob/master/dash.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) ( DASH SCTE-214)
 ---
+
+[iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) the only accurate online SCTE-35 parser.
 
 
 # Documentation
