@@ -29,9 +29,6 @@
 
 
 The fine folks at [__tunein.com__](https://tunein.com) paid for the developement of __threefive hls__ and insisted it remain open and freely available to everyone. 
-[__tunein.com__](https://tunein.com) has been using this code __in production since 2022__ to parse SCTE-35 from thousands of sources.
-They see more SCTE-35 in a week, than you ever will
-This is the exact same code they have been using..
 
 you run it like this:
 
