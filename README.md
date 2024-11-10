@@ -1,16 +1,8 @@
-* _Can threefive parse SCTE-35 in MPEGTS?_
-* __Yes__.
-
-* _Can threefive inject SCTE-35 into MPEGTS?_
-* __Yes__.
-
-* _Can threefive Parse SCTE-35 in HLS?_
-* __Yes__.
-* _Can threefive add SCTE-35 to existing HLS?_
-* __Yes__.
-
-* _Even ABR HLS?_
-*  __Yes.__
+* _Can threefive parse SCTE-35 in MPEGTS?_   __Yes__.
+* _Can threefive inject SCTE-35 into MPEGTS?_  __Yes__.
+* _Can threefive Parse SCTE-35 in HLS?_  __Yes__.
+* _Can threefive add SCTE-35 to existing HLS?_  __Yes__.
+* _Even ABR HLS?_  __Yes.__
 
 # threefive is the industry leader in SCTE-35.
 
