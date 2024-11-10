@@ -1,4 +1,4 @@
-* _Can threefive handle SCTE-35 in MPEGTS?_
+* _Can threefive parse SCTE-35 in MPEGTS?_
 * __Yes__.
 
 * _Can threefive inject SCTE-35 into MPEGTS?_
