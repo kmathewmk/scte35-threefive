@@ -12,9 +12,9 @@
 
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-## Latest version is v2.4.90 
-* pre-release
+## Latest version is v2.4.91 
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
+* Even more xml work. 
 * Added a  [__Super Amazing__ HLS SCTE-35 Parser](https://github.com/futzu/threefive/blob/master/hlsparse.md)  to the __threefive cli.__. 
 * Added a HLS SCTE-35 Encoder to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
