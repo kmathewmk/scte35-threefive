@@ -1,7 +1,6 @@
  [cli](https://github.com/futzu/threefive/edit/master/README.md#cli)  [lib](https://github.com/futzu/threefive/edit/master/README.md#lib)  [examples](https://github.com/futzu/threefive/edit/master/README.md#examples)  [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) [dash](https://github.com/futzu/threefive/edit/master/README.md#dash) [encoding](https://github.com/futzu/threefive/edit/master/README.md#encoding) [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)   [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser)
 
-# Without threefive SCTE-35 sucks.
-
+# You can spend years learning SCTE-35, or you can use threefive and get on with your life.
 
 * `Can threefive Parse SCTE-35 in MPEGTS?`   __Yes__.
 * `Can threefive Inject SCTE-35 into MPEGTS?`  __Yes__.
