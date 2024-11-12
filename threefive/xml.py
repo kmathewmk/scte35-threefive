@@ -13,6 +13,10 @@ def rm_xmlattr(exemel,attr):
     """
     rm_xmlattr remove an attr from an xml string
     """
+    if isinstance(exemel,bytes):
+        exemel=exemel.decode()
+    if isinstance(exemel,Node):
+        exemel=exemel.mk()
     reggie= re.compile(f'{attr}=".+?"')
     return "".join(reggie.split(exemel))
 
@@ -101,8 +105,8 @@ class Node:
     An instance of Node has:
 
         name :      <name> </name>
-        attrs :     <name attrs[k]="attrs[v]">
         value  :    <name>value</name>
+        attrs :     <name attrs[k]="attrs[v]">
         children :  <name><children[0]></children[0]</name>
         depth:      tab depth for printing (automatically set)
 
@@ -131,6 +135,18 @@ class Node:
     def __repr__(self):
         return self.mk()
 
+    def rm_attr(self,attr):
+        """
+        rm_attr remove an attribute
+        """
+        self.attrs.pop(attr)
+
+    def add_attr(self,attr,value):
+        """
+        add_attr add an attribute
+        """
+        self.attrs[attr]=value
+
     def set_depth(self):
         """
         set_depth is used to format
@@ -145,6 +161,11 @@ class Node:
         """
         tab = "   "
         return tab * self.depth
+
+    def _rendrd_children(self,obj,rendrd,ndent):
+        for child in obj.children:
+            rendrd += obj.mk(child)
+        return f"{rendrd}{ndent}</{obj.name}>\n"
 
     def mk(self, obj=None):
         """
@@ -163,23 +184,34 @@ class Node:
         if obj.value:
             return f"{rendrd}{obj.value}</{obj.name}>\n"
         rendrd = f"{rendrd}\n"
-        for child in obj.children:
-            rendrd += obj.mk(child)
         if obj.children:
-            return f"{rendrd}{ndent}</{obj.name}>\n"
+            return self._rendrd_children(obj,rendrd,ndent)
         return rendrd.replace(">", "/>")
 
-    def add_child(self, child):
+    def add_child(self, child, slot=None):
         """
         add_child adds a child node
+        set slot to insert at index slot.
         """
-        self.children.append(child)
+        if slot ==None:
+            self.children.append(child)
+        else:
+            self.children=self.children[:slot]+[child]+self.children[slot:]
 
-    def add_comment(self, comment):
+    def rm_child(self, child):
+        """
+        rm_child remove a child
+
+        example:
+        a_node.rm_child(a_node.children[3])
+        """
+        self.children.remove(child)
+
+    def add_comment(self, comment,slot=None):
         """
         add_comment add a Comment node
         """
-        self.add_child(Comment(comment))
+        self.add_child(Comment(comment),slot)
 
 
 class Comment(Node):
