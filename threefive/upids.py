@@ -373,7 +373,6 @@ class Umid(Upid):
         encode Umid Upid
         """
         _, self.upid_value = self.redecode(seg_upid)
-        self.redecode()
         chunks = self.upid_value.split(".")
         for chunk in chunks:
             nbin.add_hex(chunk, 32)
