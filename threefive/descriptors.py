@@ -539,11 +539,16 @@ class SegmentationDescriptor(SpliceDescriptor):
 
     def _upid_from_xml(self, stuff):
         if "SegmentationUpid" in stuff:
-            seg_upid=stuff["SegmentationUpid"]["segmentation_upid"]
-            if "segmentation_upid_type" in stuff["SegmentationUpid"]:
-                self.segmentation_upid_type= stuff["SegmentationUpid"]["segmentation_upid_type"]
-                self.segmentation_upid_type_name = upid_map[self.segmentation_upid_type][0]
-            self._xml_redecode(seg_upid)
+            if "segmentation_upid" not in stuff["SegmentationUpid"]:
+                self.segmentation_upid_type=0
+                self.segmentation_upid_length=0
+                self.segmentation_upid=''
+            else:
+                seg_upid=stuff["SegmentationUpid"]["segmentation_upid"]
+                if "segmentation_upid_type" in stuff["SegmentationUpid"]:
+                    self.segmentation_upid_type= stuff["SegmentationUpid"]["segmentation_upid_type"]
+                    self.segmentation_upid_type_name = upid_map[self.segmentation_upid_type][0]
+                self._xml_redecode(seg_upid)
 
     def from_xml(self, stuff):
         """
