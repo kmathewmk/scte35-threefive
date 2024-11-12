@@ -11,7 +11,8 @@ from new_reader import reader
 
 def rm_xmlattr(exemel,attr):
     """
-    rm_xmlattr remove an attr from an xml string
+    rm_xmlattr remove an attr from
+    an xml string, byte string or Node instance.
     """
     if isinstance(exemel,bytes):
         exemel=exemel.decode()
