@@ -13,15 +13,16 @@ SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 c
 
 ## Latest version is v2.4.93
 # Release #300!
-* Fixed UMID UPiD Encoding.
-* Updated threefive.Cue so it can now be initialized with SCTE-35 in Base64, Bytes, Dict Hex, Integer, JSON, or Xml.
-* Added scte35 xml namespace.
+* Fixed `UMID` UPiD Xml encoding.
+* Updated `threefive.Cue` so it can now be initialized with SCTE-35 in `Base64`, `Bytes`, `Dict`, `Hex`, `Integer`, `JSON`, or `Xml`.
+* Added `scte35` xml namespace.
 * Updated threefive.Cue.xml with the optioonal ns arg to disable the scte35 namespace `cue.xml(ns='')`
-* Added the  rm_xmlattr function to remove xml attributes easily and quickly.
-* Added methods to threefive.xml.Node
-    *      rm_child(self, child):
-    *      rm_attr(self,attr):
-    *      add_attr(self,attr,value):
+* Added the  `threefive.xml.rm_xmlattr` function to remove xml attributes easily and quickly. `rm_xml_attr(exemel,"attr_name")`
+  * exemel can be a `string`, `byte string`, or `Node` instance 
+* Added methods to `threefive.xml.Node`
+  * rm_child(self, child):
+  * rm_attr(self,attr):
+  * add_attr(self,attr,value):
 
     
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
