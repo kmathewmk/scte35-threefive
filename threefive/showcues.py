@@ -985,18 +985,21 @@ def cli():
     """
     playlists = None
     m3u8 = None
-    if "help" in sys.argv:
+    args = sys.argv
+    if 'hls' in args:
+        args.remove('hls')
+    if "help" in args:
         print(helpme)
         sys.exit()
-    if "profile" in sys.argv:
+    if "profile" in args:
         scp = Scte35Profile()
         scp.write_profile(".35rc")
         sys.exit()
-    with reader(sys.argv[-1]) as arg:
+    with reader(args[-1]) as arg:
         variants = [line for line in arg if b"#EXT-X-STREAM-INF" in line]
         if variants:
             fumo = M3uFu()
-            fumo.m3u8 = sys.argv[-1]
+            fumo.m3u8 = args[-1]
             fumo.decode()
             playlists = [
                 segment
@@ -1006,7 +1009,7 @@ def cli():
     if playlists:
         m3u8 = playlists[0].media
     else:
-        m3u8 = sys.argv[1]
+        m3u8 = sys.argv[-1]
     cpulr = CuePuller()
     cpulr.pull(m3u8)
     print()
