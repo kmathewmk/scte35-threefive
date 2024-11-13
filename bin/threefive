@@ -65,38 +65,53 @@ def mk_sidecar(cue):
 HELP = f"""
 threefive                    {U}
 
-{U}{B}    decode    {U}{BLUE}  base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+{U}{B}    decode    {U} {BLUE}Decode SCTE-35 from Base64,Hex,MPEGTS, etc..{NORM}
 
-                {BLUE}hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
+{BLUE}base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
 
-                {BLUE}files:     {NORM} threefive myvideo.ts
+{BLUE}hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
 
-                {BLUE}stdin:     {NORM} cat myvideo.ts | threefive
+{BLUE}files:     {NORM} threefive myvideo.ts
 
-                {BLUE}http(s):   {NORM} threefive https://futzu.com/xaa.ts
+{BLUE}stdin:     {NORM} cat myvideo.ts | threefive
 
-                {BLUE}udp:       {NORM} threefive udp://127.0.0.1:3535
+{BLUE}http(s):   {NORM} threefive https://futzu.com/xaa.ts
 
-                {BLUE}multicast: {NORM} threefive udp://@235.35.3.5:3535
+{BLUE}udp:       {NORM} threefive udp://127.0.0.1:3535
 
-                {BLUE}hls:       {NORM} threefive hls https://example.com/master.m3u8
+{BLUE}multicast: {NORM} threefive udp://@235.35.3.5:3535
 
-{U}{B}    encode   {U}{BLUE}\tLoad JSON, XML, Base64 or Hex and encode to
-                JSON, XML, Base64, Hex, Int or Bytes:{NORM} threefive encode help
+{U}{B}    encode   {U}{BLUE} Encode SCTE-35 to JSON, XML, Base64, Hex, etc.. {NORM}
 
-{U}{B}    hls      {U}{NORM}{BLUE}\tHLS decode SCTE-35:{NORM} threefive hls help
+threefive encode help
 
-                {BLUE}HLS encode SCTE-35:{U} threefive hls encode help{U}
+{U}{B}    hls      {U}
 
-{U}{B}    inject   {U}{NORM}{BLUE}\tInject an mpegts stream with a SCTE-35 sidecar file
-                at pid:{NORM} threefive inject video.ts with sidecar.txt at 333
+{NORM}{BLUE}HLS decode SCTE-35:{NORM} threefive hls help
 
-{U}{B}    mpegts   {U}{NORM}{BLUE}\tFunctions for MPEGTS (packet, proxy,
-                pts, sidecar, sixfix show, xml):{NORM} threefive mpegts help
+{BLUE}HLS encode SCTE-35:{U} threefive hls encode help{U}
 
-{U}{B}    version  {U}{NORM}{BLUE}\tShow version:{NORM} threefive version
+{U}{B}    inject   {U}
 
-{U}{B}    help     {U}{NORM} {BLUE}\tHelp:{NORM} threefive help
+{NORM}{BLUE}Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}
+
+threefive inject video.ts with sidecar.txt at 333
+
+{U}{B}    mpegts   {U}
+
+{NORM}{BLUE}Functions for MPEGTS (packet, proxy, pts, sidecar, sixfix show, xml):{NORM}
+
+threefive mpegts help
+
+{U}{B}    xml      {U}{NORM}{BLUE} Xml output:{NORM}
+
+threefive xml '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
+
+threefive xml https://your-momma.com/video.ts
+
+{U}{B}    version  {U}{NORM}{BLUE} Show version:{NORM} threefive version
+                    
+{U}{B}    help     {U}{NORM} {BLUE}Help:{NORM} threefive help
 """
 
 
@@ -122,19 +137,19 @@ def encode_help():
     print(
         f"""
 
-        {BLUE}Base64 to bytes:{NORM}threefive  encode  bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+{BLUE}Base64 to bytes:{NORM}threefive  encode  bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-        {BLUE}Base64 to hex:{NORM}\tthreefive  encode hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
+{BLUE}Base64 to hex:{NORM}\tthreefive  encode hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
 
-        {BLUE}Base64 to xml:{NORM}\tthreefive  encode xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
+{BLUE}Base64 to xml:{NORM}\tthreefive  encode xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
 
-        {BLUE}Hex to int:{NORM}   \tthreefive  encode  int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
+{BLUE}Hex to int:{NORM}   \tthreefive  encode  int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
 
-        {BLUE}JSON to base64:{NORM}\tthreefive  encode {U} < json.json
+{BLUE}JSON to base64:{NORM}\tthreefive  encode {U} < json.json
 
-        {BLUE}JSON to xml:{NORM}\tthreefive  encode  xml {U} < json.json
+{BLUE}JSON to xml:{NORM}\tthreefive  encode  xml {U} < json.json
 
-        {BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive  encode hex {U}
+{BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive  encode hex {U}
     """
     )
 
@@ -281,19 +296,19 @@ def mhelp():
     print(
         f"""
 
-    {U}    packets  {U}{NORM}{BLUE}\tPrint raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} mpegts {U} {B} packets {U} udp://@235.35.3.5:3535
+{U} packets  {U}{NORM}{BLUE}Print raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} mpegts {U} {B} packets {U} udp://@235.35.3.5:3535
 
-    {U}    proxy    {U}{NORM}{BLUE}\tParse a https stream and write raw video to stdout:{NORM}  threefive {B} mpegts {U} {B} proxy {U} https://example.com/video.ts
+{U} proxy    {U}{NORM}{BLUE}Parse a https stream and write raw video to stdout:{NORM}  threefive {B} mpegts {U} {B} proxy {U} https://example.com/video.ts
 
-    {U}    pts      {U}{NORM}{BLUE}\tPrint PTS from mpegts video:{NORM}  threefive {B} mpegts {U} {B} pts {U} video.ts
+{U} pts      {U}{NORM}{BLUE}Print PTS from mpegts video:{NORM}  threefive {B} mpegts {U} {B} pts {U} video.ts
 
-    {U}    sidecar  {U}{NORM}{BLUE}\tParse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} mpegts {U} {B} sidecar {U} https://example.com/video.ts
+{U} sidecar  {U}{NORM}{BLUE}Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} mpegts {U} {B} sidecar {U} https://example.com/video.ts
 
-    {U}    sixfix   {U}{NORM}{BLUE}\tFix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} mpegts {U} {B} sixfix {U} video.ts
+{U} sixfix   {U}{NORM}{BLUE}Fix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} mpegts {U} {B} sixfix {U} video.ts
 
-    {U}    show     {U}{NORM}{BLUE}\tProbe mpegts video:{NORM}  threefive {B} mpegts {U} {B} show {U} video.ts
+{U} show     {U}{NORM}{BLUE}Probe mpegts video:{NORM}  threefive {B} mpegts {U} {B} show {U} video.ts
 
-    {U}    xml      {U}{NORM}{BLUE}\tParse an mpegts stream and output xml: {NORM} threefive {B} mpegts {U} {B} xml {U} video.ts
+{U} xml      {U}{NORM}{BLUE}Parse an mpegts stream and output xml: {NORM} threefive {B} mpegts {U} {B} xml {U} video.ts
 
 """
     )
