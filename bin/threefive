@@ -192,6 +192,7 @@ def superkabuki():
 
 
 def hls():
+    sys.argv.remove('hls')
     if "encode" in sys.argv:
         sidecli()
     else:
