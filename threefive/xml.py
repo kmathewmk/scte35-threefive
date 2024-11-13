@@ -290,6 +290,11 @@ class XmlParser:
         name = node[1:].split(" ", 1)[0].split(">", 1)[0].split(":")[-1]
         self.active = name.replace("/", "").replace(">", "")
 
+    def _split_attrs(self,node):
+        node = node.replace("='", '="').replace("' ", '" ')
+        attrs = [x for x in node.split(" ") if "=" in x]
+        return attrs
+        
     def mk_attrs(self, node):
         """
         mk_attrs parses the current node for attributes
@@ -297,8 +302,7 @@ class XmlParser:
         """
         if "!--" in node:
             return False
-        node = node.replace("='", '="').replace("' ", '" ')
-        attrs = [x for x in node.split(" ") if "=" in x]
+        attrs =self._split_attrs(node)
         parsed = {
             x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
         }
