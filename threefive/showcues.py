@@ -206,18 +206,29 @@ class Scte35Profile:
             return line
         return line
 
+    def _dscptr_duration(self,dscptr,line):
+        if "segmentation_duration" in vars(dscptr):
+            duration = dscptr.segmentation_duration
+            line = f"#EXT-X-CUE-OUT:{duration}\n"
+        return line        
+
+    def _dscptr_is_start(self,dscptr,line):
+        if dscptr.segmentation_type_id in self.starts:
+            self.seg_type = dscptr.segmentation_type_id + 1
+            line = self._dscptr_duration(dscptr,line)
+        return line
+
+    def _dscptr_is_stop(self,dscptr,line):
+        if dscptr.segmentation_type_id == self.seg_type:
+            line = "#EXT-X-CUE-IN\n"
+            self.seg_type = None
+        return line
+    
     def _line_from_dscptr(self,dscptr):
         line = None
         if dscptr.tag in self.descriptor_tags:
-            if dscptr.segmentation_type_id in self.starts:
-                self.seg_type = dscptr.segmentation_type_id + 1
-                if "segmentation_duration" in vars(dscptr):
-                    duration = dscptr.segmentation_duration
-                    line = f"#EXT-X-CUE-OUT:{duration}\n"
-                    return line
-            if dscptr.segmentation_type_id == self.seg_type:
-                line = "#EXT-X-CUE-IN\n"
-                self.seg_type = None
+            line = self._dscptr_is_start(dscptr,line)
+            line = self._dscptr_is_stop(dscptr,line)
         return line
 
     def validate_time_signal(self, cue):
@@ -270,7 +281,7 @@ class SlidingWindow:
         """
         all_panes returns the current window panes joined.
         """
-        return "\n".join(set([a_pane.get() for a_pane in self.panes]))
+        return "\n".join([a_pane.get() for a_pane in self.panes])
 
     def slide_panes(self, a_pane):
         """
@@ -278,8 +289,8 @@ class SlidingWindow:
         and then calls self.pop_pane to trim self.panes
         as needed.
         """
-        self.panes.append(a_pane)
         self.pop_pane()
+        self.panes.append(a_pane)
 
 
 class AacParser:
