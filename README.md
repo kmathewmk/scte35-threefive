@@ -1,4 +1,4 @@
- [cli](https://github.com/futzu/threefive/edit/master/README.md#cli)  [lib](https://github.com/futzu/threefive/edit/master/README.md#lib)  [examples](https://github.com/futzu/threefive/edit/master/README.md#examples)  [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) [dash](https://github.com/futzu/threefive/edit/master/README.md#dash) [encoding](https://github.com/futzu/threefive/edit/master/README.md#encoding) [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)   [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser)
+ [cli](#cli)  [lib](#lib)  [examples](#examples)  [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) [encoding](#encoding) [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md) | [xml](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md)  [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) | 
 
 # You can spend years learning SCTE-35, or you can use threefive and get on with your life.
 
@@ -11,16 +11,27 @@
 
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-## Latest version is v2.4.91
-* Release #299
+## Latest version is v2.4.93
+# Release #300!
+* Fixed UMID UPiD Encoding.
+* Updated threefive.Cue so it can now be initialized with SCTE-35 in Base64, Bytes, Dict Hex, Integer, JSON, or Xml.
+* Added scte35 xml namespace.
+* Updated threefive.Cue.xml with the optioonal ns arg to disable the scte35 namespace `cue.xml(ns='')`
+* Added the  rm_xmlattr function to remove xml attributes easily and quickly.
+* Added methods to threefive.xml.Node
+    *      rm_child(self, child):
+    *      rm_attr(self,attr):
+    *      add_attr(self,attr,value):
+
+    
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
 * Even more xml work. 
 * Added a  [__Super Amazing__ HLS SCTE-35 Parser](https://github.com/futzu/threefive/blob/master/hlsparse.md)  to the __threefive cli.__. 
 * Added a HLS SCTE-35 Encoder to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
     * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
-* [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) : __ffmpeg__ turns SCTE-35 streams to __bin data (0x06)__, sixfix switches them back to SCTE-35 (0x86).
-* [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/dash.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#xml) ( DASH SCTE-214)
+* [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/newcli.md) : __ffmpeg__ turns SCTE-35 streams to __bin data (0x06)__, sixfix switches them back to SCTE-35 (0x86).
+* [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/newcli.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) ( DASH SCTE-214)
 
 
 
@@ -45,8 +56,6 @@ python3 -mpip install threefive
 ```py3
 pypy3 -mpip install threefive
 ```
-
-* [fast start](https://github.com/futzu/SCTE35-threefive/blob/master/FastStart.md)
 
   
 * [super cool examples](https://github.com/futzu/SCTE35-threefive/blob/master/examples/README.md)
