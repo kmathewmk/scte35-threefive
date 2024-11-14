@@ -22,9 +22,9 @@
 
 ## HLS Decode SCTE-35
 #### short answer:
-* threfive hls will parse an m3u8 manifest as well as MPEGTS for SCTE-35.
+* threfive hls will parse an m3u8 manifest as well as mpegts segments for SCTE-35.
 * Ad breaks splice points  elapsed time, PTS, SCTE-35 preroll and SCTE-35 Cues are displayed
-* SCTE-35 Ad break SCTE-35 criteria is adjustable, you can define a CUE-OUT and CUE-IN.
+* Ad break SCTE-35 criteria is adjustable.
 
 <details><summary><B>threefive hls help</B></summary>
    
@@ -299,7 +299,8 @@ Profile:
 
 ## HLS Encode SCTE-35
 #### short answer:
-   * threefive hls encode takes an HLS master.m3u8 and a SCTE-35 sidecar file and generates HLS manifests with SCTE-35 HLS tags.
+   * threefive takes an HLS master.m3u8 and a SCTE-35 sidecar file as input.
+   * Generates HLS manifests with SCTE-35 HLS tags.
    * It works on live feeds, and threefive can run along side an encodre, in realtime.
    *  thrreefine can insert any HLS SCTE-35 tag type.
      
