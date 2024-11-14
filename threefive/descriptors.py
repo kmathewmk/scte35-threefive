@@ -328,12 +328,12 @@ class SegmentationDescriptor(SpliceDescriptor):
         self.archive_allowed_flag = None
         self.device_restrictions = None
         self.segmentation_duration = None
+        self.segmentation_type_id = None
         self.segmentation_message = None
         self.segmentation_upid_type = None
         self.segmentation_upid_type_name = None
         self.segmentation_upid_length = None
         self.segmentation_upid = None
-        self.segmentation_type_id = None
         self.segment_num = None
         self.segments_expected = None
         self.sub_segment_num = None
@@ -373,6 +373,8 @@ class SegmentationDescriptor(SpliceDescriptor):
         the_upid = self.mk_the_upid(bitbin)
         self.segmentation_upid_type_name, self.segmentation_upid = the_upid.decode()
         self.segmentation_type_id = bitbin.as_int(8)
+        if self.segmentation_type_id in table22: # fix for #126 
+            self.segmentation_message = table22[self.segmentation_type_id]
         self._decode_segments(bitbin)
 
     def _chk_sub_segments(self):
