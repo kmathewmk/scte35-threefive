@@ -21,8 +21,16 @@
 </details>
 
 ## HLS Decode SCTE-35
+#### short answer:
+* threfive hls will parse an m3u8 manifest as well as MPEGTS for SCTE-35.
+* Ad breaks splice points  elapsed time, PTS, SCTE-35 preroll and SCTE-35 Cues are displayed
+* SCTE-35 Ad break SCTE-35 criteria is adjustable, you can define a CUE-OUT and CUE-IN.
+
 <details><summary><B>threefive hls help</B></summary>
+   
 ## The coolest new feature in the threefive cli is the HLS SCTE-35 parser.
+
+The fine folks at [__tunein.com__](https://tunein.com) paid for the developement of __threefive hls__ and insisted it remain open and freely available to everyone. 
 
 
 ```rebol
@@ -48,8 +56,6 @@
                         Media: index_2_8638523.ts
 ```
 
-
-The fine folks at [__tunein.com__](https://tunein.com) paid for the developement of __threefive hls__ and insisted it remain open and freely available to everyone. 
 
 you run it like this:
 
@@ -287,13 +293,16 @@ Profile:
                threefive  https://example.com/out/v1/547e1b8d09444666ac810f6f8c78ca82/index.m3u8
 
 
-```
 
 </details>
 
 
 ## HLS Encode SCTE-35
-
+#### short answer:
+   * threefive hls encode takes an HLS master.m3u8 and a SCTE-35 sidecar file and generates HLS manifests with SCTE-35 HLS tags.
+   * It works on live feeds, and threefive can run along side an encodre, in realtime.
+   *  thrreefine can insert any HLS SCTE-35 tag type.
+     
 <details><summary><B>threefive  hls  encode  help</B></summary>
   
 ```js
@@ -418,20 +427,20 @@ a-seg544.ts  a-seg547.ts  b-seg544.ts  b-seg547.ts  index.m3u8  sidecar.txt
 * line format for text file insert_pts, cue
 
 * pts is the insert time for the cue, cue can be base64,hex, int, or bytes
-```lua
+```sed
 a@debian:~/sidweways$ cat sidecar.txt
 
 38103.868589, /DAxAAAAAAAAAP/wFAUAAABdf+/+zHRtOn4Ae6DOAAAAAAAMAQpDVUVJsZ8xMjEqLYemJQ== 
 38199.918911, /DAsAAAAAAAAAP/wDwUAAABef0/+zPACTQAAAAAADAEKQ1VFSbGfMTIxIxGolm0= 
 ```
 * you can do dynamic cue injection with a Sidecar file
-```lua
+```asm
 touch sidecar.txt
 
 sideways -i master.m3u8 -s sidecar.txt -o bob
 ```
 *  Open another terminal and printf cues into sidecar.txt
-```lua
+```asm
 printf '38103.868589, /DAxAAAAAAAAAP/wFAUAAABdf+/+zHRtOn4Ae6DOAAAAAAAMAQpDVUVJsZ8xMjEqLYemJQ==\n' > sidecar.txt
 ```
 
@@ -442,41 +451,49 @@ printf '38103.868589, /DAxAAAAAAAAAP/wFAUAAABdf+/+zHRtOn4Ae6DOAAAAAAAMAQpDVUVJsZ
 
 ## Inject  SCTE-35   
 * Inject an mpegts stream with a SCTE-35 sidecar file at pid:  
-```js
+```asm
 threefive  inject  video.ts  with  sidecar.txt  at  333
 ```
 
 ## MPEGTS 
     
-<details><summary><B>threefive mpegts help</B></summary>
+* threefive mpegts help
 
-* packets         Print raw SCTE-35 packets from multicast mpegts video:  
-```js
+### packets
+* Print raw SCTE-35 packets from multicast mpegts video:  
+```asm
 threefive  mpegts   packets  udp://@235.35.3.5:3535
 ```
-* proxy           Parse a https stream and write raw video to stdout:  
-```js
+### proxy
+* Parse a https stream and write raw video to stdout:  
+```asm
 threefive  mpegts   proxy  https://example.com/video.ts
 ```
-* pts             Print PTS from mpegts video:  
-```js
+### pts
+* Print PTS from mpegts video:  
+```asm
 threefive  mpegts   pts  video.ts
 ```
-* sidecar         Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:  
-```js
-threefive  mpegts   sidecar  https://example.com/video.ts
+### sidecar
+* Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:
+```asm
+ threefive  mpegts   sidecar  https://example.com/video.ts
 ```
-* sixfix          Fix SCTE-35 data mangled by ffmpeg:  ```js
-threefive  mpegts   sixfix  video.ts
+### sixfix
+* Fix SCTE-35 data mangled by ffmpeg:
+```asm
+   threefive  mpegts   sixfix  video.ts
 ```
-* show            Probe mpegts video:  
-```js 
+### show
+* Probe mpegts video:  
+```asm
 threefive  mpegts   show  video.ts
 ```
-*xml             Parse an mpegts stream and output xml: 
-```js
+### xml
+* Parse an mpegts stream and output xml: 
+```asm
 threefive  mpegts   xml  video.ts
 ```
 
-</details>
+
 
