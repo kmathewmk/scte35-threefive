@@ -1,5 +1,13 @@
 # Xml as of v2.4.93
 
+
+
+# What is proper SCTE-35 xml?
+
+ **For the Sploce Infb oSection xml model this is a difficult question to answer.** See it's not just the same data just as xml, The data is modified, rearrange and a lot of it not included. There are multiple specifications that conflict in some areas, the schema is several years out of date, and some areas are just not very clear.I asked several people several questions and on 95% of it we agreed. In areas that we could not reach a consensus, I have gone with what I thought best. **To accomidate every opinion, things like xml namespace, xml attributes and even xml nodes can be added, removed, or modified.**
+ 
+__I strongly suggest using the xml+binary format__ for DASH, it is very straight forward, very compact, and the SCTE-35 data is exactly the same as regular SCTE-35.  __use xml+bin for DASH__
+
 #### xml in the Cli  
 *  [SCTE-35 xml input](#xml-input)
 *  [SCTE-35 xml output](#xml-output)
@@ -8,7 +16,7 @@
 #### xml in the Cue class 
 * [SCTE-35 xml input](#xml-as-input)
 * [SCTE-35 xml output](#the-cue-class-can-return-xml-as-output)
-* [reoving SCTE-35 xml attributes](#removing-xml-attributes)
+* [removing SCTE-35 xml attributes](#rm_xmlattr)
 * [removing or changing the scte35 namespace](#removing-or-changing-the-namespace)
 
 # Cli
@@ -172,11 +180,10 @@ True
 </scte35:SpliceInfoSection>
 ```
 
-# What is proper SCTE-35 xml?
-
-* this is difficult question to answer. there are multiple specifications that conflict in some areas, the schema is several years out of date, and some is just not very clear.The majority of the issues are with the attributes of the complex UPIDs, which most people do not use. Howeveer, if you do use them , you can make adjustments if needed.
-### Removing xml attributes
+### rm_xmlattr
 * If you want to remove an attribute, you can use rm_xmlattr function.
+* rm_xmlattr accepts an axl string, bytestring, or Node instance as input.
+
 
 ```py3
 >>>> from threefive.xml import rm_xmlattr
