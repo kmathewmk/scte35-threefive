@@ -22,15 +22,15 @@ ffmpeg -copyts -i video.ts [other ffmpeg stuff] -muxpreload 0 -muxdelay 0 outvid
 * Create renditions and master.m3u8 with ffmpeg
 
 ```smalltalk
-threefive proxy video.ts | ffmpeg -copyts -i - [..ffmpeg stuff..] master.m3u8
+threefive mpegts proxy video.ts | ffmpeg -copyts -i - [..ffmpeg stuff..] master.m3u8
 ```
 
-* Start  [sideways](https://github.com/futzu/sideways) to inject SCTE-35 back into the HLS
+* Start threefive to inject SCTE-35 back into the HLS
 
 ```smalltalk
-sideways -i master.m3u8 -s sidecar.txt -o output_dir
+threefive hls encode -i master.m3u8 -s sidecar.txt -o output_dir
 ```
-* sideways will process the renditions from the master.m3u8 and add SCTE-35 Cues from the sidecar file live.
+*  threefive will process the renditions from the master.m3u8 and add SCTE-35 Cues from the sidecar file live.
 *  SCTE-35 is translated to HLS tags. __All SCTE-35 HLS Tags are Supported__. 
 *  SCTE-35 is added to new manifest files in output_dir
 *  Original segments from ffmpeg are used. Segments are split if needed for Cue Outs. 
