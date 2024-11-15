@@ -37,6 +37,13 @@ def xml_out(cue):
     """
     print2(cue.xml())
 
+def xml_out_binary(cue):
+    """
+    xml_out prints cue as xml
+    """
+    print2(cue.xml(binary=True))
+
+
 
 class SupaStream(Stream):
     """
@@ -69,21 +76,27 @@ threefive                    {U}
 
 {BLUE}base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
 
-{BLUE}hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
+{BLUE}Hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
 
-{BLUE}files:     {NORM} threefive myvideo.ts
+{BLUE}Files:     {NORM} threefive myvideo.ts
 
-{BLUE}stdin:     {NORM} cat myvideo.ts | threefive
+{BLUE}Stdin:     {NORM} cat myvideo.ts | threefive
 
-{BLUE}http(s):   {NORM} threefive https://futzu.com/xaa.ts
+{BLUE}Http(s):   {NORM} threefive https://futzu.com/xaa.ts
 
-{BLUE}udp:       {NORM} threefive udp://127.0.0.1:3535
+{BLUE}Multicast: {NORM} threefive udp://@235.35.3.5:3535
 
-{BLUE}multicast: {NORM} threefive udp://@235.35.3.5:3535
+{U}{B}    encode   {U}{BLUE} Encode SCTE-35 to JSON, XML, Base64, Hex, Int etc.. {NORM}
 
-{U}{B}    encode   {U}{BLUE} Encode SCTE-35 to JSON, XML, Base64, Hex, etc.. {NORM}
+{BLUE}Base64 to Hex:{NORM}\tthreefive  encode hex {U} '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-threefive encode help
+{BLUE}Hex to Xml:{NORM}\tthreefive  encode xml {U} '0xfc301600000000000000fff00506fe00a98ac700000b3baed9' 
+
+{BLUE}JSON to Base64:{NORM} threefive  encode {U} < json.json
+
+{BLUE}JSON to Xml:{NORM} threefive  encode  xml {U} < json.json
+
+{BLUE}Xml to Hex:{NORM} cat xml.xml | threefive  encode hex {U}
 
 {U}{B}    hls      {U}
 
@@ -91,23 +104,33 @@ threefive encode help
 
 {BLUE}HLS encode SCTE-35:{U} threefive hls encode help{U}
 
-{U}{B}    inject   {U}
-
-{NORM}{BLUE}Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}
-
-threefive inject video.ts with sidecar.txt at 333
-
-{U}{B}    mpegts   {U}
-
-{NORM}{BLUE}Functions for MPEGTS (packet, proxy, pts, sidecar, sixfix show, xml):{NORM}
-
-threefive mpegts help
-
 {U}{B}    xml      {U}{NORM}{BLUE} Xml output:{NORM}
 
 threefive xml '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
 
 threefive xml https://your-momma.com/video.ts
+
+{U}{B}    inject   {U}{NORM}{BLUE} Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}
+
+threefive inject video.ts with sidecar.txt at 333
+
+{U}{B}    packets  {U}{NORM}{BLUE} Print raw SCTE-35 packets from multicast mpegts video:{NORM}
+
+threefive packets udp://@235.35.3.5:3535
+
+{U}{B}    proxy    {U}{NORM}{BLUE} Parse a https stream and write raw video to stdout:{NORM}
+
+threefive proxy https://example.com/video.ts
+
+{U}{B}    pts      {U}{NORM}{BLUE} Print PTS from mpegts video:{NORM} threefive pts video.ts
+
+{U}{B}    sidecar  {U}{NORM}{BLUE} Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}
+
+threefive sidecar https://example.com/video.ts
+
+{U}{B}    sixfix   {U}{NORM}{BLUE} Fix SCTE-35 data mangled by ffmpeg:{NORM} threefive sixfix video.ts
+
+{U}{B}    show     {U}{NORM}{BLUE} Probe mpegts video:{NORM} threefive show video.ts
 
 {U}{B}    version  {U}{NORM}{BLUE} Show version:{NORM} threefive version
                     
@@ -133,32 +156,11 @@ def print_version():
     sys.exit()
 
 
-def encode_help():
-    print(
-        f"""
-
-{BLUE}Base64 to bytes:{NORM}threefive  encode  bytes {U}  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-
-{BLUE}Base64 to hex:{NORM}\tthreefive  encode hex {U}  '/DBCAAGRZOeYAP/wBQb/ijB9aAAsAipDVUVJAAAAAX//AABSfTABFG1zbmJjX0VQMDE3MTc0MzEyNzg2NgEBAABDk4yN'
-
-{BLUE}Base64 to xml:{NORM}\tthreefive  encode xml {U}  '/DAxAAGRZOeYAP/wFAUAAAAMf+//kCYroP4AUmXAAAAAAAAMAQpDVUVJUJ8xMjEq9sE7YA=='
-
-{BLUE}Hex to int:{NORM}   \tthreefive  encode  int {U} 0xfc302500000000000000fff014050000000e7feffe14ebd5c0fe00a4cb80000e00000000cc1a27d0
-
-{BLUE}JSON to base64:{NORM}\tthreefive  encode {U} < json.json
-
-{BLUE}JSON to xml:{NORM}\tthreefive  encode  xml {U} < json.json
-
-{BLUE}xml to hex:{NORM}   \tcat xml.xml | threefive  encode hex {U}
-    """
-    )
-
-
 def json_load():
     """
     json_load is used by encode
     """
-    cmdlist = list(mapped.keys()) + ["encode"]
+    cmdlist = list(mapped.keys()) + ["encode","binary"]
     if "help" in sys.argv:
         encode_help()
         sys.exit()
@@ -183,7 +185,10 @@ def json_load():
         for k, v in mapped.items():
             if k in sys.argv:
                 method = getattr(cue, v)
-                print2(method())
+                if 'binary' in sys.argv and 'xml' in sys.argv:
+                    print2(method(binary=True))
+                else:
+                    print2(method())
                 sys.exit()
 
     print2(cue.encode())
@@ -274,14 +279,20 @@ def to_xml(this):
     try:
         # Mpegts Video
         strm = Stream(this)
-        strm.decode(func=xml_out)
+        if 'binary' in  sys.argv:
+            strm.decode(func=xml_out_binary)
+        else:
+            strm.decode(func=xml_out)
         return True
 
     except:
+        binary=False
         try:
             cue = Cue(this)
             cue.decode()
-            print2(cue.xml())
+            if 'binary' in sys.argv:
+                binary=True
+            print2(cue.xml(binary=binary))
             return True
         except:
             return False
@@ -292,62 +303,25 @@ func_map = {
 }
 
 
-def mhelp():
-    print(
-        f"""
+print_map = {
+    "hls": hls,
+    "encode": json_load,
+   # "mpegts": mpegts,
+    "help": print_help,
+    "version": print_version,
+    "inject": superkabuki,
+}
 
-{U} packets  {U}{NORM}{BLUE}Print raw SCTE-35 packets from multicast mpegts video:{NORM}  threefive {B} mpegts {U} {B} packets {U} udp://@235.35.3.5:3535
-
-{U} proxy    {U}{NORM}{BLUE}Parse a https stream and write raw video to stdout:{NORM}  threefive {B} mpegts {U} {B} proxy {U} https://example.com/video.ts
-
-{U} pts      {U}{NORM}{BLUE}Print PTS from mpegts video:{NORM}  threefive {B} mpegts {U} {B} pts {U} video.ts
-
-{U} sidecar  {U}{NORM}{BLUE}Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}  threefive {B} mpegts {U} {B} sidecar {U} https://example.com/video.ts
-
-{U} sixfix   {U}{NORM}{BLUE}Fix SCTE-35 data mangled by ffmpeg:{NORM}  threefive {B} mpegts {U} {B} sixfix {U} video.ts
-
-{U} show     {U}{NORM}{BLUE}Probe mpegts video:{NORM}  threefive {B} mpegts {U} {B} show {U} video.ts
-
-{U} xml      {U}{NORM}{BLUE}Parse an mpegts stream and output xml: {NORM} threefive {B} mpegts {U} {B} xml {U} video.ts
-
-"""
-    )
-
-
-def mpegts():
-    mpegts_map = {
-        "help": mhelp,
+mpegts_map = {
         "pts": pts_chk,
         "show": show_chk,
         "sixfix": sixfix,
         "packets": packet_chk,
         "proxy": proxy_chk,
         "sidecar": sidecar_chk,
-        "xml": to_xml,
-    }
-
-    sys.argv.remove("mpegts")
-    for k, v in mpegts_map.items():
-        if k in sys.argv:
-            if k in ["help"]:
-                mhelp()
-            else:
-                args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
-                for mo in args:
-                    v(mo)
-            sys.exit()
-
-
-print_map = {
-    "hls": hls,
-    "encode": json_load,
-    "mpegts": mpegts,
-    "help": print_help,
-    "version": print_version,
-    "inject": superkabuki,
+       # "xml": to_xml,
 }
-
-
+    
 def chk_print_map():
     """
     chk_print_map checks for print_map.keys() in sys.argv
@@ -355,6 +329,16 @@ def chk_print_map():
     for k, v in print_map.items():
         if k in sys.argv:
             v()
+            sys.exit()
+
+
+def chk_mpegts_map():
+  #  sys.argv.remove("mpegts")
+    for k, v in mpegts_map.items():
+        if k in sys.argv:
+            args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
+            for mo in args:
+                v(mo)
             sys.exit()
 
 
@@ -373,6 +357,7 @@ def chk_func_map():
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         chk_print_map()
+        chk_mpegts_map()
         chk_func_map()
         for arg in sys.argv[1:]:
             decode(arg)
