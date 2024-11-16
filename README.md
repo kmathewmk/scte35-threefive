@@ -1,38 +1,14 @@
  | [cli](#cli) | [lib](#lib) | [examples](#examples) | [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) | [encoding](#encoding) | [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) | [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md) | [xml](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) | [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) | 
 
-# I Asked Google's Super Advanced Ai about threefive.
-![scte-ai](https://github.com/user-attachments/assets/81ab09ae-13a5-4418-8041-cbaea62d83e0)
+### I Asked Google's Super Advanced Ai about threefive....
+![scte-ai](https://github.com/user-attachments/assets/fea040b5-9783-4b3f-9491-9be9bc1bc69d)
 
-
-![image](https://github.com/user-attachments/assets/7a5342a0-64e9-47a8-af77-53123d968ec2)
-
-
-# threefive is The Heavy Weight Champion of SCTE-35.
-
-* `Can threefive Parse SCTE-35 in MPEGTS?`   __Yes__.
-* `Can threefive Inject SCTE-35 into MPEGTS?`  __Yes__.
-* `Can threefive Parse SCTE-35 in HLS?`  __Yes__.
-* `Can threefive Add SCTE-35 to existing HLS?`  __Yes__.
-* `Even ABR HLS?`  __Yes.__
 
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 ## Latest version is v2.4.93
-# Release #300!
-* Fixed `UMID` UPiD Xml encoding.
-* Updated `threefive.Cue` so it can now be initialized with SCTE-35 in `Base64`, `Bytes`, `Dict`, `Hex`, `Integer`, `JSON`, or `Xml`.
-* Added `scte35` xml namespace.
-* Updated threefive.Cue.xml with the optioonal ns arg to disable the scte35 namespace `cue.xml(ns='')`
-* Added the  `threefive.xml.rm_xmlattr` function to remove xml attributes easily and quickly. `rm_xml_attr(exemel,"attr_name")`
-  * exemel can be a `string`, `byte string`, or `Node` instance 
-* Added methods to `threefive.xml.Node`
-  * rm_child(self, child):
-  * rm_attr(self,attr):
-  * add_attr(self,attr,value):
-
     
 * [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
-* Even more xml work. 
 * Added a  [__Super Amazing__ HLS SCTE-35 Parser](https://github.com/futzu/threefive/blob/master/hlsparse.md)  to the __threefive cli.__. 
 * Added a HLS SCTE-35 Encoder to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
@@ -40,6 +16,7 @@ SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 c
 * [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/newcli.md) : __ffmpeg__ turns SCTE-35 streams to __bin data (0x06)__, sixfix switches them back to SCTE-35 (0x86).
 * [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/newcli.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) ( DASH SCTE-214)
 
+![image](https://github.com/user-attachments/assets/46a470ea-c546-4604-8947-f6bf329a3545)
 
 
 
@@ -616,6 +593,8 @@ private_data = b'threefive kicks ass'
 
 
 </details>
+
+
 
  Powered by threefive
 ---
