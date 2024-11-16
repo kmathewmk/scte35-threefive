@@ -3,7 +3,7 @@
    * [decode](#decode) __Decode SCTE-35.__ _this is the default action._
    * [encode](#encode) __Encode SCTE-35__ _and convert SCTE-35 formats._
    * [hls](#hls) __HLS SCTE-35 Decoding and Encoding.__
-   * [xml](#xml)  __Xml__ _output for_ _SCTE-35.__
+   * [xml](#xml)  __Xml__ _output for_ _SCTE-35._
    * [inject](#inject) __Inject SCTE-35__ _packets into mpegts streams._
    * [packets](#packets) _Output raw SCTE-35 packets from mpegts._
    * [proxy](#proxy) _Parse SCTE-35 from mpegts and copy video stream to stdout._
