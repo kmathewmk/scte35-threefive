@@ -85,12 +85,22 @@ ___
 * Xml output:
 
 #### Base64
+* xml format
 ```asm
       threefive xml '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
 ```
+* xml+bin format
+```asm
+      threefive xml binary '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
+```
 #### MPEGTS
+* xml format
 ```asm                                                                                           
       threefive xml https://example.com/video.ts 
+```
+* xml+bin format
+```asm                                                                                           
+      threefive xml binary https://example.com/video.ts 
 ```
 ___
 #  `inject`
