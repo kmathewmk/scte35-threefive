@@ -1,4 +1,5 @@
-# The threefive cli tool
+# threefive
+###  the  cli
    * [decode](#decode) __Decode SCTE-35.__ _this is the default action._
    * [encode](#encode) __Encode SCTE-35__ _and convert SCTE-35 formats._
    * [hls](#hls) __HLS SCTE-35 Decoding and Encoding.__
@@ -68,16 +69,20 @@ ___
 # `hls`  
 * SCTE-35  Decoding and Encoding for HLS
        
-#### HLS decode SCTE-35: 
+#### HLS SCTE-35 Decoding: 
 ```asm
       threefive hls https://example.com/master.m3u8
-      
+```
+* _read the help for advanced HLS SCTE-35 decoding._
+```asm    
       threefive hls help
 ```
-#### HLS encode SCTE-35: 
+#### HLS SCTE-35 Encoding: 
 ```asm
       threefive hls  -i https://example.com/master.m3u8 -s sidecar.txt -o output_dir
-
+```
+*  _read the help for advanced HLS SCTE-35 encoding._
+``` asm
       threefive hls encode help
 ```
 ___
@@ -85,7 +90,7 @@ ___
 * Xml output:
 
 #### Base64
-* xml format
+* xml splice info section format
 ```asm
       threefive xml '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
 ```
@@ -94,7 +99,7 @@ ___
       threefive xml binary '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
 ```
 #### MPEGTS
-* xml format
+* xml splice info section format
 ```asm                                                                                           
       threefive xml https://example.com/video.ts 
 ```
