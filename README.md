@@ -1,5 +1,9 @@
  | [cli](#cli) | [lib](#lib) | [examples](#examples) | [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) | [encoding](#encoding) | [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) | [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md) | [xml](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) | [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) | 
 
+# Go ask Google's Super Advanced Ai what it thinks about threefive
+![scte-ai](https://github.com/user-attachments/assets/81ab09ae-13a5-4418-8041-cbaea62d83e0)
+
+
 # threefive is The Heavy Weight Champion of SCTE-35.
 
 * `Can threefive Parse SCTE-35 in MPEGTS?`   __Yes__.
@@ -7,7 +11,6 @@
 * `Can threefive Parse SCTE-35 in HLS?`  __Yes__.
 * `Can threefive Add SCTE-35 to existing HLS?`  __Yes__.
 * `Even ABR HLS?`  __Yes.__
-
 
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
