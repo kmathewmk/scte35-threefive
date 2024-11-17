@@ -9,16 +9,16 @@ from xml.sax.saxutils import escape, unescape
 from new_reader import reader
 
 
-def rm_xmlattr(exemel,attr):
+def rm_xmlattr(exemel, attr):
     """
     rm_xmlattr remove an attr from
     an xml string, byte string or Node instance.
     """
-    if isinstance(exemel,bytes):
-        exemel=exemel.decode()
-    if isinstance(exemel,Node):
-        exemel=exemel.mk()
-    reggie= re.compile(f'{attr}=".+?"')
+    if isinstance(exemel, bytes):
+        exemel = exemel.decode()
+    if isinstance(exemel, Node):
+        exemel = exemel.mk()
+    reggie = re.compile(f'{attr}=".+?"')
     return "".join(reggie.split(exemel))
 
 
@@ -136,17 +136,17 @@ class Node:
     def __repr__(self):
         return self.mk()
 
-    def rm_attr(self,attr):
+    def rm_attr(self, attr):
         """
         rm_attr remove an attribute
         """
         self.attrs.pop(attr)
 
-    def add_attr(self,attr,value):
+    def add_attr(self, attr, value):
         """
         add_attr add an attribute
         """
-        self.attrs[attr]=value
+        self.attrs[attr] = value
 
     def set_depth(self):
         """
@@ -163,7 +163,7 @@ class Node:
         tab = "   "
         return tab * self.depth
 
-    def _rendrd_children(self,obj,rendrd,ndent):
+    def _rendrd_children(self, obj, rendrd, ndent):
         for child in obj.children:
             rendrd += obj.mk(child)
         return f"{rendrd}{ndent}</{obj.name}>\n"
@@ -186,7 +186,7 @@ class Node:
             return f"{rendrd}{obj.value}</{obj.name}>\n"
         rendrd = f"{rendrd}\n"
         if obj.children:
-            return self._rendrd_children(obj,rendrd,ndent)
+            return self._rendrd_children(obj, rendrd, ndent)
         return rendrd.replace(">", "/>")
 
     def add_child(self, child, slot=None):
@@ -194,10 +194,10 @@ class Node:
         add_child adds a child node
         set slot to insert at index slot.
         """
-        if slot ==None:
+        if slot == None:
             self.children.append(child)
         else:
-            self.children=self.children[:slot]+[child]+self.children[slot:]
+            self.children = self.children[:slot] + [child] + self.children[slot:]
 
     def rm_child(self, child):
         """
@@ -208,11 +208,11 @@ class Node:
         """
         self.children.remove(child)
 
-    def add_comment(self, comment,slot=None):
+    def add_comment(self, comment, slot=None):
         """
         add_comment add a Comment node
         """
-        self.add_child(Comment(comment),slot)
+        self.add_child(Comment(comment), slot)
 
 
 class Comment(Node):
@@ -290,11 +290,11 @@ class XmlParser:
         name = node[1:].split(" ", 1)[0].split(">", 1)[0].split(":")[-1]
         self.active = name.replace("/", "").replace(">", "")
 
-    def _split_attrs(self,node):
+    def _split_attrs(self, node):
         node = node.replace("='", '="').replace("' ", '" ')
         attrs = [x for x in node.split(" ") if "=" in x]
         return attrs
-        
+
     def mk_attrs(self, node):
         """
         mk_attrs parses the current node for attributes
@@ -302,7 +302,7 @@ class XmlParser:
         """
         if "!--" in node:
             return False
-        attrs =self._split_attrs(node)
+        attrs = self._split_attrs(node)
         parsed = {
             x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
         }
