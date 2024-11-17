@@ -134,7 +134,7 @@ class SCTE35Base:
         xml_attrs = self.kv_clean()
         iam = type(self)
         iam = str(iam).split("'", 1)[1].split("'", 1)[0]
-        this = Node(iam, attrs=xml_attrs,ns=ns)
+        this = Node(iam, attrs=xml_attrs, ns=ns)
         return this
 
     @staticmethod
