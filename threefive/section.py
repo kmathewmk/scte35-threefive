@@ -190,7 +190,7 @@ class SpliceInfoSection(SCTE35Base):
             "sap_type": self.sap_type,
             "tier": self.tier,
         }
-        sis = Node("SpliceInfoSection", attrs=sis_attrs,ns=ns)
+        sis = Node("SpliceInfoSection", attrs=sis_attrs, ns=ns)
         return sis
 
     def from_xml(self, stuff):
