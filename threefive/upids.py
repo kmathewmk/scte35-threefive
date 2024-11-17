@@ -78,15 +78,15 @@ class Upid:
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": self._xml_format_attr(),
         }
-        return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value,ns=ns)
+        return Node("SegmentationUpid", attrs=ud_attrs, value=self.upid_value, ns=ns)
 
     def _extra_xml_attrs(self, ud):
         if "format_identifier" in self.upid_value:
             ud["format_identifier"] = int.from_bytes(
-            self.upid_value["format_identifier"].encode(), byteorder="big"
+                self.upid_value["format_identifier"].encode(), byteorder="big"
             )
         if "private_data" in self.upid_value:
-            ud["private_data"]=self.upid_value["private_data"]
+            ud["private_data"] = self.upid_value["private_data"]
         return ud
 
     def complexml(self, ns="scte35"):
@@ -97,11 +97,11 @@ class Upid:
             "segmentation_upid_type": self.upid_type,
             "segmentation_upid_format": self._xml_format_attr(),
         }
-        if isinstance(self.upid_value,dict):
+        if isinstance(self.upid_value, dict):
             ud_attrs = self._extra_xml_attrs(ud_attrs)
         nbin = NBin()
         self.encode(nbin, self.upid_value)
-        return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex(),ns=ns)
+        return Node("SegmentationUpid", attrs=ud_attrs, value=nbin.bites.hex(), ns=ns)
 
 
 class NoUpid(Upid):
@@ -129,7 +129,7 @@ class NoUpid(Upid):
             "segmentation_upid_type": 0x0,
             "segmentation_upid_format": "hexbinary",
         }
-        return Node("SegmentationUpid", attrs=ud_attrs, value="",ns=ns)
+        return Node("SegmentationUpid", attrs=ud_attrs, value="", ns=ns)
 
 
 class AirId(Upid):
