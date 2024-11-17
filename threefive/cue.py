@@ -1,4 +1,4 @@
-\"""
+"""
 threefive.Cue Class
 """
 
@@ -86,15 +86,14 @@ class Cue(SCTE35Base):
         """
         tag_n_len = 2
         while len(loop_bites) > tag_n_len:
-            length = loop_bites[1]
-            sd_size = tag_n_len + length
-            spliced = splice_descriptor(loop_bites[:sd_size])
-            loop_bites = loop_bites[sd_size:]
+            spliced = splice_descriptor(loop_bites)
             if not spliced:
                 return
+            sd_size = tag_n_len + spliced.descriptor_length
+            loop_bites = loop_bites[sd_size:]
             del spliced.bites
             self.descriptors.append(spliced)
-
+            
     def _get_dash_data(self, scte35_dict):
         if self.dash_data:
             scte35_dict["dash_data"] = self.dash_data
