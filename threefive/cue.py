@@ -1,4 +1,4 @@
-"""
+\"""
 threefive.Cue Class
 """
 
@@ -86,11 +86,12 @@ class Cue(SCTE35Base):
         """
         tag_n_len = 2
         while len(loop_bites) > tag_n_len:
-            spliced = splice_descriptor(loop_bites)
+            length = loop_bites[1]
+            sd_size = tag_n_len + length
+            spliced = splice_descriptor(loop_bites[:sd_size])
+            loop_bites = loop_bites[sd_size:]
             if not spliced:
                 return
-            sd_size = tag_n_len + spliced.descriptor_length
-            loop_bites = loop_bites[sd_size:]
             del spliced.bites
             self.descriptors.append(spliced)
 
@@ -464,14 +465,14 @@ class Cue(SCTE35Base):
             # Self.encode() will calculate lengths and types and such
             self.encode()
 
-    def _xml_binary(self,ns):
+    def _xml_binary(self, ns):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
         sig_node = Node("Signal", attrs=sig_attrs)
-        bin_node = Node("Binary", value=self.encode(),ns=ns)
+        bin_node = Node("Binary", value=self.encode(), ns=ns)
         sig_node.add_child(bin_node)
         return sig_node
 
-    def _xml_mk_descriptor(self, sis,ns):
+    def _xml_mk_descriptor(self, sis, ns):
         """
         _mk_descriptor_xml make xml nodes for descriptors.
         """
@@ -494,6 +495,6 @@ class Cue(SCTE35Base):
         #    raise Exception("\033[7mA Splice Command is Required\033[27m")
         cmd = self.command.xml(ns=ns)
         sis.add_child(cmd)
-        sis = self._xml_mk_descriptor(sis,ns)
+        sis = self._xml_mk_descriptor(sis, ns)
         sis.mk()
         return sis
