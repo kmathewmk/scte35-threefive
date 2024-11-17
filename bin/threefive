@@ -21,28 +21,7 @@ BLUE = "\033[36;1;51m"
 
 B = "\033[7;1m"
 U = "\033[m"
-mapped = {
-    "base64": "encode",
-    "bytes": "get_bytes",
-    "hex": "encode2hex",
-    "json": "get_json",
-    "int": "encode2int",
-    "xml": "xml",
-}
 
-
-def xml_out(cue):
-    """
-    xml_out prints cue as xml
-    """
-    print2(cue.xml())
-
-
-def xml_out_binary(cue):
-    """
-    xml_out prints cue as xml
-    """
-    print2(cue.xml(binary=True))
 
 
 class SupaStream(Stream):
@@ -70,37 +49,39 @@ def mk_sidecar(cue):
 
 
 HELP = f"""
-threefive                    {U}
+{B}threefive                    {U}
 
-{U}{B}    decode    {U} {BLUE}Decode SCTE-35 from Base64,Hex,MPEGTS, etc..{NORM}
+The default action is take an input of SCTE-35, and turn it into an output of SCTE-35 
 
-{BLUE}base64:     {NORM}threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+threefive SCTE-35 inputs:{BLUE} mpegts, base64, hex json, xml, xmlbin{NORM}
 
-{BLUE}Hex: {NORM}       threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
+inpute are autodetected and can be read from:{BLUE}files, stdin (piped), http(s), UDP, Multicast
+{NORM}
+threefive SCTE-35 outputs:{BLUE} base64, bytes, hex, json, xml, xmlbin
+{NORM}
+The default output format is json, other outputs need to be specified. 
 
-{BLUE}Files:     {NORM} threefive myvideo.ts
 
-{BLUE}Stdin:     {NORM} cat myvideo.ts | threefive
+{BLUE}input: mpegts output: json{NORM} threefive video.ts
 
-{BLUE}Http(s):   {NORM} threefive https://futzu.com/xaa.ts
+{BLUE}input: mpegts output: hex{NORM} threefive https://example.com/video.ts hex
 
-{BLUE}Multicast: {NORM} threefive udp://@235.35.3.5:3535
+{BLUE}input: base64 output: json{NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
 
-{U}{B}    encode   {U}{BLUE} Encode SCTE-35 to JSON, XML, Base64, Hex, Int etc.. {NORM}
+{BLUE}input: hex output: json{NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
 
-{BLUE}Base64 to Hex:{NORM}\tthreefive  encode hex {U} '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
+{BLUE}input: json output: xml{NORM} threefive xml < json.json
 
-{BLUE}Hex to Xml:{NORM}\tthreefive  encode xml {U} '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
+{BLUE}input: hex output: xmlbin{NORM} threefive xmlbin 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
+ 
+{BLUE}input: xml output:hex{NORM}  threefive hex < xml.xml
 
-{BLUE}JSON to Base64:{NORM} threefive  encode {U} < json.json
+{BLUE}input: json output: hex{NORM} cat json.json | threefive hex{U}
 
-{BLUE}JSON to Xml:{NORM} threefive  encode  xml {U} < json.json
 
-{BLUE}Xml to Hex:{NORM} cat xml.xml | threefive  encode hex {U}
-
-{U}{B}    hls      {U}
-
-{NORM}{BLUE}HLS decode SCTE-35:{NORM} threefive hls help
+{B}    hls      {U}
+{NORM}
+{BLUE}HLS decode SCTE-35:{NORM} threefive hls help
 
 {BLUE}HLS encode SCTE-35:{U} threefive hls encode help{U}
 
@@ -137,6 +118,15 @@ threefive sidecar https://example.com/video.ts
 {U}{B}    help     {U}{NORM} {BLUE}Help:{NORM} threefive help
 """
 
+# print_map functions
+
+def hls():
+    sys.argv.remove("hls")
+    if "encode" in sys.argv:
+        sidecli()
+    else:
+        hlscli()
+
 
 def print_help():
     """
@@ -149,50 +139,9 @@ def print_help():
 
 def print_version():
     """
-    version_chk checks for the version keyword.
-
+    print_version print the threefive version
     """
-    print2(f"{version}")
-    sys.exit()
-
-
-def json_load():
-    """
-    json_load is used by encode
-    """
-    cmdlist = list(mapped.keys()) + ["encode", "binary"]
-    if "help" in sys.argv:
-        encode_help()
-        sys.exit()
-    json = False
-    arglist = [arg for arg in sys.argv[1:] if arg not in cmdlist]
-    if not arglist:
-        with reader(sys.stdin.buffer) as stuff:
-            json = stuff.read().decode()
-            arglist.append(json)
-    for that in arglist:
-        try:
-            cue = Cue()
-            cue.load(that)
-        except:
-            try:
-                cue = Cue(that)
-                cue.decode()
-            except:
-                print2("threefive accepts json, xml, base64, or hex as input")
-                return False
-        cue.encode()
-        for k, v in mapped.items():
-            if k in sys.argv:
-                method = getattr(cue, v)
-                if "binary" in sys.argv and "xml" in sys.argv:
-                    print2(method(binary=True))
-                else:
-                    print2(method())
-                sys.exit()
-
-    print2(cue.encode())
-    sys.exit()
+    print2(version())
 
 
 def superkabuki():
@@ -211,21 +160,25 @@ def superkabuki():
     return False
 
 
-def hls():
-    sys.argv.remove("hls")
-    if "encode" in sys.argv:
-        sidecli()
-    else:
-        hlscli()
+print_map = {
+    "hls": hls,
+    "help": print_help,
+    "version": print_version,
+    "inject": superkabuki,
+}
 
 
-def no_op(cue):
+def chk_print_map():
     """
-    no_op is just a dummy func to pass to Stream.decode()
-    to suppress output.
+    chk_print_map checks for print_map.keys() in sys.argv
     """
-    return cue
+    for k, v in print_map.items():
+        if k in sys.argv:
+            v()
+            sys.exit()
 
+
+# functions for mpegts_map
 
 def packet_chk(this):
     """
@@ -272,94 +225,155 @@ def sidecar_chk(this):
     strm.decode(func=mk_sidecar)
 
 
-def to_xml(this):
-    """
-    to_xml prints cues as xml instead of json.
-    """
-    try:
-        # Mpegts Video
-        strm = Stream(this)
-        if "binary" in sys.argv:
-            strm.decode(func=xml_out_binary)
-        else:
-            strm.decode(func=xml_out)
-        return True
-
-    except:
-        binary = False
-        try:
-            cue = Cue(this)
-            cue.decode()
-            if "binary" in sys.argv:
-                binary = True
-            print2(cue.xml(binary=binary))
-            return True
-        except:
-            return False
-
-
-func_map = {
-    "xml": to_xml,
-}
-
-
-print_map = {
-    "hls": hls,
-    "encode": json_load,
-    # "mpegts": mpegts,
-    "help": print_help,
-    "version": print_version,
-    "inject": superkabuki,
-}
-
 mpegts_map = {
-    "pts": pts_chk,
-    "show": show_chk,
-    "sixfix": sixfix,
     "packets": packet_chk,
     "proxy": proxy_chk,
+    "pts": pts_chk,
+    "show": show_chk,
     "sidecar": sidecar_chk,
-    # "xml": to_xml,
+    "sixfix": sixfix,
 }
-
-
-def chk_print_map():
-    """
-    chk_print_map checks for print_map.keys() in sys.argv
-    """
-    for k, v in print_map.items():
-        if k in sys.argv:
-            v()
-            sys.exit()
 
 
 def chk_mpegts_map():
-    for k, v in mpegts_map.items():
-        if k in sys.argv:
-            args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
-            for mo in args:
-                v(mo)
+    """
+    chk_mpegts_map check sys.argv for mpegts_map keys
+    """
+    m_keys= list(mpegts_map.keys())
+    args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
+    for key in m_keys:
+        if key in sys.argv:
+            for arg in args:
+                mpegts_map[key](arg)
             sys.exit()
 
+# functions for funk_map
 
-def chk_func_map():
+def base64_out(cue):
+    """
+    print SCTE-35 from mpegts as base64 
+    """
+    print2(cue.encode())
+
+
+def bytes_out(cue):
+    """
+    print SCTE-35 from mpegts as base64 
+    """
+    print2(cue.bites)
+
+
+def hex_out(cue):
+    """
+    print SCTE-35 from mpegts as hex 
+    """
+    print2(cue.encode2hex())
+
+
+def int_out(cue):
+    """
+    print SCTE-35 from mpegts as int
+    """
+    print2(cue.encode2int())
+
+
+def json_out(cue):
+    """
+    print SCTE-35 from mpegts as json
+    """    
+    cue.show()
+
+
+def xml_out(cue):
+    """
+    xml_out prints cue as xml
+    """
+    print(cue.xml())
+
+
+def xmlbin_out(cue):
+    """
+    xml_out prints cue as xml
+    """
+    print2(cue.xml(binary=True))
+
+
+funk_map={
+        'base64': base64_out,
+        'bytes': bytes_out,
+        'hex':hex_out,
+        'int': int_out,
+        'json':json_out,
+        'xml':xml_out,
+        'xmlbin':xmlbin_out,
+ }            
+
+
+def funk():
+    """
+    return a func
+    if a key in out_map
+    is also in sys.argv
+    """
+    for k,v in funk_map.items():
+        if k in sys.argv:
+            return v
+    return False
+
+
+def to_funk(this):
+    """
+    to_funk prints a cue in a variety of formats.
+    """
+    try:
+        strm = Stream(this)
+        func=funk()
+        strm.decode(func=func)
+    except:
+        cue=False
+        try:
+            cue = Cue()
+            cue.load(this)
+        except:
+            try:
+                cue = Cue(this)
+                cue.decode()
+            except:
+                pass
+        if cue:
+            cue.encode()
+            func= funk()
+            func(cue)
+      
+
+def read_buff():
+    with reader(sys.stdin.buffer) as stuff:
+        inbuff= stuff.read().decode()
+        return inbuff
+
+def chk_funk_map():
     """
     chk_func_map checks for func_map.keys() in sys.argv
     """
-    for k, v in func_map.items():
-        if k in sys.argv:
-            args = [arg for arg in sys.argv[1:] if arg not in func_map]
-            for mo in args:
-                v(mo)
-            sys.exit()
+    funk_keys= list(funk_map.keys())
+    args = [arg for arg in sys.argv[1:] if arg not in funk_keys ]
+    if not args:
+        args.append(read_buff())
+    superfunk=decode
+    for fkey in funk_keys:
+        if fkey in sys.argv:
+            superfunk=to_funk
+    for mo in args:
+        superfunk(mo)
+    sys.exit()
+
+ 
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         chk_print_map()
         chk_mpegts_map()
-        chk_func_map()
-        for arg in sys.argv[1:]:
-            decode(arg)
-    else:
-        decode(sys.stdin.buffer)
+        chk_funk_map()
+   # else:
+    #    decode(sys.stdin.buffer)
