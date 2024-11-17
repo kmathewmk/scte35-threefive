@@ -37,12 +37,12 @@ def xml_out(cue):
     """
     print2(cue.xml())
 
+
 def xml_out_binary(cue):
     """
     xml_out prints cue as xml
     """
     print2(cue.xml(binary=True))
-
 
 
 class SupaStream(Stream):
@@ -90,7 +90,7 @@ threefive                    {U}
 
 {BLUE}Base64 to Hex:{NORM}\tthreefive  encode hex {U} '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
 
-{BLUE}Hex to Xml:{NORM}\tthreefive  encode xml {U} '0xfc301600000000000000fff00506fe00a98ac700000b3baed9' 
+{BLUE}Hex to Xml:{NORM}\tthreefive  encode xml {U} '0xfc301600000000000000fff00506fe00a98ac700000b3baed9'
 
 {BLUE}JSON to Base64:{NORM} threefive  encode {U} < json.json
 
@@ -133,7 +133,7 @@ threefive sidecar https://example.com/video.ts
 {U}{B}    show     {U}{NORM}{BLUE} Probe mpegts video:{NORM} threefive show video.ts
 
 {U}{B}    version  {U}{NORM}{BLUE} Show version:{NORM} threefive version
-                    
+
 {U}{B}    help     {U}{NORM} {BLUE}Help:{NORM} threefive help
 """
 
@@ -160,7 +160,7 @@ def json_load():
     """
     json_load is used by encode
     """
-    cmdlist = list(mapped.keys()) + ["encode","binary"]
+    cmdlist = list(mapped.keys()) + ["encode", "binary"]
     if "help" in sys.argv:
         encode_help()
         sys.exit()
@@ -185,7 +185,7 @@ def json_load():
         for k, v in mapped.items():
             if k in sys.argv:
                 method = getattr(cue, v)
-                if 'binary' in sys.argv and 'xml' in sys.argv:
+                if "binary" in sys.argv and "xml" in sys.argv:
                     print2(method(binary=True))
                 else:
                     print2(method())
@@ -212,7 +212,7 @@ def superkabuki():
 
 
 def hls():
-    sys.argv.remove('hls')
+    sys.argv.remove("hls")
     if "encode" in sys.argv:
         sidecli()
     else:
@@ -279,19 +279,19 @@ def to_xml(this):
     try:
         # Mpegts Video
         strm = Stream(this)
-        if 'binary' in  sys.argv:
+        if "binary" in sys.argv:
             strm.decode(func=xml_out_binary)
         else:
             strm.decode(func=xml_out)
         return True
 
     except:
-        binary=False
+        binary = False
         try:
             cue = Cue(this)
             cue.decode()
-            if 'binary' in sys.argv:
-                binary=True
+            if "binary" in sys.argv:
+                binary = True
             print2(cue.xml(binary=binary))
             return True
         except:
@@ -306,22 +306,23 @@ func_map = {
 print_map = {
     "hls": hls,
     "encode": json_load,
-   # "mpegts": mpegts,
+    # "mpegts": mpegts,
     "help": print_help,
     "version": print_version,
     "inject": superkabuki,
 }
 
 mpegts_map = {
-        "pts": pts_chk,
-        "show": show_chk,
-        "sixfix": sixfix,
-        "packets": packet_chk,
-        "proxy": proxy_chk,
-        "sidecar": sidecar_chk,
-       # "xml": to_xml,
+    "pts": pts_chk,
+    "show": show_chk,
+    "sixfix": sixfix,
+    "packets": packet_chk,
+    "proxy": proxy_chk,
+    "sidecar": sidecar_chk,
+    # "xml": to_xml,
 }
-    
+
+
 def chk_print_map():
     """
     chk_print_map checks for print_map.keys() in sys.argv
@@ -333,7 +334,6 @@ def chk_print_map():
 
 
 def chk_mpegts_map():
-  #  sys.argv.remove("mpegts")
     for k, v in mpegts_map.items():
         if k in sys.argv:
             args = [arg for arg in sys.argv[1:] if arg not in mpegts_map]
