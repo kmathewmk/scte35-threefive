@@ -76,7 +76,7 @@ class Scte35Profile:
         self.starts = [0x22, 0x30, 0x32, 0x34, 0x36, 0x44, 0x46]
         self.seg_type = 0x23
 
-    def _mk_line(self,k,v):
+    def _mk_line(self, k, v):
         line = f"{k} = "
         if isinstance(v, list):
             for item in v:
@@ -96,10 +96,9 @@ class Scte35Profile:
         """
         with open(pro_file, "w") as pro_f:
             for que, vee in vars(self).items():
-                line=self._mk_line(que,vee)
+                line = self._mk_line(que, vee)
                 pro_f.write(line + "\n")
             print2("\ncreated .35rc\n")
-
 
     def show_profile(self, headline):
         """
@@ -206,29 +205,29 @@ class Scte35Profile:
             return line
         return line
 
-    def _dscptr_duration(self,dscptr,line):
+    def _dscptr_duration(self, dscptr, line):
         if "segmentation_duration" in vars(dscptr):
             duration = dscptr.segmentation_duration
             line = f"#EXT-X-CUE-OUT:{duration}\n"
-        return line        
-
-    def _dscptr_is_start(self,dscptr,line):
-        if dscptr.segmentation_type_id in self.starts:
-            self.seg_type = dscptr.segmentation_type_id + 1
-            line = self._dscptr_duration(dscptr,line)
         return line
 
-    def _dscptr_is_stop(self,dscptr,line):
+    def _dscptr_is_start(self, dscptr, line):
+        if dscptr.segmentation_type_id in self.starts:
+            self.seg_type = dscptr.segmentation_type_id + 1
+            line = self._dscptr_duration(dscptr, line)
+        return line
+
+    def _dscptr_is_stop(self, dscptr, line):
         if dscptr.segmentation_type_id == self.seg_type:
             line = "#EXT-X-CUE-IN\n"
             self.seg_type = None
         return line
-    
-    def _line_from_dscptr(self,dscptr):
+
+    def _line_from_dscptr(self, dscptr):
         line = None
         if dscptr.tag in self.descriptor_tags:
-            line = self._dscptr_is_start(dscptr,line)
-            line = self._dscptr_is_stop(dscptr,line)
+            line = self._dscptr_is_start(dscptr, line)
+            line = self._dscptr_is_stop(dscptr, line)
         return line
 
     def validate_time_signal(self, cue):
@@ -614,14 +613,13 @@ class CuePuller:
                 )
         return False
 
-
     def chk_x_daterange(self, tags, line):
         """
         chk_x_daterange handles #EXT-X-DATERANGE tags.
         """
         self.show_tags(tags["#EXT-X-DATERANGE"])
         for scte35_tag in ["SCTE35-OUT", "SCTE35-IN"]:
-            cue_state=self._x_daterange_in_out(scte35tag,tags["#EXT-X-DATERANGE"])
+            cue_state = self._x_daterange_in_out(scte35tag, tags["#EXT-X-DATERANGE"])
             if cue_state:
                 return cue_state
         return self.invalid(line)
@@ -986,8 +984,8 @@ def cli():
     playlists = None
     m3u8 = None
     args = sys.argv
-    if 'hls' in args:
-        args.remove('hls')
+    if "hls" in args:
+        args.remove("hls")
     if "help" in args:
         print(helpme)
         sys.exit()
