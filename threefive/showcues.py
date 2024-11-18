@@ -98,7 +98,7 @@ class Scte35Profile:
             for que, vee in vars(self).items():
                 line = self._mk_line(que, vee)
                 pro_f.write(line + "\n")
-            print2("\ncreated .35rc\n")
+            print("\ncreated .35rc\n")
 
     def show_profile(self, headline):
         """
@@ -127,18 +127,16 @@ class Scte35Profile:
             this = None
         return this, that
 
-    def format4profile(self, this, that):
-        """
-        format4profile formats data read from .35rc for internal use.
-        """
-        if this is None or that is None:
-            return
-        this = this.lower()
-        if this.startswith("parse") or this.startswith("expand"):
-            if that[0].lower().startswith("f"):
-                that = False
-            else:
-                that = True
+    def _chk_booleans(self,this, that):
+        booleans=["expand_cues","parse_segments","parse_manifests"]
+        if this in booleans:
+            pre_that =True
+            if that.lower=='false':
+                pre_that=False
+            that =pre_that
+        return this,that
+
+    def _chk_lists(self,this,that):
         if this in ["command_types", "descriptor_tags", "starts"]:
             new_that = []
             for s in that:
@@ -147,6 +145,16 @@ class Scte35Profile:
                 else:
                     new_that.append(int(s))
             that = new_that
+            return this,that
+
+    def format4profile(self, this, that):
+        """
+        format4profile formats data read from .35rc for internal use.
+        """
+        if this is None or that is None:
+            return
+        this,that= self._chk_booleans(this,that)
+        this,that = self.chk_lists(this,that)
         self.__dict__.update({this: that})
 
     def read_profile(self, pro_file):
@@ -938,6 +946,9 @@ class CuePuller:
         """
         _parse_manifest, parses m3u8 files.
         """
+        if manifest in ['hls']:
+            sys.argv.remove('hls')
+            return False
         with reader(manifest) as m3u8:
             lines = []
             m3u8_lines = self.decode_lines(m3u8.readlines())
@@ -967,6 +978,19 @@ class CuePuller:
             flat.write("#EXT-X-ENDLIST\n")
 
 
+def _clean_args():
+    args = sys.argv
+    if "hls" in args:
+        args.remove("hls")
+    if "help" in args:
+        print(helpme)
+        sys.exit()
+    if "profile" in args:
+        scp = Scte35Profile()
+        scp.write_profile(".35rc")
+        sys.exit()
+    return args
+
 def cli():
     """
     cli is a function to use in a command line tool
@@ -983,21 +1007,12 @@ def cli():
     """
     playlists = None
     m3u8 = None
-    args = sys.argv
-    if "hls" in args:
-        args.remove("hls")
-    if "help" in args:
-        print(helpme)
-        sys.exit()
-    if "profile" in args:
-        scp = Scte35Profile()
-        scp.write_profile(".35rc")
-        sys.exit()
+    args=_clean_args()
     with reader(args[-1]) as arg:
         variants = [line for line in arg if b"#EXT-X-STREAM-INF" in line]
         if variants:
             fumo = M3uFu()
-            fumo.m3u8 = args[-1]
+            fumo.m3u8 = args[1]
             fumo.decode()
             playlists = [
                 segment
