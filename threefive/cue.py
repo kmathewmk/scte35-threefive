@@ -93,7 +93,7 @@ class Cue(SCTE35Base):
             loop_bites = loop_bites[sd_size:]
             del spliced.bites
             self.descriptors.append(spliced)
-            
+
     def _get_dash_data(self, scte35_dict):
         if self.dash_data:
             scte35_dict["dash_data"] = self.dash_data
@@ -466,7 +466,7 @@ class Cue(SCTE35Base):
 
     def _xml_binary(self, ns):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
-        sig_node = Node("Signal", attrs=sig_attrs)
+        sig_node = Node("Signal", attrs=sig_attrs,ns=ns)
         bin_node = Node("Binary", value=self.encode(), ns=ns)
         sig_node.add_child(bin_node)
         return sig_node
