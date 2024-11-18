@@ -55,23 +55,23 @@ HELP = f"""
 
 \tSCTE-35 inputs:{BLUE} mpegts, base64, hex json, xml, xmlbin{NORM}
 \tInput sources: {BLUE}files, stdin (piped), http(s), UDP, or Multicast.{NORM}
-\tSCTE-35 outputs:{BLUE} base64, bytes, hex, json, xml, xmlbin{NORM}
+\tSCTE-35 outputs: {B} base64 {U}, {B} bytes {U}, {B} hex {U}, {B} json {U}, {B} xml {U}, {B} xmlbin {U}{NORM}
 
 \tInput formats are autodetected
 \tThe default output format is json, other outputs can be specified.
 
-\tinput:{U}{BLUE} mpegts {U} output: {U}{BLUE} base64 {NORM} threefive https://example.com/video.ts base64
+\tinput:{U}{BLUE} mpegts {U} output: {U}{BLUE} base64 {NORM} threefive https://example.com/video.ts {B} base64 {U}
 \tinput:{U}{BLUE} mpegts {U} output: {U}{BLUE} json   {NORM} threefive video.ts
-\tinput:{U}{BLUE} base64 {U} output: {U}{BLUE} hex    {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
+\tinput:{U}{BLUE} base64 {U} output: {U}{BLUE} hex    {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q==' {B} hex {U}
 \tinput:{U}{BLUE} base64 {U} output: {U}{BLUE} json   {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
 \tinput:{U}{BLUE} hex    {U} output: {U}{BLUE} json   {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
-\tinput:{U}{BLUE} hex    {U} output: {U}{BLUE} xmlbin {NORM} threefive xmlbin 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
-\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} hex    {NORM} cat json.json | threefive hex{U}
-\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} xml    {NORM} threefive xml < json.json
-\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} bytes  {NORM} threefive bytes < xml.xml
-\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} json   {NORM} cat xml.xml | threefive json
-\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} base64 {NORM} threefive base64 < xml.xml
-\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} hex    {NORM} cat xml.xml | threefive hex
+\tinput:{U}{BLUE} hex    {U} output: {U}{BLUE} xmlbin {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9 {B} xmlbin {U}
+\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} hex    {NORM} cat json.json | threefive {B} hex {U}
+\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} xml    {NORM} threefive  < json.json {B} xml {U}
+\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} bytes  {NORM} threefive {B} bytes {U} < xml.xml
+\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} json   {NORM} cat xml.xml | threefive {B} json {U}
+\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} base64 {NORM} threefive {B} base64 {U} < xml.xml
+\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} hex    {NORM} cat xml.xml | threefive {B} hex {U}
 
 {B}    hls      {U}{NORM}
 
