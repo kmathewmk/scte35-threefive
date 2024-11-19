@@ -55,7 +55,12 @@ def un_xml(v):
         return True
     return v
 
-
+def strip_ns(attr):
+    """
+    strip_ns strip namespace off attributes.
+    """
+    return attr.split(':')[-1]
+                      
 def iter_attrs(attrs):
     """
     iter_attrs normalizes xml attributes
@@ -64,7 +69,8 @@ def iter_attrs(attrs):
     conv = {un_camel(k): un_xml(v) for k, v in attrs.items()}
     pts_vars = ["pts_time", "pts_adjustment", "duration", "segmentation_duration"]
     conv = {k: (t2s(v) if k in pts_vars else v) for k, v in conv.items()}
-    return conv
+    stripped= {strip_ns(k):v for k,v in conv.items()}
+    return stripped
 
 
 def val2xml(val):
@@ -136,6 +142,32 @@ class Node:
     def __repr__(self):
         return self.mk()
 
+    def set_attr_ns(self,attr_ns):
+        """
+        set_attr_ns set namespace on attributes
+        """
+        new_attrs = {f'{attr_ns}:{k}':v for k,v in self.attrs.items()}
+        self.attrs=new_attrs
+
+    def set_ns(self,obj=None,ns=None,attr_ns=None,ns_uri=None,):
+        """
+        set_ns set namespace on the Node and/or
+        the attributes, set the xmlns too if you want
+        """
+        if obj is None:
+            obj = self
+        if ns_uri:
+            if obj.depth==0:
+                obj.attrs['xmlns']= ns_uri
+        if ns:
+            name = obj.name.split(":")[-1]
+            obj.name =f'{ns}:{name}'
+        if attr_ns:
+            obj.set_attr_ns(attr_ns)
+
+        for child in obj.children:
+            child.set_ns(ns=ns,attr_ns=attr_ns,ns_uri=ns_uri)
+        
     def rm_attr(self, attr):
         """
         rm_attr remove an attribute
