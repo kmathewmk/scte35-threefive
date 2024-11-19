@@ -23,7 +23,6 @@ B = "\033[7;1m"
 U = "\033[m"
 
 
-
 class SupaStream(Stream):
     """
     SupaStream is subclass of Stream used
@@ -51,62 +50,32 @@ def mk_sidecar(cue):
 HELP = f"""
 {B}threefive                    {U}
 
-\tThe default action is take an input of SCTE-35, and turn it into an output of SCTE-35
+\tSCTE-35 inputs:{BLUE}mpegts, base64, hex, json, xml, and xmlbin{U} are auto-detected.
+\tSCTE-35 outputs are {BLUE}base64, bytes, hex, int, json, xml, and xmlbin.{U}
 
-\tSCTE-35 inputs:{BLUE} mpegts, base64, hex json, xml, xmlbin{NORM}
-\tInput sources: {BLUE}files, stdin (piped), http(s), UDP, or Multicast.{NORM}
-\tSCTE-35 outputs: {B} base64 {U}, {B} bytes {U}, {B} hex {U}, {B} json {U}, {B} xml {U}, {B} xmlbin {U}{NORM}
+         Input:{U}    Output:{U}
+\t{U}{BLUE} mpegts {U}  {U}{BLUE} base64 {NORM} threefive https://example.com/video.ts {BLUE} base64 {U}
+\t{U}{BLUE} xml    {U}  {U}{BLUE} bytes  {NORM} threefive {BLUE} bytes {U} < xml.xml
+\t{U}{BLUE} base64 {U}  {U}{BLUE} hex    {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q==' {BLUE} hex {U}
+\t{U}{BLUE} xmlbin {U}  {U}{BLUE} int    {NORM} threefive {BLUE} int {U} < xml.xml
+\t{U}{BLUE} mpegts {U}  {U}{BLUE} json   {NORM} threefive video.ts
+\t{U}{BLUE} json   {U}  {U}{BLUE} xml    {NORM} threefive  < json.json {BLUE} xml {U}
+\t{U}{BLUE} hex    {U}  {U}{BLUE} xmlbin {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9 {BLUE} xmlbin {U}
 
-\tInput formats are autodetected
-\tThe default output format is json, other outputs can be specified.
+{B}    hls      {U}{NORM} {BLUE}HLS decode SCTE-35:{NORM} threefive hls https://example.com/master.m3u8
+\t\t\t\t  threefive hls help
+              {BLUE}HLS encode SCTE-35:{U} threefive hls encode  -i https://example.com/master.m3u8 -s sidecar.txt -o output_dir
+\t\t\t\t  threefive hls encode help
 
-\tinput:{U}{BLUE} mpegts {U} output: {U}{BLUE} base64 {NORM} threefive https://example.com/video.ts {B} base64 {U}
-\tinput:{U}{BLUE} mpegts {U} output: {U}{BLUE} json   {NORM} threefive video.ts
-\tinput:{U}{BLUE} base64 {U} output: {U}{BLUE} hex    {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q==' {B} hex {U}
-\tinput:{U}{BLUE} base64 {U} output: {U}{BLUE} json   {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-\tinput:{U}{BLUE} hex    {U} output: {U}{BLUE} json   {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
-\tinput:{U}{BLUE} hex    {U} output: {U}{BLUE} xmlbin {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9 {B} xmlbin {U}
-\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} hex    {NORM} cat json.json | threefive {B} hex {U}
-\tinput:{U}{BLUE} json   {U} output: {U}{BLUE} xml    {NORM} threefive  < json.json {B} xml {U}
-\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} bytes  {NORM} threefive {B} bytes {U} < xml.xml
-\tinput:{U}{BLUE} xml    {U} output: {U}{BLUE} json   {NORM} cat xml.xml | threefive {B} json {U}
-\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} base64 {NORM} threefive {B} base64 {U} < xml.xml
-\tinput:{U}{BLUE} xmlbin {U} output: {U}{BLUE} hex    {NORM} cat xml.xml | threefive {B} hex {U}
+{U}{B}    inject   {U}{NORM}{BLUE} Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM} threefive inject video.ts with sidecar.txt at 333
 
-{B}    hls      {U}{NORM}
+{U}{B}    packets  {U}{NORM}{BLUE} Print raw SCTE-35 packets from multicast mpegts video:{NORM} threefive packets udp://@235.35.3.5:3535
 
-\t{BLUE}HLS decode SCTE-35:{NORM}
-
-\tthreefive hls https://example.com/master.m3u8
-\tthreefive hls help
-
-\t{BLUE}HLS encode SCTE-35:{U}
-
-\tthreefive hls encode  -i https://example.com/master.m3u8 -s sidecar.txt -o output_dir
-\tthreefive hls encode help{U}
-
-{U}{B}    xml      {U}{NORM}{BLUE} Xml output:{NORM}
-
-\tthreefive xml '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
-\tthreefive xml https://your-momma.com/video.ts
-
-{U}{B}    inject   {U}{NORM}{BLUE} Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}
-
-\tthreefive inject video.ts with sidecar.txt at 333
-
-{U}{B}    packets  {U}{NORM}{BLUE} Print raw SCTE-35 packets from multicast mpegts video:{NORM}
-
-\tthreefive packets udp://@235.35.3.5:3535
-
-{U}{B}    proxy    {U}{NORM}{BLUE} Parse a https stream and write raw video to stdout:{NORM}
-
-\tthreefive proxy https://example.com/video.ts
+{U}{B}    proxy    {U}{NORM}{BLUE} Parse a https stream and write raw video to stdout:{NORM} threefive proxy video.ts
 
 {U}{B}    pts      {U}{NORM}{BLUE} Print PTS from mpegts video:{NORM} threefive pts video.ts
 
-{U}{B}    sidecar  {U}{NORM}{BLUE} Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}
-
-\tthreefive sidecar https://example.com/video.ts
+{U}{B}    sidecar  {U}{NORM}{BLUE} Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM} threefive sidecar video.ts
 
 {U}{B}    sixfix   {U}{NORM}{BLUE} Fix SCTE-35 data mangled by ffmpeg:{NORM} threefive sixfix video.ts
 
@@ -115,27 +84,29 @@ HELP = f"""
 {U}{B}    version  {U}{NORM}{BLUE} Show version:{NORM} threefive version
 
 {U}{B}    help     {U}{NORM} {BLUE}Help:{NORM} threefive help
+
 """
 
 
 def read_buff():
     with reader(sys.stdin.buffer) as stuff:
-        inbuff= stuff.read().decode()
+        inbuff = stuff.read().decode()
         return inbuff
+
 
 def mk_args(keys):
     """
     mk_args generates a list of args for inputs
     if no args are present,read from sys.stdin.buffer
     """
-    args = [arg for arg in sys.argv[1:] if arg not in keys ]
+    args = [arg for arg in sys.argv[1:] if arg not in keys]
     if not args:
         args.append(read_buff())
     return args
 
 
-
 # print_map functions
+
 
 def hls():
     sys.argv.remove("hls")
@@ -197,6 +168,7 @@ def chk_print_map():
 
 # functions for mpegts_map
 
+
 def packet_chk(this):
     """
     packet_chk checks for the packet keyword
@@ -256,7 +228,7 @@ def chk_mpegts_map():
     """
     chk_mpegts_map check sys.argv for mpegts_map keys
     """
-    m_keys= list(mpegts_map.keys())
+    m_keys = list(mpegts_map.keys())
     args = mk_args(m_keys)
     for key in m_keys:
         if key in sys.argv:
@@ -264,7 +236,9 @@ def chk_mpegts_map():
                 mpegts_map[key](arg)
             sys.exit()
 
+
 # functions for funk_map
+
 
 def base64_out(cue):
     """
@@ -315,15 +289,15 @@ def xmlbin_out(cue):
     print2(cue.xml(binary=True))
 
 
-funk_map={
-        'base64': base64_out,
-        'bytes': bytes_out,
-        'hex':hex_out,
-        'int': int_out,
-        'json':json_out,
-        'xml':xml_out,
-        'xmlbin':xmlbin_out,
- }
+funk_map = {
+    "base64": base64_out,
+    "bytes": bytes_out,
+    "hex": hex_out,
+    "int": int_out,
+    "json": json_out,
+    "xml": xml_out,
+    "xmlbin": xmlbin_out,
+}
 
 
 def funk():
@@ -332,7 +306,7 @@ def funk():
     if a key in out_map
     is also in sys.argv
     """
-    for k,v in funk_map.items():
+    for k, v in funk_map.items():
         if k in sys.argv:
             return v
     return False
@@ -345,22 +319,22 @@ def to_funk(this):
     try:
         # mpegts streams handled here.
         strm = Stream(this)
-        func=funk()
+        func = funk()
         strm.decode(func=func)
-    except: # try to load json or xml
-        cue=False #
+    except:  # try to load json or xml
+        cue = False  #
         try:
-            cue = Cue()# Call load first, or everybody will die.
+            cue = Cue()  # Call load first, or everybody will die.
             cue.load(this)
         except:
-            try:# handle base64, bytes, and hex.
+            try:  # handle base64, bytes, and hex.
                 cue = Cue(this)
                 cue.decode()
             except:
                 pass
         if cue:
             cue.encode()
-            func= funk()
+            func = funk()
             func(cue)
 
 
@@ -368,15 +342,13 @@ def chk_funk_map():
     """
     chk_func_map checks for func_map.keys() in sys.argv
     """
-    funk_keys= list(funk_map.keys())
+    funk_keys = list(funk_map.keys())
     args = mk_args(funk_keys)
-    superfunk=decode
+    superfunk = decode
     if [fkey for fkey in funk_keys if fkey in sys.argv]:
-        superfunk=to_funk
+        superfunk = to_funk
     [superfunk(arg) for arg in args]
     sys.exit()
-
-
 
 
 if __name__ == "__main__":
@@ -384,5 +356,5 @@ if __name__ == "__main__":
         chk_print_map()
         chk_mpegts_map()
         chk_funk_map()
-   # else:
-    #    decode(sys.stdin.buffer)
+# else:
+#    decode(sys.stdin.buffer)
