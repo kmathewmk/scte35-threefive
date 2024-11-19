@@ -55,11 +55,11 @@ def un_xml(v):
         return True
     return v
 
-def strip_ns(attr):
+def strip_ns(this):
     """
-    strip_ns strip namespace off attributes.
+    strip_ns strip namespace off this.
     """
-    return attr.split(':')[-1]
+    return this.split(':')[-1]
                       
 def iter_attrs(attrs):
     """
@@ -142,31 +142,30 @@ class Node:
     def __repr__(self):
         return self.mk()
 
-    def set_attr_ns(self,attr_ns):
+    def set_attrns(self,ns):
         """
-        set_attr_ns set namespace on attributes
+        set_attrns set namespace on attributes
         """
-        new_attrs = {f'{attr_ns}:{k}':v for k,v in self.attrs.items()}
+        new_attrs = {strip_ns(k):v for k,v in self.attrs.items()}
+        if ns !='':
+            new_attrs = {f'{ns}:{k}':v for k,v in new_attrs.items()}
         self.attrs=new_attrs
 
-    def set_ns(self,obj=None,ns=None,attr_ns=None,ns_uri=None,):
+    def set_ns(self,obj=None,ns=None,attrns=False):
         """
         set_ns set namespace on the Node and/or
         the attributes, set the xmlns too if you want
         """
         if obj is None:
             obj = self
-        if ns_uri:
-            if obj.depth==0:
-                obj.attrs['xmlns']= ns_uri
-        if ns:
-            name = obj.name.split(":")[-1]
-            obj.name =f'{ns}:{name}'
-        if attr_ns:
-            obj.set_attr_ns(attr_ns)
-
+        if ns is not None:
+            obj.name = strip_ns(obj.name)
+            if ns !='':
+                obj.name =f'{ns}:{obj.name}'
+        if attrns :
+            obj.set_attrns(ns)
         for child in obj.children:
-            child.set_ns(ns=ns,attr_ns=attr_ns,ns_uri=ns_uri)
+            child.set_ns(ns=ns,attrns=attrns)
         
     def rm_attr(self, attr):
         """
