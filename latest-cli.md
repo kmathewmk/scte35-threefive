@@ -18,7 +18,7 @@
 
 
  ### threefive SCTE-35 inputs are auto-detected. 
- *These inputs are supported.
+ * These inputs are supported.
    * mpegts
    * base64
    *  hex
