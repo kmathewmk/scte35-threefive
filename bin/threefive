@@ -309,7 +309,7 @@ def funk():
     for k, v in funk_map.items():
         if k in sys.argv:
             return v
-    return False
+    return json_out
 
 
 def to_funk(this):
