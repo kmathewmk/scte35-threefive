@@ -60,7 +60,7 @@ def strip_ns(this):
     strip_ns strip namespace off this.
     """
     return this.split(':')[-1]
-                      
+
 def iter_attrs(attrs):
     """
     iter_attrs normalizes xml attributes
@@ -127,14 +127,13 @@ class Node:
         print(ts)
     """
 
-    def __init__(self, name, value=None, attrs={}, ns=None):
+    def __init__(self, name, value=None, attrs={}):
         self.name = name
-        if ns:
-            self.name = ":".join((ns, name))
-        self.value = value
-        if self.value:
-            if isinstance(self.value, str):
-                self.value = escape(self.value)
+        self.name=name
+        self.value = escape(value)
+##        if self.value:
+##            if isinstance(self.value, str):
+##                self.value = escape(self.value)
         self.attrs = attrs
         self.children = []
         self.depth = 0
@@ -151,22 +150,29 @@ class Node:
             new_attrs = {f'{ns}:{k}':v for k,v in new_attrs.items()}
         self.attrs=new_attrs
 
+    def chk_obj(self, obj):
+        if obj is None:
+            obj = self
+        return obj
+
+    def _strip_set_ns(self,ns):
+        if ns is not None:
+            self.name = strip_ns(obj.name)
+            if ns !='':
+                self.name =f'{ns}:{self.name}'
+
     def set_ns(self,obj=None,ns=None,attrns=False):
         """
         set_ns set namespace on the Node and/or
-        the attributes, set the xmlns too if you want
+        the attributes
         """
-        if obj is None:
-            obj = self
-        if ns is not None:
-            obj.name = strip_ns(obj.name)
-            if ns !='':
-                obj.name =f'{ns}:{obj.name}'
-        if attrns :
+        obj = obj.chk_obj(obj)
+        obj._strip_set_ns(ns)
+        if attrns:
             obj.set_attrns(ns)
         for child in obj.children:
             child.set_ns(ns=ns,attrns=attrns)
-        
+
     def rm_attr(self, attr):
         """
         rm_attr remove an attribute
@@ -205,8 +211,7 @@ class Node:
         and it's children into
         an xml representation.
         """
-        if obj is None:
-            obj = self
+        obj = self.chk_obj(obj)
         obj.set_depth()
         ndent = obj.get_indent()
         if isinstance(obj, Comment):
