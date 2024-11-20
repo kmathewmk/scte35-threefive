@@ -6,9 +6,12 @@
 
 SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
-## Latest version is v2.4.93
+## Latest version is v2.4.95
     
-* [New cli format](https://github.com/futzu/threefive/blob/master/newcli.md)
+* [cli format has been updated, and suoper tuned. You're going dig this ]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
+* Xml Node Namespaces and attribute namespaces are now configurable.
+* Turned SegmentationDescriptor.segmentation_message back on.
+* Fix UMID upid encoding 
 * Added a  [__Super Amazing__ HLS SCTE-35 Parser](https://github.com/futzu/threefive/blob/master/hlsparse.md)  to the __threefive cli.__. 
 * Added a HLS SCTE-35 Encoder to the __threefive cli.__.
 * MPEGTS Packet Injection added to the __threefive cli.__.
@@ -69,12 +72,8 @@ a@slow:~/threefive$
 
 ## cli
 
-* [The New Cli](https://github.com/futzu/threefive/blob/master/newcli.md)
-* [Decode SCTE-35](https://github.com/futzu/threefive/blob/master/newcli.md#decode-scte-35) 
-  * Decode Base64,hex,files, json ,stdin, mpegts,hls, xml
-* [Encode SCTE-35](https://github.com/futzu/threefive/blob/master/newcli.md#encode-scte-35)  
-  * Load JSON, XML, Base64 or Hex and encode to JSON, XML,Base64, Hex, Int or Bytes
-  * Encode can be used to convert from one SCTE-35 format to another
+* [The New Cli](https://github.com/futzu/threefive/blob/master/latest-cli.md)
+
 *  [Decode SCTE-35 HLS](https://github.com/futzu/threefive/blob/master/newcli.md#hls-decode-scte-35)
 *  [Encode SCTE-35 HLS](https://github.com/futzu/threefive/blob/master/newcli.md#hls-encode-scte-35)
 *  [MPEGTS](https://github.com/futzu/threefive/blob/master/newcli.md#mpegts) (proy,pts,sidecar,sixfix,show,xml)
