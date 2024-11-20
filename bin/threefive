@@ -129,7 +129,7 @@ def print_version():
     """
     print_version print the threefive version
     """
-    print2(version())
+    print2(version)
 
 
 def superkabuki():
@@ -306,11 +306,11 @@ def funk():
     if a key in out_map
     is also in sys.argv
     """
+    func =json_out
     for k, v in funk_map.items():
         if k in sys.argv:
-            return v
-    return json_out
-
+            func=v
+    return func
 
 def to_funk(this):
     """
@@ -322,9 +322,8 @@ def to_funk(this):
         func = funk()
         strm.decode(func=func)
     except:  # try to load json or xml
-        cue = False  #
         try:
-            cue = Cue()  # Call load first, or everybody will die.
+            cue=Cue()
             cue.load(this)
         except:
             try:  # handle base64, bytes, and hex.
@@ -332,11 +331,11 @@ def to_funk(this):
                 cue.decode()
             except:
                 pass
-        if cue:
+        if cue:     
             cue.encode()
             func = funk()
             func(cue)
-
+ 
 
 def chk_funk_map():
     """
@@ -347,14 +346,17 @@ def chk_funk_map():
     superfunk = decode
     if [fkey for fkey in funk_keys if fkey in sys.argv]:
         superfunk = to_funk
+    else:
+        superfunk = to_funk 
     [superfunk(arg) for arg in args]
     sys.exit()
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        chk_print_map()
-        chk_mpegts_map()
-        chk_funk_map()
+    if len(sys.argv) < 2:
+        sys.argv.append('json')
+    chk_print_map()
+    chk_mpegts_map()
+    chk_funk_map()
 # else:
 #    decode(sys.stdin.buffer)
