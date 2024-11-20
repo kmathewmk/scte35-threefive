@@ -1,7 +1,6 @@
 # threefive
 ###  the  cli
-   * [decode](#decode) __Decode SCTE-35.__ _this is the default action._
-   * [encode](#encode) __Encode SCTE-35__ _and convert SCTE-35 formats._
+   * [default](#default) __Basic threefive cli usage.__ _(start here)_ 
    * [hls](#hls) __HLS SCTE-35 Decoding and Encoding.__
    * [xml](#xml)  __Xml__ _output for_ _SCTE-35._
    * [inject](#inject) __Inject SCTE-35__ _packets into mpegts streams._
@@ -14,57 +13,42 @@
    * [version](#version) _Print threefive version._
    * [help](#help)  _Show threefive help._
 ---
-# `decode`    
-* Decode SCTE-35 from Base64,Hex,MPEGTS, etc..
+### default
+ The default action of the threefive cli is to take an input and make it a SCTE-35 output
 
-#### Base64:     
-```asm
-      threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='
-```
-#### Hex:    
-```asm     
-      threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9
-```
-#### Files:      
-```asm    
-      threefive myvideo.ts
-```
-#### Stdin:      
-```asm      
-      cat myvideo.ts | threefive
-```
-#### Http(s):
-```asm
-      threefive https://futzu.com/xaa.ts
-```
-#### Multicast:
-```asm
-      threefive udp://@235.35.3.5:3535
-```
-___
-# `encode`    
-* Encode SCTE-35 to JSON, XML, Base64, Hex, Int etc.. 
 
-#### Base64 to Hex:  
-```asm
-      threefive  encode hex  '/DAlAAAAAAAAAP/wFAUAAAAOf+/+FOvVwP4ApMuAAA4AAAAAzBon0A=='
-```
-#### Hex to Xml:     
-```asm
-      threefive  encode xml  '0xfc301600000000000000fff00506fe00a98ac700000b3baed9' 
-```
-#### JSON to Base64: 
-```asm
-      threefive  encode  < json.json
-```
-#### JSON to Xml: 
-```asm
-      threefive  encode  xml  < json.json
-```
-#### Xml to Hex: 
-```asm
-      cat xml.xml | threefive  encode hex 
-```
+ ### threefive SCTE-35 inputs are auto-detected. 
+ *These inputs are supported.
+   * mpegts
+   * base64
+   *  hex
+   * json
+   * xml
+   * xmlbin
+ 
+
+ ### threefive SCTE-35 output default to json, other typess must be specified.
+ * These outputs are supported.
+   * base64
+   * bytes
+   *  hex
+   * json
+   * xml
+   * xmlbin
+  
+  ### Example usage
+
+|  Input       | Output        | Command                                                                   |
+|--------------|---------------|---------------------------------------------------------------------------|
+| mpegts       |  base64      | threefive https://example.com/video.ts  base64                            |
+|  xml         |  bytes        | threefive  bytes  < xml.xml                                               |
+| base64       |   hex         | threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q=='  hex                     |
+| xmlbin       |   int         | threefive  int  < xml.xml                                                 |
+| mpegts       |  json         | threefive video.ts                                                        |
+| json         |   xml         | threefive  < json.json  xml                                               |
+|  hex         |  xmlbin       | threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9  xmlbin 
+                                                     |
+
 ___
 # `hls`  
 * SCTE-35  Decoding and Encoding for HLS
