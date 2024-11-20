@@ -20,7 +20,7 @@ setuptools.setup(
     install_requires=[
         'iframes >= 0.0.7',
         'm3ufu >= 0.0.89',
-        'new_reader >= 0.1.11',
+        'new_reader >= 0.1.13',
         'sideways >= 0.0.23',
         "pyaes",
     ],
