@@ -127,13 +127,14 @@ class Node:
         print(ts)
     """
 
-    def __init__(self, name, value=None, attrs={}):
+    def __init__(self, name, value=None, attrs={}, ns=None):
         self.name = name
-        self.name=name
-        self.value = escape(value)
-##        if self.value:
-##            if isinstance(self.value, str):
-##                self.value = escape(self.value)
+        if ns:
+            self.name = ":".join((ns, name))
+        self.value = value
+        if self.value:
+            if isinstance(self.value, str):
+                self.value = escape(self.value)
         self.attrs = attrs
         self.children = []
         self.depth = 0
@@ -167,7 +168,7 @@ class Node:
         the attributes
         """
         obj = obj.chk_obj(obj)
-        obj._strip_set_ns(ns)
+        obj._strip_set_ns(self,ns)
         if attrns:
             obj.set_attrns(ns)
         for child in obj.children:
