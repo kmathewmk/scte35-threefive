@@ -1,14 +1,12 @@
  | [cli](#cli) | [lib](#lib) | [examples](#examples) | [hls](https://github.com/futzu/threefive/blob/master/hlsparse.md) | [encoding](#encoding) | [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/cli.md#sixfix) | [sidecar files](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md) | [xml](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) | [iodisco.com/scte35 ](https://iodisco.com/cgi-bin/scte35parser) | 
 
-### I Asked Google's Super Advanced Ai about threefive....
-![scte-ai](https://github.com/user-attachments/assets/fea040b5-9783-4b3f-9491-9be9bc1bc69d)
+# threefive is SCTE-35.
+##### SCTE-35 Parser. SCTE-35 Decoder. SCTE-35 Encoder. MPEGTS SCTE-35 Packet Injection. HLS Manifest and Segment SCTE-35 Parser. HLS SCTE-35 Injection. SCTE-35 Xml and Xml+bin Decoder/ Encoder for DASH.
 
-
-SCTE-35 parser, SCTE-35 decoder, SCTE-35 encoder, SCTE-35 injector and SCTE-35 converter.
 
 ## Latest version is v2.4.95
     
-* [cli format has been updated, and suoper tuned. You're going dig this ]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
+* [The cli has been Upgraded and tuned.]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
 * Xml Node Namespaces and attribute namespaces are now configurable.
 * Turned SegmentationDescriptor.segmentation_message back on.
 * Fix UMID upid encoding 
