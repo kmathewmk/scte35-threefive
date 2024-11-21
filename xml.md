@@ -4,7 +4,7 @@
 
 # What is proper SCTE-35 xml?
 
- **For the Sploce Infb oSection xml model this is a difficult question to answer.** See it's not just the same data just as xml, The data is modified, rearrange and a lot of it not included. There are multiple specifications that conflict in some areas, the schema is several years out of date, and some areas are just not very clear.I asked several people several questions and on 95% of it we agreed. In areas that we could not reach a consensus, I have gone with what I thought best. **To accomidate every opinion, things like xml namespace, xml attributes and even xml nodes can be added, removed, or modified.**
+ **For the Splice Info Section xml model this is a difficult question to answer.** See it's not just the same data just as xml, The data is modified, rearrange and a lot of it not included. There are multiple specifications that conflict in some areas, the schema is several years out of date, and some areas are just not very clear.I asked several people several questions and on 95% of it we agreed. In areas that we could not reach a consensus, I have gone with what I thought best. **To accomidate every opinion, things like xml namespace, xml attributes and even xml nodes can be added, removed, or modified.**
  
 __I strongly suggest using the xml+binary format__ for DASH, it is very straight forward, very compact, and the SCTE-35 data is exactly the same as regular SCTE-35.  __use xml+bin for DASH__
 
@@ -21,30 +21,64 @@ __I strongly suggest using the xml+binary format__ for DASH, it is very straight
 
 # Cli
 
-### Xml input 
+## Xml input 
 
-* SCTE-35 Xml can be encoded to base64,bytes,hex, int, or json using the `encode` keyword 
+* SCTE-35 __xml__ and SCTE-35 __xmlbin__ can be encoded to base64, bytes, hex, int, or  json.
+
+### xmlbin
+
+* parse mpegts video and display scte-35 in xmlbin format.
+
+      threefive xmlbin  sixed.ts
 
 
+* convert to xmlbin format
+
+       threefive '/DAgAAAAAAAAAP/wDwUAAAABf0/+AFJlwAABAAAAALQOZyE=' xmlbin
 ```xml
-
-a@fu:~/build/SCTE35_threefive$ cat xml.xml
-<SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
-   <TimeSignal>
-      <SpliceTime ptsTime="3985015765"/>
-   </TimeSignal>
-   <!-- Break Start -->
-   <SegmentationDescriptor segmentationEventId="56561" segmentationEventCancelIndicator="false" segmentationEventIdComplianceIndicator="true" segmentationTypeId="34" segmentNum="0" segmentsExpected="0">
-      <!-- UPID: MPU  -->
-      <SegmentationUpid segmentationUpidType="12" segmentationUpidFormat="hexbinary" formatIdentifier="1331055705" privateData="73">4f564c5949</SegmentationUpid>
-   </SegmentationDescriptor>
-</SpliceInfoSection>
+<scte35:Signal xmlns="https://scte.org/schemas/35">
+   <scte35:Binary>/DAgAAAAAAAAAP/wDwUAAAABf0/+AFJlwAABAAAAALQOZyE=</scte35:Binary>
+</scte35:Signal>
 ```
+
+* write to a file in xmlbin format
+
+      a@fu:~$ threefive '/DAgAAAAAAAAAP/wDwUAAAABf0/+AFJlwAABAAAAALQOZyE=' xmlbin 2> xmlbin.xml
+
+* read from the file and convert to bytes
+
+      a@fu:~$ threefive  bytes  < xmlbin.xml
+       b'\xfc0\x00\x00\x00\x00\x00\x00\x00\xff\xf0\x0f\x05\x00\x00\x00\x01\x7fO\xfe\x00Re\xc0\x00\x01\x00\x00\x00\x00\xb4\x0eg!'
+
+* read from a file and convert to base64
+
+      a@fu:~$ threefive base64  < xmlbin.xml
+      /DAgAAAAAAAAAP/wDwUAAAABf0/+AFJlwAABAAAAALQOZyE=
+
+* read from a file and convert to hex
+
+      a@fu:~$ threefive hex  < xmlbin.xml
+      0xfc302000000000000000fff00f05000000017f4ffe005265c0000100000000b40e6721
+
+* read from a file and convert to plain xml
+
+      a@fu:~$ threefive xml < xmlbin.xml
+```xml
+<scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
+   <scte35:SpliceInsert spliceEventId="1" spliceEventCancelIndicator="false" spliceImmediateFlag="false" eventIdComplianceFlag="true" availNum="0" availsExpected="0" outOfNetworkIndicator="false" uniqueProgramId="1">
+      <scte35:Program>
+         <scte35:SpliceTime ptsTime="5400000"/>
+      </scte35:Program>
+   </scte35:SpliceInsert>
+</scte35:SpliceInfoSection>
+```
+## Xml
+
 
 * Xml to Base64
 
 ```js
-a@fu:~/build/SCTE35_threefive$ .threefive encode  < xml.xml
+ threefive  < xml.xml
 
 /DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q=
 
@@ -53,21 +87,21 @@ a@fu:~/build/SCTE35_threefive$ .threefive encode  < xml.xml
 * Xml to  hex
 
 ```js
-a@fu:~/build/SCTE35_threefive$  threefive encode  hex < xml.xml
+ threefive hex < xml.xml
 0xfc302c00000000000000fff00506feed8683d500160214435545490000dcf17fbf0c054f564c59492200009e869364
 
 ```
 
 * Xml to int
 ```js
-a@fu:~/build/SCTE35_threefive$  threefive encode  int  < xml.xml
+ threefive int  < xml.xml
 151622312799635087445131038116901140411521203255173124307448868984487395583746158940007186416525810106184013091684
 ```
 
 ### Xml output
 * the cli can convert SCTE-35 base64, hex, or json to xml 
 ```js
-a@fu:~/build/SCTE35_threefive$ threefive encode xml '0xfc302c00000000000000fff00506feed8683d500160214435545490000dcf17fbf0c054f564c59492200009e869364'
+a@fu:~/build/SCTE35_threefive$ threefive  xml '0xfc302c00000000000000fff00506feed8683d500160214435545490000dcf17fbf0c054f564c59492200009e869364'
 ```xml
 <scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
    <scte35:TimeSignal>
@@ -86,7 +120,7 @@ a@fu:~/build/SCTE35_threefive$ threefive encode xml '0xfc302c00000000000000fff00
 * MPEGTS streams can be parsed for SCTE-35 and the output encoded in Xml
 
 ```js
-a@fu:~/build/SCTE35_threefive$ threefive xml  sixed.ts
+threefive xml  sixed.ts
 ```
 ```xml
 <scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="207000" protocolVersion="0" sapType="3" tier="4095">
@@ -109,7 +143,7 @@ a@fu:~/build/SCTE35_threefive$ threefive xml  sixed.ts
 * threefive prints output to stderr, stdout is used for piping data. 
 * To save the output of the cli tool redirect 2.
 ```js
-threefive xml  sixed.ts 2> fu.xml
+threefive xmlbin  sixed.ts 2> fu.xml
 ```
 
 # Xml with the Cue class.
