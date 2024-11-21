@@ -147,19 +147,23 @@ class Node:
         set_attrns set namespace on attributes
         """
         new_attrs = {strip_ns(k):v for k,v in self.attrs.items()}
-        if ns !='':
+        if ns not in ['',None]:
             new_attrs = {f'{ns}:{k}':v for k,v in new_attrs.items()}
         self.attrs=new_attrs
 
     def chk_obj(self, obj):
+        """
+        chk_obj determines if
+        obj is self, or another obj
+        for self.set_ns and self.mk
+        """
         if obj is None:
             obj = self
         return obj
 
     def _strip_set_ns(self,ns):
-        if ns is not None:
-            self.name = strip_ns(obj.name)
-            if ns !='':
+        self.name = strip_ns(self.name)
+        if ns not in ['',None]:
                 self.name =f'{ns}:{self.name}'
 
     def set_ns(self,obj=None,ns=None,attrns=False):
@@ -168,7 +172,7 @@ class Node:
         the attributes
         """
         obj = self.chk_obj(obj)
-        obj._strip_set_ns(self,ns)
+        obj._strip_set_ns(ns)
         if attrns:
             obj.set_attrns(ns)
         for child in obj.children:
