@@ -17,9 +17,6 @@
 * [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/newcli.md) : __ffmpeg__ turns SCTE-35 streams to __bin data (0x06)__, sixfix switches them back to SCTE-35 (0x86).
 * [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/newcli.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) ( DASH SCTE-214)
 
-![image](https://github.com/user-attachments/assets/46a470ea-c546-4604-8947-f6bf329a3545)
-
-
 
 # Documentation
 #### 
