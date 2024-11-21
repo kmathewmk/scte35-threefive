@@ -1,11 +1,5 @@
-# Xml as of v2.4.93
+# Xml as of v2.4.95
 
-
-
-# What is proper SCTE-35 xml?
-
- **For the Splice Info Section xml model this is a difficult question to answer.** See it's not just the same data just as xml, The data is modified, rearrange and a lot of it not included. There are multiple specifications that conflict in some areas, the schema is several years out of date, and some areas are just not very clear.I asked several people several questions and on 95% of it we agreed. In areas that we could not reach a consensus, I have gone with what I thought best. **To accomidate every opinion, things like xml namespace, xml attributes and even xml nodes can be added, removed, or modified.**
- 
 __I strongly suggest using the xml+binary format__ for DASH, it is very straight forward, very compact, and the SCTE-35 data is exactly the same as regular SCTE-35.  __use xml+bin for DASH__
 
 #### xml in the Cli  
