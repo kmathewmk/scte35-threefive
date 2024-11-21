@@ -4,7 +4,7 @@
 ##### SCTE-35 Parser. SCTE-35 Decoder. SCTE-35 Encoder. MPEGTS SCTE-35 Packet Injection. HLS Manifest and Segment SCTE-35 Parser. HLS SCTE-35 Injection. SCTE-35 Xml and Xml+bin Decoder/ Encoder for DASH.
 
 
-## Latest version is v2.4.95
+## Latest version is v2.4.97
 * Updated to latest version of new_reader for Zero packet loss Multicast _(tested on OpenBSD and Debian)_.   
 * [The cli has been Upgraded and tuned.]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
 * Xml Node Namespaces and attribute namespaces are now configurable.
