@@ -61,6 +61,22 @@ def strip_ns(this):
     """
     return this.split(':')[-1]
 
+def strip_xmlns(attrs):
+    """
+    strip_xmlns strips namespace off the xmlns attribute
+    """
+    new_attrs={}
+    new_key='xmlns'
+    old_key=None
+    for k,v in attrs.items():
+        if new_key in k:
+            old_key= k
+            new_attrs[new_key]=v
+        else:
+            new_attrs[k]=v
+    return new_attrs
+
+
 def iter_attrs(attrs):
     """
     iter_attrs normalizes xml attributes
@@ -69,7 +85,8 @@ def iter_attrs(attrs):
     conv = {un_camel(k): un_xml(v) for k, v in attrs.items()}
     pts_vars = ["pts_time", "pts_adjustment", "duration", "segmentation_duration"]
     conv = {k: (t2s(v) if k in pts_vars else v) for k, v in conv.items()}
-    stripped= {strip_ns(k):v for k,v in conv.items()}
+    conv2 = strip_xmlns(conv)
+    stripped= {strip_ns(k):v for k,v in conv2.items()}
     return stripped
 
 
@@ -133,8 +150,8 @@ class Node:
             self.name = ":".join((ns, name))
         self.value = value
         if self.value:
-            if isinstance(self.value, str):
-                self.value = escape(self.value)
+           # if isinstance(self.value, str):
+            self.value = escape(self.value)
         self.attrs = attrs
         self.children = []
         self.depth = 0
@@ -142,13 +159,24 @@ class Node:
     def __repr__(self):
         return self.mk()
 
-    def set_attrns(self,ns):
+
+    @staticmethod
+    def _swap_xmlns(attrs ,ns):
+        if f'{ns}:xmlns' in attrs:
+            attrs[f'xmlns:{ns}']= attrs[f'{ns}:xmlns']
+            attrs.pop(f'{ns}:xmlns')
+        return attrs
+        
+        
+    def set_attrs_ns(self,ns=None):
         """
         set_attrns set namespace on attributes
         """
-        new_attrs = {strip_ns(k):v for k,v in self.attrs.items()}
-        if ns not in ['',None]:
-            new_attrs = {f'{ns}:{k}':v for k,v in new_attrs.items()}
+        attrs2= strip_xmlns(self.attrs)
+        new_attrs = {strip_ns(k):v for k,v in attrs2.items()}
+        if ns not in ['',None]:                
+            attrs3 = {f'{ns}:{k}':v for k,v in new_attrs.items()}
+            new_attrs= self._swap_xmlns(attrs3,ns)
         self.attrs=new_attrs
 
     def chk_obj(self, obj):
@@ -166,17 +194,17 @@ class Node:
         if ns not in ['',None]:
                 self.name =f'{ns}:{self.name}'
 
-    def set_ns(self,obj=None,ns=None,attrns=False):
+    def set_ns(self,obj=None,ns=None,attrs=False):
         """
         set_ns set namespace on the Node and/or
         the attributes
         """
         obj = self.chk_obj(obj)
         obj._strip_set_ns(ns)
-        if attrns:
-            obj.set_attrns(ns)
+        if attrs:
+            obj.set_attrs_ns(ns)
         for child in obj.children:
-            child.set_ns(ns=ns,attrns=attrns)
+            child.set_ns(ns=ns,attrs=attrs)
 
     def rm_attr(self, attr):
         """
@@ -235,10 +263,9 @@ class Node:
         add_child adds a child node
         set slot to insert at index slot.
         """
-        if slot == None:
-            self.children.append(child)
-        else:
-            self.children = self.children[:slot] + [child] + self.children[slot:]
+        if not slot:
+            slot = len(self.children)
+        self.children = self.children[:slot] + [child] + self.children[slot:]
 
     def rm_child(self, child):
         """
@@ -328,7 +355,8 @@ class XmlParser:
         """
         mk_active sets self.active to the current node name.
         """
-        name = node[1:].split(" ", 1)[0].split(">", 1)[0].split(":")[-1]
+        name = node[1:].split(" ", 1)[0].split(">", 1)[0]
+        name= strip_ns(name)
         self.active = name.replace("/", "").replace(">", "")
 
     def _split_attrs(self, node):
