@@ -65,7 +65,7 @@ b'\xfeB:5\xbd'    <---  encoding returns a byte string when it works
     "pts_time": 12345.6789
 }
 ```
-* Now let's make a Cue instance wnd add the TimeSignal to it.
+* Now let's make a Cue instance and add the TimeSignal to it.
 ```py3
 >>>> cue =Cue()
 >>>> cue.command=ts
