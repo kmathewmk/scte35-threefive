@@ -167,7 +167,7 @@ class Node:
         set_ns set namespace on the Node and/or
         the attributes
         """
-        obj = obj.chk_obj(obj)
+        obj = self.chk_obj(obj)
         obj._strip_set_ns(self,ns)
         if attrns:
             obj.set_attrns(ns)
