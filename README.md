@@ -5,7 +5,7 @@
 
 
 ## Latest version is v2.4.95
-    
+* Updated to latest version of new_reader for Zero packet loss Multicast _(tested on OpenBSD and Debian)_.   
 * [The cli has been Upgraded and tuned.]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
 * Xml Node Namespaces and attribute namespaces are now configurable.
 * Turned SegmentationDescriptor.segmentation_message back on.
