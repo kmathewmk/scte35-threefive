@@ -6,7 +6,6 @@ xml.py  The Node class for converting to xml,
 
 import re
 from xml.sax.saxutils import escape, unescape
-from new_reader import reader
 
 
 def rm_xmlattr(exemel, attr):
@@ -67,13 +66,11 @@ def strip_xmlns(attrs):
     """
     new_attrs={}
     new_key='xmlns'
-    old_key=None
     for k,v in attrs.items():
         if new_key in k:
-            old_key= k
             new_attrs[new_key]=v
         else:
-            new_attrs[k]=v
+            new_attrs[strip_ns(k)]=v
     return new_attrs
 
 
@@ -85,9 +82,7 @@ def iter_attrs(attrs):
     conv = {un_camel(k): un_xml(v) for k, v in attrs.items()}
     pts_vars = ["pts_time", "pts_adjustment", "duration", "segmentation_duration"]
     conv = {k: (t2s(v) if k in pts_vars else v) for k, v in conv.items()}
-    conv2 = strip_xmlns(conv)
-    stripped= {strip_ns(k):v for k,v in conv2.items()}
-    return stripped
+    return strip_xmlns(conv)
 
 
 def val2xml(val):
@@ -146,8 +141,8 @@ class Node:
 
     def __init__(self, name, value=None, attrs={}, ns=None):
         self.name = name
-        if ns:
-            self.name = ":".join((ns, name))
+##        if ns:
+##            self.name = ":".join((ns, name))
         self.value = value
         if self.value:
            # if isinstance(self.value, str):
@@ -155,29 +150,32 @@ class Node:
         self.attrs = attrs
         self.children = []
         self.depth = 0
+        self.ns =ns
+        self.ans =None
 
     def __repr__(self):
         return self.mk()
 
 
-    @staticmethod
-    def _swap_xmlns(attrs ,ns):
+
+    def swap_xmlns(self,attrs ,ns):
+        """
+        swap_xmlns
+        """
         if f'{ns}:xmlns' in attrs:
-            attrs[f'xmlns:{ns}']= attrs[f'{ns}:xmlns']
-            attrs.pop(f'{ns}:xmlns')
+            attrs[f'xmlns:{ns}']= attrs.pop(f'{ns}:xmlns')
         return attrs
-        
-        
-    def set_attrs_ns(self,ns=None):
+
+
+    def mk_ans(self,ans=None):
         """
         set_attrns set namespace on attributes
         """
-        attrs2= strip_xmlns(self.attrs)
-        new_attrs = {strip_ns(k):v for k,v in attrs2.items()}
-        if ns not in ['',None]:                
-            attrs3 = {f'{ns}:{k}':v for k,v in new_attrs.items()}
-            new_attrs= self._swap_xmlns(attrs3,ns)
-        self.attrs=new_attrs
+        new_attrs= strip_xmlns(self.attrs)
+        if ans not in ['',None]:
+            attrs2 = {f'{ans}:{k}':v for k,v in new_attrs.items()}
+            new_attrs=self.swap_xmlns(attrs2,ans)
+        return new_attrs
 
     def chk_obj(self, obj):
         """
@@ -192,19 +190,19 @@ class Node:
     def _strip_set_ns(self,ns):
         self.name = strip_ns(self.name)
         if ns not in ['',None]:
-                self.name =f'{ns}:{self.name}'
+            self.name =f'{ns}:{self.name}'
 
-    def set_ns(self,obj=None,ns=None,attrs=False):
+    def set_ns(self,ns=None):
         """
-        set_ns set namespace on the Node and/or
-        the attributes
+        set_ns set namespace on the Node
         """
-        obj = self.chk_obj(obj)
-        obj._strip_set_ns(ns)
-        if attrs:
-            obj.set_attrs_ns(ns)
-        for child in obj.children:
-            child.set_ns(ns=ns,attrs=attrs)
+        self.ns =ns
+
+    def set_ans(self,ans=None):
+        """
+        set_ns set namespace on the Node
+        """
+        self.ans =ans
 
     def rm_attr(self, attr):
         """
@@ -233,12 +231,21 @@ class Node:
         tab = "   "
         return tab * self.depth
 
-    def _rendrd_children(self, obj, rendrd, ndent):
+    def _rendrd_children(self, obj, rendrd, ndent,ns,ans):
         for child in obj.children:
-            rendrd += obj.mk(child)
+            rendrd += obj.mk(child,ns,ans)
         return f"{rendrd}{ndent}</{obj.name}>\n"
 
-    def mk(self, obj=None):
+    def mk_name(self,ns):
+        """
+        mk_name add namespace to node name
+        """
+        name =self.name
+        if ns  not in ['',None]:
+            name =f'{ns}:{name}'
+        return name
+
+    def mk(self, obj=None, ns=None,ans=None):
         """
         mk makes the node obj,
         and it's children into
@@ -246,16 +253,21 @@ class Node:
         """
         obj = self.chk_obj(obj)
         obj.set_depth()
+        if obj.depth==0:
+            ns= obj.ns
+            ans = obj.ans
+        name =obj.mk_name(ns)
         ndent = obj.get_indent()
         if isinstance(obj, Comment):
             return obj.mk(obj)
-        new_attrs = mk_xml_attrs(obj.attrs)
-        rendrd = f"{ndent}<{obj.name}{new_attrs}>"
+        attrs=obj.mk_ans(ans=ans)
+        new_attrs = mk_xml_attrs(attrs)
+        rendrd = f"{ndent}<{name}{new_attrs}>"
         if obj.value:
-            return f"{rendrd}{obj.value}</{obj.name}>\n"
+            return f"{rendrd}{obj.value}</{name}>\n"
         rendrd = f"{rendrd}\n"
         if obj.children:
-            return self._rendrd_children(obj, rendrd, ndent)
+            return self._rendrd_children(obj, rendrd, ndent,ns,ans)
         return rendrd.replace(">", "/>")
 
     def add_child(self, child, slot=None):
@@ -307,7 +319,7 @@ class Comment(Node):
     See also Node.add_comment:
     """
 
-    def mk(self, obj=None):
+    def mk(self, obj=None,ns=None,ans=None):
         if obj is None:
             obj = self
         obj.set_depth()
