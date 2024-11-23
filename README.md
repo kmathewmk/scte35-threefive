@@ -5,7 +5,8 @@
 
 You may have noticed I've done several releases in the last month or so. What I'm doing to get the cli dialed in with the new HLS SCTE-35 decoding and encoding as well as shaking out the new XML stuff for DASH.<br>
 The **HLS** code has been in production for at least a year, it **is solid and stable**, there will be **no major changes**.  I'm just sorting out the syntax for integrating it with the cli. <br>
-The **xml** stuff on the other hand, **is experimental** and change **is volatile**, I may **change any part of the current xml implementation at any time**. Do not use the xml in production yet. If you want to **join the xml debate**,  @davemevans and @wabiloo and myself **argue daily over details that probably don't matter** here #108
+The **xml** stuff on the other hand, **is experimental** and change **is volatile**, I may **change any part of the current xml implementation at any time**. Do not use the xml in production yet. If you want to **join the xml debate**,  @davemevans and @wabiloo and myself **argue daily over details that probably don't matter** [here](https://github.com/futzu/threefive/discussions/108)  <br>
+**Xml will be stable in the few weeks.**
 
 
 
