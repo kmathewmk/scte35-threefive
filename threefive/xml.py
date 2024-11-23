@@ -432,7 +432,6 @@ class XmlParser:
             x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
         }
         it = iter_attrs(parsed)
-        print(it)
         return it
 
     def parse(self, exemel, descriptor_parse=False):
