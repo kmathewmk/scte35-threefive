@@ -8,18 +8,18 @@ import re
 from xml.sax.saxutils import escape, unescape
 
 
-def rm_xmlattr(exemel, attr):
-    """
-    rm_xmlattr remove an attr from
-    an xml string, byte string or Node instance.
-    """
-    if isinstance(exemel, bytes):
-        exemel = exemel.decode()
-    if isinstance(exemel, Node):
-        exemel = exemel.mk()
-    reggie = re.compile(f'{attr}=".+?"')
-    return "".join(reggie.split(exemel))
-
+##def rm_xmlattr(exemel, attr):
+##    """
+##    rm_xmlattr remove an attr from
+##    an xml string, byte string or Node instance.
+##    """
+##    if isinstance(exemel, bytes):
+##        exemel = exemel.decode()
+##    if isinstance(exemel, Node):
+##        exemel = exemel.mk()
+##    reggie = re.compile(f'{attr}=".+?"')
+##    return "".join(reggie.split(exemel))
+##
 
 def t2s(v):
     """
@@ -44,33 +44,35 @@ def un_xml(v):
     un_xml converts an xml value
     to ints, floats and booleans.
     """
+    mapped={"false":False,
+            "true":True, }
     if v.isdigit():
         return int(v)
     if v.replace(".", "").isdigit():
         return float(v)
-    if v in ["false", "False"]:
-        return False
-    if v in ["true", "True"]:
-        return True
+    if v in mapped:
+        return mapped[v]
     return v
+
 
 def strip_ns(this):
     """
     strip_ns strip namespace off this.
     """
-    return this.split(':')[-1]
+    return this.split(":")[-1]
+
 
 def strip_xmlns(attrs):
     """
     strip_xmlns strips namespace off the xmlns attribute
     """
-    new_attrs={}
-    new_key='xmlns'
-    for k,v in attrs.items():
+    new_attrs = {}
+    new_key = "xmlns"
+    for k, v in attrs.items():
         if new_key in k:
-            new_attrs[new_key]=v
+            new_attrs[new_key] = v
         else:
-            new_attrs[strip_ns(k)]=v
+            new_attrs[strip_ns(k)] = v
     return new_attrs
 
 
@@ -89,14 +91,12 @@ def val2xml(val):
     """
     val2xmlconvert val for xml
     """
-    if isinstance(val, bool):
-        return str(val).lower()
-    if isinstance(val, (int, float)):
-        return str(val)
+    if isinstance(val, (bool,int,float)):
+        return  str(val).lower()
     if isinstance(val, str):
         if val.lower()[:2] == "0x":
             return str(int(val, 16))
-    return escape(val)
+    return val
 
 
 def key2xml(string):
@@ -115,6 +115,42 @@ def mk_xml_attrs(attrs):
     a dict of xml friendly keys and values
     """
     return "".join([f' {key2xml(k)}="{val2xml(v)}"' for k, v in attrs.items()])
+
+
+class NameSpace:
+    """
+    Each Node instance has a NameSpace instance
+    to track namespace settings.
+    """
+    def __init__(self, ns=None, uri=None):
+        self.ns = ns
+        self.uri = uri
+        self.all = False
+
+    def prefix_all(self, abool=True):
+        """
+        prefix_all takes a boolean
+        True turns it on, False turns it off.
+        """
+        self.all = abool
+
+    def xmlns(self):
+        """
+        xmlns return xmlns attribute
+        """
+        if not self.uri:
+            return ""
+        if not self.ns:
+            return f'xmlns="{self.uri}"'
+        return f'xmlns:{self.ns}="{self.uri}"'
+
+    def clear(self):
+        """
+        clear clear namespace info
+        """
+        self.ns = None
+        self.uri = None
+        self.all = False
 
 
 class Node:
@@ -139,42 +175,44 @@ class Node:
         print(ts)
     """
 
-    def __init__(self, name, value=None, attrs={}, ns=None):
+    def __init__(self, name, value=None, attrs=None, ns=None):
         self.name = name
-##        if ns:
-##            self.name = ":".join((ns, name))
         self.value = value
-        if self.value:
-           # if isinstance(self.value, str):
-            self.value = escape(self.value)
-        self.attrs = attrs
-        self.children = []
         self.depth = 0
-        self.ns =ns
-        self.ans =None
+        self.namespace = NameSpace()
+        self.namespace.ns = ns
+        self.attr=None
+        self._handle_attrs(attrs)
+        self.children = []
 
     def __repr__(self):
         return self.mk()
 
+    def _handle_attrs(self,attrs):
+        if not attrs:
+            attrs={}
+        if "xmlns" in attrs:
+            self.namespace.uri = attrs.pop("xmlns")
+        self.attrs=attrs
 
+    @staticmethod
+    def attrs2nodes(attrs):
+        """
+        attrs2nodes attributes to elements
+        """
+        node_list = []
+        for k, v in attrs.items():
+            node_list.append(Node(name=key2xml(k), value=val2xml(v)))
+        return node_list
 
-    def swap_xmlns(self,attrs ,ns):
+    def mk_ans(self, attrs):
         """
-        swap_xmlns
+        mk_ans set namespace on attributes
         """
-        if f'{ns}:xmlns' in attrs:
-            attrs[f'xmlns:{ns}']= attrs.pop(f'{ns}:xmlns')
-        return attrs
-
-
-    def mk_ans(self,ans=None):
-        """
-        set_attrns set namespace on attributes
-        """
-        new_attrs= strip_xmlns(self.attrs)
-        if ans not in ['',None]:
-            attrs2 = {f'{ans}:{k}':v for k,v in new_attrs.items()}
-            new_attrs=self.swap_xmlns(attrs2,ans)
+        new_attrs = {}
+        if self.namespace.all:
+            for k, v in attrs.items():
+                new_attrs[f"{self.namespace.ns}:{k}"] = v
         return new_attrs
 
     def chk_obj(self, obj):
@@ -187,22 +225,11 @@ class Node:
             obj = self
         return obj
 
-    def _strip_set_ns(self,ns):
-        self.name = strip_ns(self.name)
-        if ns not in ['',None]:
-            self.name =f'{ns}:{self.name}'
-
-    def set_ns(self,ns=None):
+    def set_ns(self, ns=None):
         """
         set_ns set namespace on the Node
         """
-        self.ns =ns
-
-    def set_ans(self,ans=None):
-        """
-        set_ns set namespace on the Node
-        """
-        self.ans =ans
+        self.namespace.ns = ns
 
     def rm_attr(self, attr):
         """
@@ -231,21 +258,42 @@ class Node:
         tab = "   "
         return tab * self.depth
 
-    def _rendrd_children(self, obj, rendrd, ndent,ns,ans):
+    def _rendrd_children(self, obj, rendrd, ndent, name):
         for child in obj.children:
-            rendrd += obj.mk(child,ns,ans)
-        return f"{rendrd}{ndent}</{obj.name}>\n"
+            rendrd += obj.mk(child)
+        return f"{rendrd}{ndent}</{name}>\n"
 
-    def mk_name(self,ns):
+    def mk_name(self):
         """
         mk_name add namespace to node name
         """
-        name =self.name
-        if ns  not in ['',None]:
-            name =f'{ns}:{name}'
+        name = self.name
+        if self.namespace.ns:
+            name = f"{self.namespace.ns}:{name}"
         return name
 
-    def mk(self, obj=None, ns=None,ans=None):
+    def rendrd_attrs(self, ndent, name):
+        """
+        rendrd_attrs renders xml attributes
+        """
+        attrs = self.attrs
+        if self.namespace.all:
+            attrs = self.mk_ans(self.attrs)
+        new_attrs = mk_xml_attrs(attrs)
+        if self.depth == 0:
+            return f"{ndent}<{name} {self.namespace.xmlns()} {new_attrs}>"
+        return f"{ndent}<{name}{new_attrs}>"
+
+    def children_namespaces(self):
+        """
+        children_namespaces give children your namespace
+        """
+        for child in self.children:
+            child.namespace.ns = self.namespace.ns
+            child.namespace.all = self.namespace.all
+            child.namespace.uri = ""
+
+    def mk(self, obj=None):
         """
         mk makes the node obj,
         and it's children into
@@ -253,21 +301,17 @@ class Node:
         """
         obj = self.chk_obj(obj)
         obj.set_depth()
-        if obj.depth==0:
-            ns= obj.ns
-            ans = obj.ans
-        name =obj.mk_name(ns)
+        obj.children_namespaces()
+        name = obj.mk_name()
         ndent = obj.get_indent()
         if isinstance(obj, Comment):
             return obj.mk(obj)
-        attrs=obj.mk_ans(ans=ans)
-        new_attrs = mk_xml_attrs(attrs)
-        rendrd = f"{ndent}<{name}{new_attrs}>"
+        rendrd = obj.rendrd_attrs(ndent, name)
         if obj.value:
             return f"{rendrd}{obj.value}</{name}>\n"
         rendrd = f"{rendrd}\n"
         if obj.children:
-            return self._rendrd_children(obj, rendrd, ndent,ns,ans)
+            return self._rendrd_children(obj, rendrd, ndent, name)
         return rendrd.replace(">", "/>")
 
     def add_child(self, child, slot=None):
@@ -319,7 +363,7 @@ class Comment(Node):
     See also Node.add_comment:
     """
 
-    def mk(self, obj=None,ns=None,ans=None):
+    def mk(self, obj=None):
         if obj is None:
             obj = self
         obj.set_depth()
@@ -368,7 +412,7 @@ class XmlParser:
         mk_active sets self.active to the current node name.
         """
         name = node[1:].split(" ", 1)[0].split(">", 1)[0]
-        name= strip_ns(name)
+        name = strip_ns(name)
         self.active = name.replace("/", "").replace(">", "")
 
     def _split_attrs(self, node):
@@ -388,6 +432,7 @@ class XmlParser:
             x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
         }
         it = iter_attrs(parsed)
+        print(it)
         return it
 
     def parse(self, exemel, descriptor_parse=False):
@@ -414,11 +459,11 @@ class XmlParser:
         """
         ridx = data.index(">")
         this_node = data[: ridx + 1]
+        data = data[ridx + 1 :]
         self.chk_node_list(this_node)
         attrs = self.mk_attrs(this_node)
         if self.active not in stuff:
             stuff[self.active] = attrs
-        data = data[ridx + 1 :]
         if "<" in data:
             lidx = data.index("<")
             value = data[:lidx].strip()
@@ -435,7 +480,7 @@ class XmlParser:
         tag = data[1:].split(" ", 1)[0]
         try:
             sub_data = data[: data.index(f"</{tag}>") + len(tag) + 1]
-        except:
+        except (LookupError, TypeError, ValueError):
             sub_data = data[: data.index("/>") + 2]
         data = data.replace(sub_data, "")
         stuff["descriptors"].append(self.parse(sub_data, descriptor_parse=True))
