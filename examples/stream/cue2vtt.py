@@ -13,6 +13,7 @@ import sys
 from threefive import Stream
 import time
 
+
 def ts_to_vtt(timestamp):
     """
     ts_to_vtt converts timestamp into webvtt times
@@ -27,16 +28,17 @@ def scte35_to_vtt(cue):
     """
     scte35_to_vtt prints splice insert cue out and cue in via webvtt
     """
-    start =0
+    start = 0
     end = 0
     duration = None
     pts_time = None
     upid = None
-    seg_mesg= None
+    seg_mesg = None
     now = cue.packet_data.pts
     if cue.command.has("pts_time"):
-        start= pts_time = cue.command.pts_time+cue.info_section.pts_adjustment
-        if pts_time > now:  time.sleep(pts_time -now)
+        start = pts_time = cue.command.pts_time + cue.info_section.pts_adjustment
+        if pts_time > now:
+            time.sleep(pts_time - now)
     if cue.command.has("break_duration"):
         duration = cue.command.break_duration
     for d in cue.descriptors:
@@ -49,7 +51,7 @@ def scte35_to_vtt(cue):
     if start and duration:
         end = start + duration
     if end == 0:
-        end = start+4
+        end = start + 4
 
     print(f"{ts_to_vtt(start)} --> {ts_to_vtt(end)} ")
 
@@ -57,7 +59,7 @@ def scte35_to_vtt(cue):
     if pts_time:
         print(f"PTS:  {pts_time}  ")
     if duration:
-        print(f"Duration:  {round(duration,3)} " )
+        print(f"Duration:  {round(duration,3)} ")
     if seg_mesg:
         print(seg_mesg)
     if upid:
