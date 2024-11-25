@@ -120,9 +120,11 @@ class SCTE35Base:
     def has(self, what):
         """
         has runs hasattr with self and what
+        and checks if it's set.
         """
         if hasattr(self, what):
-            return True
+            if vars(self)[what]:
+                return True
         return False
 
     def xml(self, ns="scte35"):
