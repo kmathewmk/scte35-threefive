@@ -9,9 +9,9 @@ threefive command line SCTE35 decoder.
 import sys
 from new_reader import reader
 from threefive import Cue, Stream, print2, decode, version
+from threefive.hls import cli as hlscli
 from threefive.sixfix import sixfix
 from threefive.superkabuki import SuperKabuki
-from threefive.showcues import cli as hlscli
 from sideways import cli as sidecli
 
 REV = "\033[7;1m"
