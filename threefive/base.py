@@ -120,7 +120,6 @@ class SCTE35Base:
     def has(self, what):
         """
         has runs hasattr with self and what
-        and checks if it's set.
         """
         if hasattr(self, what):
             if vars(self)[what]:
@@ -161,7 +160,8 @@ class SCTE35Base:
         if isinstance(stuff, str):
             stuff = json.loads(stuff)
         if isinstance(stuff, dict):
+            prevars= vars(self)
             for k, v in stuff.items():
-                if self.has(k):
+                if k in prevars:
                     self.__dict__[k] = v
-        # self.__dict__.update(stuff)
+            #self.__dict__.update(stuff)
