@@ -469,7 +469,6 @@ class XmlParser:
         """
         sub_data = ""
         tag = data[1:].split(" ", 1)[0].split('>',1)[0]
-        print('tag',tag)
         try:
             sub_data = data[: data.index(f"</{tag}>") + len(tag) + 1]
         except:
