@@ -466,7 +466,7 @@ class Cue(SCTE35Base):
 
     def _xmlbin(self, ns):
         sig_attrs = {"xmlns": "https://scte.org/schemas/35"}
-        sig_node = Node("Signal", attrs=sig_attrs,ns=ns)
+        sig_node = Node("Signal", attrs=sig_attrs, ns=ns)
         bin_node = Node("Binary", value=self.encode(), ns=ns)
         sig_node.add_child(bin_node)
         return sig_node
@@ -476,7 +476,7 @@ class Cue(SCTE35Base):
         _mk_descriptor_xml make xml nodes for descriptors.
         """
         for d in self.descriptors:
-            if d.has("segmentation_type_id")and d.segmentation_type_id in table22:
+            if d.has("segmentation_type_id") and d.segmentation_type_id in table22:
                 comment = f"{table22[d.segmentation_type_id]}"
                 sis.add_comment(comment)
             sis.add_child(d.xml(ns=ns))
