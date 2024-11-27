@@ -8,11 +8,12 @@
 * [decode.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/decode.py)   `threefive.decode` function.
 * [descriptors.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/descriptors.py)   All `Splice Descriptor` classes.
 * [encode.py](https://github.com/futzu/threefive/blob/master/threefive/encode.py) `threefive.mk_splice_null`, `threefive.mk_splice_insert`, and `threefive.mk_time_signal` functions.
+* [hls.py](https://github.com/futzu/threefive/blob/master/threefive/hls.py) `HLS SCTE-35 Parser classes and cli()` function. Replaces showcues.
 * [packetdata.py](https://github.com/futzu/threefive/blob/master/threefive/packetdata.py) `threefive.PacketData` class.
 * [section.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/section.py) `threefive.SpliceInfoSection` class.
 * [segment.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/segment.py) `threefive.Segment` class.
 * [segmentation.py](https://github.com/futzu/SCTE35-threefive/blob/master/threefive/segmentation.py)  `lookup tables` for the  `threefive.SegmentationDescriptor` class.
-* [showcues.py](https://github.com/futzu/threefive/blob/master/threefive/showcues.py) `showcues HLS SCTE-35 Parser classes and cli()` function.
+* <s>[showcues.py](https://github.com/futzu/threefive/blob/master/threefive/showcues.py) `showcues HLS SCTE-35 Parser classes and cli()` function.</s> Deprecated in favor of hls.py.
 
 * [sixfix.py](https://github.com/futzu/threefive/blob/master/threefive/sixfix.py) `threefive.sixfix ` function.
 * [smoketest.py](https://github.com/futzu/threefive/blob/master/threefive/smoketest.py) `threefive.smoke` function.
