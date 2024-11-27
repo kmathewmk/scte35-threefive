@@ -10,7 +10,6 @@ __I strongly suggest using the xml+binary format__ for DASH, it is very straight
 #### xml in the Cue class 
 * [SCTE-35 xml input](#xml-as-input)
 * [SCTE-35 xml output](#the-cue-class-can-return-xml-as-output)
-* [removing SCTE-35 xml attributes](#rm_xmlattr)
 * [removing or changing the scte35 namespace](#removing-or-changing-the-namespace)
 
 # Cli
@@ -153,7 +152,7 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>>> cue=Cue('/DA4AAAAAAAA///wBQb+AKpFLgAiAiBDVUVJAAAAA3//AAApPWwDDEFCQ0QwMTIzNDU2SBAAABZE5vg=')
 >>>> cue.decode()
 True
->>>> cue.xml()
+>>>> cue.xml(xmlbin=False)
 ```
 ```xml
 <scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
@@ -167,10 +166,9 @@ True
    </scte35:SegmentationDescriptor>
 </scte35:SpliceInfoSection>
 ```
-* the Cue class can also return xml in the xml+bin format
-* set the optional binary arg to True
+* By default, the Cue class returns xml in the xml+bin format
 ```py3
->>>> cue.xml(binary=True)
+>>>> cue.xml()
 ```
 ```xml
 <Signal xmlns="https://scte.org/schemas/35">
@@ -191,9 +189,8 @@ x="
 ```
 ```py3
 >>>> cue2=Cue(x)
->>>> cue2.decode()
-True
->>>> cue2.xml()
+
+>>>> cue2.xml(xmlbin=False)
 ```
 ```xml
 <scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
@@ -208,54 +205,13 @@ True
 </scte35:SpliceInfoSection>
 ```
 
-### rm_xmlattr
-* If you want to remove an attribute, you can use rm_xmlattr function.
-* rm_xmlattr accepts an axl string, bytestring, or Node instance as input.
-
-
-```py3
->>>> from threefive.xml import rm_xmlattr
->>>> from threefive import Cue
->>>> cue=Cue('/DA4AAAAAAAA///wBQb+AKpFLgAiAiBDVUVJAAAAA3//AAApPWwDDEFCQ0QwMTIzNDU2SBAAABZE5vg=')
->>>> cue.decode()
->>>> x = cue.xml()
->>>> print(x)
-```
-```xml
-<scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
-   <scte35:TimeSignal>
-      <scte35:SpliceTime ptsTime="11158830"/>
-   </scte35:TimeSignal>
-   <!-- Program Start -->
-   <scte35:SegmentationDescriptor segmentationEventId="3" segmentationEventCancelIndicator="false" segmentationEventIdComplianceIndicator="true" segmentationTypeId="16" segmentNum="0" segmentsExpected="0" segmentationDuration="2702700">
-      <!-- AdID -->
-      <scte35:SegmentationUpid segmentationUpidType="3" segmentationUpidFormat="text">ABCD0123456H</scte35:SegmentationUpid>
-   </scte35:SegmentationDescriptor>
-</scte35:SpliceInfoSection>
-```
-```py3
->>>> y = rm_xmlattr(x,"sapType")
->>>> print(y)
-```
-```xml
-<scte35:SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0"  tier="4095">
-   <scte35:TimeSignal>
-      <scte35:SpliceTime ptsTime="11158830"/>
-   </scte35:TimeSignal>
-   <!-- Program Start -->
-   <scte35:SegmentationDescriptor segmentationEventId="3" segmentationEventCancelIndicator="false" segmentationEventIdComplianceIndicator="true" segmentationTypeId="16" segmentNum="0" segmentsExpected="0" segmentationDuration="2702700">
-      <!-- AdID -->
-      <scte35:SegmentationUpid segmentationUpidType="3" segmentationUpidFormat="text">ABCD0123456H</scte35:SegmentationUpid>
-   </scte35:SegmentationDescriptor>
-</scte35:SpliceInfoSection>
-```
 ### Removing or changing the namespace
 
 * the namespace can be removed or changed  in either the xml or xml+bin format
 * to remove the scte35 namespace, set the optional ns arg  to an empty string
 
 ```py3
->>>> cue.xml(ns='')
+>>>> cue.xml(xmlbin=False,ns='')
 ```
 ```xml
 <SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="0" protocolVersion="0" sapType="3" tier="4095">
