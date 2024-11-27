@@ -4,7 +4,6 @@ xml.py  The Node class for converting to xml,
         and several helper functions
 """
 
-import re
 from xml.sax.saxutils import escape, unescape
 
 
@@ -481,5 +480,8 @@ class XmlParser:
         except:
             sub_data = data[: data.index("/>") + 2]
         data = data.replace(sub_data, "")
-        stuff["descriptors"].append(self.parse(sub_data, descriptor_parse=True))
+        sub_stuff = self.parse(sub_data, descriptor_parse=True)
+        if 'SegmentationDescriptor' in sub_stuff and 'SegmentationUpid' in sub_stuff:
+            sub_stuff['SegmentationDescriptor']['SegmentationUpid'] = sub_stuff.pop('SegmentationUpid')
+        stuff["descriptors"].append(sub_stuff)
         return data, stuff
