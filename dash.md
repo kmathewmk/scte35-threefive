@@ -1,15 +1,15 @@
 # Dash SCTE-35 Parser Preview    (_Updated 9/26/2024_)
-### [The cli also has XML support](https://github.com/futzu/SCTE-35/edit/master/cli.md)
+### [The cli also has XML support](https://github.com/futzu/SCTE-35/edit/master/atest-cli.md)
 ### From Xml
 ___
 #### SCTE-35 XML is converted to a threefive.Cue instance.
 #### Usage:
 
-* Use a __Cue__ instance and pass in the Xml via the  __load__ method.
+* Use a __Cue__ instance.
 ```py3
   from threefive import Cue
-  cue=Cue()           # Create a Cue instance
-  cue.load(dash_xml)  # load xml
+  cue=Cue(dash_xml)           # Create a Cue instance
+  cue.show()
 ```
 ---
 
@@ -53,8 +53,7 @@ some_xml = """<Event duration="5310000">
 ```py3
 from threefive import Cue
 
-cue = Cue()
-cue.load(some_xml)
+cue = Cue(some_xml)
 cue.show()
 ```
 * You can edit the cue and re-encode:
@@ -64,7 +63,7 @@ cue.show()
 >>>> cue.command.pts_time=1234.567890
 >>>> cue.encode()
 '/DAxAAAAAsrbAP/wBQb+Bp9rxgAbAhlDVUVJABWWDH+DCAgAAAAALfOq1zQAAAAAtBIUqg=='  #    <-- Base64
->>>> print(cue.xml())
+>>>> print(cue.xml(xmlbin=False))
 ```
 ```xml
 <SpliceInfoSection xmlns="https://scte.org/schemas/35" ptsAdjustment="183003" protocolVersion="0" sapType="3" tier="4095">
@@ -193,8 +192,8 @@ some_xml = """<Event
 ```py3
 from threefive import Cue
 
-cue = Cue()
-cue.load(some_xml)
+cue = Cue(some_xml)
+cue.show()
 ```
 
 
@@ -272,12 +271,9 @@ ___
 
 from threefive import Cue
 
-cue=Cue(data) # Data can be Base64, Bytes, Hex, Integer
-#OR
-cue=Cue.load(data)            # JSON, a dict, or xml can be loaded
+cue=Cue(data) # Data can be Base64, Bytes, Hex, Integer,Json, or Xml
 
-cue.decode()
-x = cue.xml() # returns a threefive.Node instance
+x = cue.xml(xmlbin=False) # returns a threefive.Node instance
 print(x)  # displays xml
 ```
 
@@ -301,7 +297,7 @@ print(x)  # displays xml
 from threefive import Cue
 cue=Cue('/DA2AAHOR/nwAAAABQb+PnGRBwAgAh5DVUVJSAAAbH/PAAE1ODcICAAAAAAt86rXNAAAAACwnuYL')
 cue.decode()
-x = cue.xml() # returns a threefive.Node instance
+x = cue.xml(xmlbin=False) # returns a threefive.Node instance
 print(x)   # displays xml
 ```
 
@@ -348,7 +344,7 @@ from threefive import Cue
 b64 = '/DAlAAAAAAAAAP/wFAUAAAABf+/+y+LXLv4ARKogAAEAAAAAMZjNOQ=='
 cue=Cue(b64)
 cue.decode()
-x = cue.xml(binary=True) # returns a threefive.Node instance with a Binary Node
+x = cue.xml() # returns a threefive.Node instance with a Binary Node
 print(x)  # displays xml
 ```
 
