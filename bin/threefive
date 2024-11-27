@@ -279,7 +279,7 @@ def xml_out(cue):
     """
     xml_out prints cue as xml
     """
-    print2(cue.xml())
+    print2(cue.xml(binary=False))
 
 
 def xmlbin_out(cue):
