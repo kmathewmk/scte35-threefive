@@ -3,13 +3,6 @@
 # threefive is SCTE-35.
 ##### SCTE-35 Parser. SCTE-35 Decoder. SCTE-35 Encoder. MPEGTS SCTE-35 Packet Injection. HLS Manifest and Segment SCTE-35 Parser. HLS SCTE-35 Injection. SCTE-35 Xml and Xml+bin Decoder/ Encoder for DASH.
 
-You may have noticed I've done several releases in the last month or so. What I'm doing to get the cli dialed in with the new HLS SCTE-35 decoding and encoding as well as shaking out the new XML stuff for DASH.<br>
-The **HLS** code has been in production for at least a year, it **is solid and stable**, there will be **no major changes**.  I'm just sorting out the syntax for integrating it with the cli. <br>
-The **xml** stuff on the other hand, **is experimental** and change **is volatile**, I may **change any part of the current xml implementation at any time**. Do not use the xml in production yet. If you want to **join the xml debate**,  @davemevans and @wabiloo and myself **argue daily over details that probably don't matter** [here](https://github.com/futzu/threefive/discussions/108)  <br><br>
-**Xml will be stable in the next few weeks.**
-
-
-
 ## Latest version is v2.4.97
 * Updated to latest version of new_reader for Zero packet loss Multicast _(tested on OpenBSD and Debian)_.   
 * [The cli has been Upgraded and tuned.]((https://github.com/futzu/threefive/blob/master/latest-cli.md))
@@ -21,7 +14,7 @@ The **xml** stuff on the other hand, **is experimental** and change **is volatil
 * MPEGTS Packet Injection added to the __threefive cli.__.
     * [Sidecar files explained](https://github.com/futzu/SCTE35_threefive/blob/master/sidecar.md)
 * [sixfix](https://github.com/futzu/SCTE35_threefive/blob/master/newcli.md) : __ffmpeg__ turns SCTE-35 streams to __bin data (0x06)__, sixfix switches them back to SCTE-35 (0x86).
-* [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/newcli.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) ( DASH SCTE-214)
+* [Xml](https://github.com/futzu/SCTE35-threefive/blob/master/latest-cli.md): Experimental support for [SCTE-35 xml as an input and output](https://github.com/futzu/SCTE35_threefive/blob/master/xml.md) ( DASH SCTE-214)
 
 
 # Documentation
