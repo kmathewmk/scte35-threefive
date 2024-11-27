@@ -378,6 +378,8 @@ class XmlParser:
     def __init__(self):
         self.active = None
         self.node_list = []
+        self.open_nodes=[]
+        self.parent=None
 
     def chk_node_list(self, node):
         """
@@ -403,9 +405,11 @@ class XmlParser:
         """
         mk_active sets self.active to the current node name.
         """
+        self.active=None
         name = node[1:].split(" ", 1)[0].split(">", 1)[0]
         name = strip_ns(name)
         self.active = name.replace("/", "").replace(">", "")
+
 
     def _split_attrs(self, node):
         node = node.replace("='", '="').replace("' ", '" ')
@@ -430,7 +434,9 @@ class XmlParser:
         """
         parse parses an xml string for a SCTE-35 Cue.
         """
-        stuff = {"descriptors": []}
+        stuff={}
+        if not descriptor_parse:
+            stuff = {"descriptors": []}
         data = exemel.replace("\n", "").strip()
         while ">" in data:
             self.mk_active(data)
@@ -453,7 +459,8 @@ class XmlParser:
         self.chk_node_list(this_node)
         attrs = self.mk_attrs(this_node)
         if self.active not in stuff:
-            stuff[self.active] = attrs
+            if  self.active not in ['!--','']:
+                stuff[self.active] = attrs
         data = data[ridx + 1 :]
         if "<" in data:
             lidx = data.index("<")
