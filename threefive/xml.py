@@ -1,487 +1,379 @@
+#!/usr/bin/env python3
+
 """
-xml.py  The Node class for converting to xml,
-        The XmlParser class for parsing an xml string for SCTE-35 data.
-        and several helper functions
+threefive command line SCTE35 decoder.
+
 """
 
-from xml.sax.saxutils import escape, unescape
+
+import sys
+from new_reader import reader
+from threefive import Cue, Stream, print2, decode, version
+from threefive.hls import cli as hlscli
+from threefive.sixfix import sixfix
+from threefive.superkabuki import SuperKabuki
+from sideways import cli as sidecli
+
+REV = "\033[7;1m"
+NORM = "\033[27m\033[0m"
+NORM = "\033[0m"
+BLUE = "\033[36;1;51m"
+
+B = "\033[7;1m"
+U = "\033[m"
 
 
-def t2s(v):
+class SupaStream(Stream):
     """
-    _t2s converts
-    90k ticks to seconds and
-    rounds to six decimal places
-    """
-    return round(v / 90000.0, 6)
-
-
-def un_camel(k):
-    """
-    camel changes camel case xml names
-    to underscore_format names.
-    """
-    k = strip_ns(k)
-    k = "".join([f"_{i.lower()}" if i.isupper() else i for i in k])
-    return (k, k[1:])[k[0] == "_"]
-
-
-def un_xml(v):
-    """
-    un_xml converts an xml value
-    to ints, floats and booleans.
-    """
-    mapped = {
-        "false": False,
-        "true": True,
-    }
-    if v.isdigit():
-        return int(v)
-    if v.replace(".", "").isdigit():
-        return float(v)
-    if v in mapped:
-        return mapped[v]
-    return v
-
-
-def strip_ns(this):
-    """
-    strip_ns strip namespace off this.
-    """
-    if "xmlns:" in this:
-        return "xmlns"
-    return this.split(":")[-1]
-
-
-def iter_attrs(attrs):
-    """
-    iter_attrs normalizes xml attributes
-    and adds them to the stuff dict.
-    """
-    conv = {un_camel(k): un_xml(v) for k, v in attrs.items()}
-    pts_vars = ["pts_time", "pts_adjustment", "duration", "segmentation_duration"]
-    return  {k: (t2s(v) if k in pts_vars else v) for k, v in conv.items()}
-
-
-
-def val2xml(val):
-    """
-    val2xmlconvert val for xml
-    """
-    if isinstance(val, (bool, int, float)):
-        return str(val).lower()
-    if isinstance(val, str):
-        if val.lower()[:2] == "0x":
-            return str(int(val, 16))
-    return val
-
-
-def key2xml(string):
-    """
-    key2xml convert name to camel case
-    """
-    new_string = string
-    if "_" in string:
-        new_string = string.title().replace("_", "")
-        return new_string[0].lower() + new_string[1:]
-
-
-def mk_xml_attrs(attrs):
-    """
-    mk_xml_attrs converts a dict into
-    a dict of xml friendly keys and values
-    """
-    return "".join([f' {key2xml(k)}="{val2xml(v)}"' for k, v in attrs.items()])
-
-
-class NameSpace:
-    """
-    Each Node instance has a NameSpace instance
-    to track namespace settings.
-    @ns is the name of the namespace
-    @uri is the xmlns uri
-    @all is a flag to signal that all elements and
-    attributes will have the namespace prefixed.
-    By default only  the elements are prefixed with the namespace.
+    SupaStream is subclass of Stream used
+    to print raw SCTE-35 packets.
     """
 
-    def __init__(self, ns=None, uri=None):
-        self.ns = ns
-        self.uri = uri
-        self.all = False
-
-    def prefix_all(self, abool=True):
-        """
-        prefix_all takes a boolean
-        True turns it on, False turns it off.
-        """
-        self.all = abool
-
-    def xmlns(self):
-        """
-        xmlns return xmlns attribute
-        """
-        if not self.uri:
-            return ""
-        if not self.ns:
-            return f'xmlns="{self.uri}"'
-        return f'xmlns:{self.ns}="{self.uri}"'
-
-    def clear(self):
-        """
-        clear clear namespace info
-        """
-        self.ns = None
-        self.uri = None
-        self.all = False
+    def _parse_scte35(self, pkt, pid):
+        print2(pkt)
+        print2('')
+        super()._parse_scte35(pkt, pid)
 
 
-class Node:
+def mk_sidecar(cue):
     """
-    The Node class is to create an xml node.
-
-    An instance of Node has:
-
-        name :      <name> </name>
-        value  :    <name>value</name>
-        attrs :     <name attrs[k]="attrs[v]">
-        children :  <name><children[0]></children[0]</name>
-        depth:      tab depth for printing (automatically set)
-
-    Use like this:
-
-        from threefive.xml import Node
-
-        ts = Node('TimeSignal')
-        st = Node('SpliceTime',attrs={'pts_time':3442857000})
-        ts.add_child(st)
-        print(ts)
+    mk_sidecar generates a sidecar file with the SCTE-35 Cues
     """
-
-    def __init__(self, name, value=None, attrs=None, ns=None):
-        self.name = name
-        self.value = value
-        self.depth = 0
-        self.namespace = NameSpace()
-        self.namespace.ns = ns
-        self.attr = None
-        self._handle_attrs(attrs)
-        self.children = []
-
-    def __repr__(self):
-        return self.mk()
-
-    def _handle_attrs(self, attrs):
-        if not attrs:
-            attrs = {}
-        if "xmlns" in attrs:
-            self.namespace.uri = attrs.pop("xmlns")
-        self.attrs = attrs
-
-    def attrs2nodes(self):
-        """
-        attrs2nodes attributes to elements
-        """
-        for k, v in self.attrs.items():
-            self.add_child( Node(name=key2xml(k), value=val2xml(v)),slot=0 )
-        self.attrs={}
-
-    def mk_ans(self, attrs):
-        """
-        mk_ans set namespace on attributes
-        """
-        new_attrs = {}
-        if self.namespace.all:
-            for k, v in attrs.items():
-                new_attrs[f"{self.namespace.ns}:{k}"] = v
-        return new_attrs
-
-    def chk_obj(self, obj):
-        """
-        chk_obj determines if
-        obj is self, or another obj
-        for self.set_ns and self.mk
-        """
-        if obj is None:
-            obj = self
-        return obj
-
-    def set_ns(self, ns=None):
-        """
-        set_ns set namespace on the Node
-        """
-        self.namespace.ns = ns
-
-    def rm_attr(self, attr):
-        """
-        rm_attr remove an attribute
-        """
-        self.attrs.pop(attr)
-
-    def add_attr(self, attr, value):
-        """
-        add_attr add an attribute
-        """
-        self.attrs[attr] = value
-
-    def set_depth(self):
-        """
-        set_depth is used to format
-        tabs in output
-        """
-        for child in self.children:
-            child.depth = self.depth + 1
-
-    def get_indent(self):
-        """
-        get_indent returns a string of spaces the required depth for a node
-        """
-        tab = "   "
-        return tab * self.depth
-
-    def _rendrd_children(self, rendrd, ndent, name):
-        for child in self.children:
-            rendrd += self.mk(child)
-        return f"{rendrd}{ndent}</{name}>\n".replace(" >",">")
+    pts = 0.0
+    with open("sidecar.txt", "a") as sidecar:
+        cue.show()
+        if cue.packet_data.pts:
+            pts = cue.packet_data.pts
+        data = f"{pts},{cue.encode()}\n"
+        sidecar.write(data)
 
 
-    def mk_name(self):
-        """
-        mk_name add namespace to node name
-        """
-        name = self.name
-        if self.namespace.ns:
-            name = f"{self.namespace.ns}:{name}"
-        return name
+HELP = f"""
+threefive                    {U}
 
-    def rendr_attrs(self, ndent, name):
-        """
-        rendrd_attrs renders xml attributes
-        """
-        attrs = self.attrs
-        if self.namespace.all:
-            attrs = self.mk_ans(self.attrs)
-        new_attrs = mk_xml_attrs(attrs)
-        if self.depth == 0:
-            return f"{ndent}<{name} {self.namespace.xmlns()} {new_attrs}>"
-        return f"{ndent}<{name}{new_attrs}>"
+{B} Default    {U} {BLUE}The default action is to read a input and write a SCTE-35 output.{U}
 
-    def children_namespaces(self):
-        """
-        children_namespaces give children your namespace
-        """
-        for child in self.children:
-            child.namespace.ns = self.namespace.ns
-            child.namespace.all = self.namespace.all
-            child.namespace.uri = ""
+  {BLUE}inputs {U} mpegts, base64, hex, json, xml, and xmlbin{U}.
 
-    def rendr_all(self,ndent,name):
-        """
-        rendr_all renders the Node instance and it's children in xml.
-        """
-        rendrd = self.rendr_attrs(ndent, name)
-        if self.value:
-            return f"{rendrd}{self.value}</{name}>\n"
-        rendrd = f"{rendrd}\n"
-        rendrd.replace(" >",">")
-        if self.children:
-            return self._rendrd_children(rendrd, ndent, name)
-        return rendrd.replace(">", "/>")
+  {BLUE}outputs{U} base64, bytes, hex, int, json, xml, and xmlbin.{U}
 
-    def mk(self, obj=None):
-        """
-        mk makes the node obj,
-        and it's children into
-        an xml representation.
-        """
-        obj = self.chk_obj(obj)
-        obj.set_depth()
-        obj.children_namespaces()
-        name = obj.mk_name()
-        ndent = obj.get_indent()
-        #obj.attrs2nodes()
-        if isinstance(obj, Comment):
-            return obj.mk(obj)
-        return obj.rendr_all(ndent,name)
+  {BLUE}threefive can read from {U} strings, files, stdin, http(s), multicast, and Udp.
+
+  Input:{U}    Output:{U}
+ {U}{BLUE} mpegts {U}  {U}{BLUE} base64 {NORM} threefive https://example.com/video.ts  base64
+ {U}{BLUE} xml    {U}  {U}{BLUE} bytes  {NORM} threefive bytes  < xml.xml
+ {U}{BLUE} base64 {U}  {U}{BLUE} hex    {NORM} threefive '/DAWAAAAAAAAAP/wBQb+AKmKxwAACzuu2Q==' hex
+ {U}{BLUE} xmlbin {U}  {U}{BLUE} int    {NORM} threefive  int  < xml.xml
+ {U}{BLUE} mpegts {U}  {U}{BLUE} json   {NORM} threefive video.ts
+ {U}{BLUE} json   {U}  {U}{BLUE} xml    {NORM} threefive  < json.json  xml
+ {U}{BLUE} hex    {U}  {U}{BLUE} xmlbin {NORM} threefive 0xfc301600000000000000fff00506fe00a98ac700000b3baed9  xmlbin
+
+{B}  hls        {U}{NORM} {BLUE} SCTE-35 hls decode help:{U} threefive hls help
+
+  threefive hls https://example.com/master.m3u8
+
+{B}  hls encode {U} {BLUE} SCTE-35 hls encode help:{U}threefive hls encode help
+
+  threefive hls encode  -i https://example.com/master.m3u8 -s sidecar.txt -o output_dir
+
+{B}  inject     {U}{NORM}{BLUE} Inject an mpegts stream with a SCTE-35 sidecar file at pid:{NORM}
+
+  threefive inject video.ts with sidecar.txt at 333
+
+{B}  packets    {U}{NORM}{BLUE} Print raw SCTE-35 packets from multicast mpegts video:{NORM}
+
+  threefive packets udp://@235.35.3.5:3535
+
+{B}  proxy      {U}{NORM}{BLUE} Parse a https stream and write raw video to stdout:{NORM}
+
+  threefive proxy video.ts
+
+{B}  pts        {U}{NORM}{BLUE} Print PTS from mpegts video:{NORM} threefive pts video.ts
+
+{B}  sidecar    {U}{NORM}{BLUE} Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:{NORM}
+
+  threefive sidecar video.ts
+
+{B}  sixfix     {U}{NORM}{BLUE} Fix SCTE-35 data mangled by ffmpeg:{NORM} threefive sixfix video.ts
+
+{B}  show       {U}{NORM}{BLUE} Probe mpegts video:{NORM} threefive show video.ts
+
+{B}  version    {U}{NORM}{BLUE} Show version:{NORM} threefive version
+
+{B}  help       {U}{NORM} {BLUE}Help:{NORM} threefive help
+
+"""
 
 
-    def add_child(self, child, slot=None):
-        """
-        add_child adds a child node
-        set slot to insert at index slot.
-        """
-        if not slot:
-            slot = len(self.children)
-        self.children = self.children[:slot] + [child] + self.children[slot:]
-
-    def rm_child(self, child):
-        """
-        rm_child remove a child
-
-        example:
-        a_node.rm_child(a_node.children[3])
-        """
-        self.children.remove(child)
-
-    def add_comment(self, comment, slot=None):
-        """
-        add_comment add a Comment node
-        """
-        self.add_child(Comment(comment), slot)
+def read_buff():
+    with reader(sys.stdin.buffer) as stuff:
+        inbuff = stuff.read().decode()
+        return inbuff
 
 
-class Comment(Node):
+def mk_args(keys):
     """
-    The Comment class is to create a Node representing a xml comment.
-
-    An instance of Comment has:
-
-        name :      <!-- name -->
-        depth:      tab depth for printing (automatically set)
-
-    Since Comment is a Node, it also has attrs, value and children but
-    these are ignored. cf etree.Comment
-    Use like this:
-
-        from threefive.xml import Comment, Node
-
-        n = Node('root')
-        c = Comment('my first comment')
-
-        n.add_child(c)
-        print(n)
-
-    See also Node.add_comment:
+    mk_args generates a list of args for inputs
+    if no args are present,read from sys.stdin.buffer
     """
-
-    def mk(self, obj=None):
-        if obj is None:
-            obj = self
-        obj.set_depth()
-        return f"{obj.get_indent()}<!-- {obj.name} -->\n"
+    args = [arg for arg in sys.argv[1:] if arg not in keys]
+    if not args:
+        args.append(read_buff())
+    return args
 
 
-class XmlParser:
+# print_map functions
+
+
+def hls():
+    sys.argv.remove("hls")
+    if "encode" in sys.argv:
+        sidecli()
+    else:
+        hlscli()
+
+
+def print_help():
     """
-    XmlParser is for parsing
-    a SCTE-35 Cue from  xml.
+    print_help checks sys.argv for the word help
+    and displays the help if found
     """
-
-    DESCRIPTORS = [
-        "AvailDescriptor",
-        "DTMFDescriptor",
-        "SegmentationDescriptor",
-        "TimeDescriptor",
-    ]
-
-    def __init__(self):
-        self.active = None
-        self.node_list = []
-        self.open_nodes=[]
-        self.parent=None
-
-    def chk_node_list(self, node):
-        """
-        chk_node_list is used to track open xml nodes
-        """
-        if self.active in self.node_list:
-            self.node_list.remove(self.active)
-        elif node[-2] != "/":
-            self.node_list.append(self.active)
-
-    def mk_value(self, value, stuff):
-        """
-        mk_value, if the xml node has a value, write it to self.stuff
-
-        <name>value</name>
-
-        """
-        if value:
-            stuff[self.active][un_camel(self.active)] = unescape(value)
-        return stuff
-
-    def mk_active(self, node):
-        """
-        mk_active sets self.active to the current node name.
-        """
-        self.active=None
-        name = node[1:].split(" ", 1)[0].split(">", 1)[0]
-        name = strip_ns(name)
-        self.active = name.replace("/", "").replace(">", "")
+    print2(HELP)
+    sys.exit()
 
 
-    def _split_attrs(self, node):
-        node = node.replace("='", '="').replace("' ", '" ')
-        attrs = [x for x in node.split(" ") if "=" in x]
-        return attrs
+def print_version():
+    """
+    print_version print the threefive version
+    """
+    print2(version)
 
-    def mk_attrs(self, node):
-        """
-        mk_attrs parses the current node for attributes
-        and stores them in self.stuff[self.active]
-        """
-        if "!--" in node:
-            return False
-        attrs = self._split_attrs(node)
-        parsed = {
-            x.split('="')[0]: unescape(x.split('="')[1].split('"')[0]) for x in attrs
-        }
-        it = iter_attrs(parsed)
-        return it
 
-    def parse(self, exemel, descriptor_parse=False):
-        """
-        parse parses an xml string for a SCTE-35 Cue.
-        """
-        stuff={}
-        if not descriptor_parse:
-            stuff = {"descriptors": []}
-        data = exemel.replace("\n", "").strip()
-        while ">" in data:
-            self.mk_active(data)
-            data, stuff = self._parse_nodes(data, stuff, descriptor_parse)
-        return stuff
+def superkabuki():
+    args = {}
+    if "inject" in sys.argv:
+        args["input"] = sys.argv[sys.argv.index("inject") + 1]
+        if "with" in sys.argv:
+            args["sidecar"] = sys.argv[sys.argv.index("with") + 1]
+            if "at" in sys.argv:
+                args["scte35_pid"] = sys.argv[sys.argv.index("at") + 1]
+                supak = SuperKabuki()
+                supak.apply_args(args)
+                supak.encode()
+                return True
+    print2("threefive mpegts inject {infile} with {sidecar_file} at {pid}")
+    return False
 
-    def _parse_nodes(self, data, stuff, descriptor_parse=False):
-        if self.active in self.DESCRIPTORS and not descriptor_parse:
-            data, stuff = self._parse_descriptor(data, stuff)
-        else:
-            data, stuff = self._parse_most(data, stuff)
-        return data, stuff
 
-    def _parse_most(self, data, stuff):
-        """
-        parse_most parse everything except descriptor nodes
-        """
-        ridx = data.index(">")
-        this_node = data[: ridx + 1]
-        self.chk_node_list(this_node)
-        attrs = self.mk_attrs(this_node)
-        if self.active not in stuff:
-            if  self.active not in ['!--','']:
-                stuff[self.active] = attrs
-        data = data[ridx + 1 :]
-        if "<" in data:
-            lidx = data.index("<")
-            value = data[:lidx].strip()
-            stuff = self.mk_value(value, stuff)
-            data = data[lidx:]
-        return data, stuff
+print_map = {
+    "hls": hls,
+    "help": print_help,
+    "version": print_version,
+    "inject": superkabuki,
+}
 
-    def _parse_descriptor(self, data, stuff):
-        """
-        mk_descriptor slices off an entire
-        descriptor xml node from data to parse.
-        """
-        sub_data = ""
-        tag = data[1:].split(" ", 1)[0].split('>',1)[0]
+
+def chk_print_map():
+    """
+    chk_print_map checks for print_map.keys() in sys.argv
+    """
+    for k, v in print_map.items():
+        if k in sys.argv:
+            v()
+            sys.exit()
+
+
+# functions for mpegts_map
+
+
+def packet_chk(this):
+    """
+    packet_chk checks for the packet keyword
+    and displays SCTE-35 packets if present.
+    """
+    supa = SupaStream(this)
+    supa.decode()
+
+
+def proxy_chk(this):
+    """
+    proxy_chk checks for the proxy keyword
+    and proxies the stream to stdout if present.
+    proxy_chk also writes pts,cue pairs to sidecar.txt
+    """
+    strm = Stream(this)
+    strm.proxy(func=mk_sidecar)
+
+
+def pts_chk(this):
+    """
+    pts_chk is used to display PTS.
+    """
+    strm = Stream(this)
+    strm.show_pts()
+
+
+def show_chk(this):
+    """
+    show_chk checks for the show keyword
+    and displays the streams if present.
+    """
+    strm = Stream(this)
+    strm.show()
+
+
+def sidecar_chk(this):
+    """
+    sidecar_chk checks for the sidecar keyword and
+    generates a sidecar file if present.
+    """
+    strm = Stream(this)
+    strm.decode(func=mk_sidecar)
+
+
+mpegts_map = {
+    "packets": packet_chk,
+    "proxy": proxy_chk,
+    "pts": pts_chk,
+    "show": show_chk,
+    "sidecar": sidecar_chk,
+    "sixfix": sixfix,
+}
+
+
+def chk_mpegts_map():
+    """
+    chk_mpegts_map check sys.argv for mpegts_map keys
+    """
+    m_keys = list(mpegts_map.keys())
+    args = mk_args(m_keys)
+    for key in m_keys:
+        if key in sys.argv:
+            for arg in args:
+                mpegts_map[key](arg)
+            sys.exit()
+
+
+# functions for funk_map
+
+
+def base64_out(cue):
+    """
+    print SCTE-35 from mpegts as base64
+    """
+    print2(cue.encode())
+
+
+def bytes_out(cue):
+    """
+    print SCTE-35 from mpegts as base64
+    """
+    print2(cue.bites)
+
+
+def hex_out(cue):
+    """
+    print SCTE-35 from mpegts as hex
+    """
+    print2(cue.encode2hex())
+
+
+def int_out(cue):
+    """
+    print SCTE-35 from mpegts as int
+    """
+    print2(cue.encode2int())
+
+
+def json_out(cue):
+    """
+    print SCTE-35 from mpegts as json
+    """
+    cue.show()
+
+
+def xml_out(cue):
+    """
+    xml_out prints cue as xml
+    """
+    print2(cue.xml(xmlbin=False))
+
+
+def xmlbin_out(cue):
+    """
+    xml_out prints cue as xml
+    """
+    print2(cue.xml())
+
+
+funk_map = {
+    "base64": base64_out,
+    "bytes": bytes_out,
+    "hex": hex_out,
+    "int": int_out,
+    "json": json_out,
+    "xml": xml_out,
+    "xmlbin": xmlbin_out,
+}
+
+
+def funk():
+    """
+    return a func
+    if a key in out_map
+    is also in sys.argv
+    """
+    func =json_out
+    for k, v in funk_map.items():
+        if k in sys.argv:
+            func=v
+    return func
+
+def to_funk(this):
+    """
+    to_funk prints a cue in a variety of formats.
+    """
+    try:
+        # mpegts streams handled here.
+        strm = Stream(this)
+        func = funk()
+        strm.decode(func=func)
+    except:  # try to load json or xml
         try:
-            sub_data = data[: data.index(f"</{tag}>") + len(tag) + 1]
+            cue=Cue()
+            cue.load(this)
         except:
-            sub_data = data[: data.index("/>") + 2]
-        data = data.replace(sub_data, "")
-        sub_stuff = self.parse(sub_data, descriptor_parse=True)
-        if 'SegmentationDescriptor' in sub_stuff and 'SegmentationUpid' in sub_stuff:
-            sub_stuff['SegmentationDescriptor']['SegmentationUpid'] = sub_stuff.pop('SegmentationUpid')
-        stuff["descriptors"].append(sub_stuff)
-        return data, stuff
+            try:  # handle base64, bytes, and hex.
+                cue = Cue(this)
+                cue.decode()
+            except:
+                pass
+        if cue:
+            cue.encode()
+            func = funk()
+            func(cue)
+
+
+def chk_funk_map():
+    """
+    chk_func_map checks for func_map.keys() in sys.argv
+    """
+    funk_keys = list(funk_map.keys())
+    args = mk_args(funk_keys)
+    superfunk = decode
+    if [fkey for fkey in funk_keys if fkey in sys.argv]:
+        superfunk = to_funk
+    else:
+        superfunk = to_funk
+    [superfunk(arg) for arg in args]
+    sys.exit()
+
+
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        sys.argv.append('json')
+    chk_print_map()
+    chk_mpegts_map()
+    chk_funk_map()
+# else:
+#    decode(sys.stdin.buffer)
