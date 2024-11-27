@@ -1,25 +1,5 @@
 # The new threefive cli 
 
-## Decode SCTE-35
-<details><summary><B>threefive decode help</B></summary>
-
-* __Here's how to decode SCTE-35 from MPEGTS, HLS, Base64, Hex, Files, Stdin__
-![image](https://github.com/user-attachments/assets/b646d89e-c318-4449-a2da-728520776f86)
-
-
-</details>
-
-
-## Encode SCTE-35
-
-<details><summary><B>threefive encode help</summary</B> </summary>
-
-*  Load JSON, XML, Base64 or Hex and encode to  JSON, XML,Base64, Hex, Int or Bytes : threefive  encode  help 
-    * encode can be used to convert from one SCTE-35 format to another.
-![image](https://github.com/user-attachments/assets/3e61dc4c-7072-4617-9f9a-796e871faf18)
-
-</details>
-
 ## HLS Decode SCTE-35
 #### short answer:
 * threfive hls will parse an m3u8 manifest as well as mpegts segments for SCTE-35.
@@ -116,13 +96,13 @@ Supported:
 
 [ Profiles ]
 * A lot of companies have multiple SCTE-35 Tags and/or SCTE-35 embedded inthe segments. threefive hls allows you to set what you parse. This is tunable via a file called __.35rc__
-* to generate .35rc run the following
+* to generate hls.profile run the following
 ```awk
 threefive hls profile
 ```
 * it will creat .35rc in the current directory
 ( Integers are show in hex (base 16),
-          base 10 unsigned integers can also be used in .35rc )
+          base 10 unsigned integers can also be used in hls.profile )
 ```awk
   a@fu:~$ cat .35rc
 
@@ -165,7 +145,7 @@ _(Edit the file as needed and then run threefive hls from the same directory)_
 * Comments can be started with a # or //
 * Integers can be base 10 or base 16
 
-* __threefive hls__ genrates a few output files to make it easier to debug live HLS with SCTE-35
+* __threefive hls__ generates a few output files to make it easier to debug live HLS with SCTE-35
 
 
 [__Output Files__]
@@ -175,12 +155,12 @@ _(Edit the file as needed and then run threefive hls from the same directory)_
 * this is done to prevent old files from stacking up.
 *  If you want to keep a file, rename it before restarting __threefve hls__ 
     * Profile rules applied to the output:
-        * __35.m3u8__  - live playable rewrite of the m3u8 
-        * __35.sidecar__ - list of ( pts, HLS SCTE-35 tag ) pairs
+        * __hls.m3u8__  - live playable rewrite of the m3u8 
+        * __hls.sidecar__ - list of ( pts, HLS SCTE-35 tag ) pairs
 
 * Profile rules not applied to the output:
-   * __35.dump__  -  all of the HLS SCTE-35 tags read.
-   * __35.flat__  - every time an m3u8 is reloaded, it's contents are appended to 35.flat.
+   * __hls.dump__  -  all of the HLS SCTE-35 tags read.
+   * __hls.flat__  - every time an m3u8 is reloaded, it's contents are appended to 35.flat.
 
 
 [  Cool Features  ]
@@ -267,7 +247,7 @@ Profile:
 ```sed
    threefive hls help
 ```
-  * Generate a new .35rc
+  * Generate a new hls.profile
 ```sed
     threefive hls profile
 ```
@@ -284,7 +264,7 @@ Profile:
 
                 threefive hls help
 
-        * Generate a new sc.profile
+        * Generate a new hls.profile
 
                 threefive hls profile
 
@@ -456,44 +436,41 @@ printf '38103.868589, /DAxAAAAAAAAAP/wFAUAAABdf+/+zHRtOn4Ae6DOAAAAAAAMAQpDVUVJsZ
 threefive  inject  video.ts  with  sidecar.txt  at  333
 ```
 
-## MPEGTS 
-    
-* threefive mpegts help
 
 ### packets
 * Print raw SCTE-35 packets from multicast mpegts video:  
 ```asm
-threefive  mpegts   packets  udp://@235.35.3.5:3535
+threefive   packets  udp://@235.35.3.5:3535
 ```
 ### proxy
 * Parse a https stream and write raw video to stdout:  
 ```asm
-threefive  mpegts   proxy  https://example.com/video.ts
+threefive  proxy  https://example.com/video.ts
 ```
 ### pts
 * Print PTS from mpegts video:  
 ```asm
-threefive  mpegts   pts  video.ts
+threefive  pts  video.ts
 ```
 ### sidecar
 * Parse a stream, write pts,write SCTE-35 Cues to sidecar.txt:
 ```asm
- threefive  mpegts   sidecar  https://example.com/video.ts
+ threefive   sidecar  https://example.com/video.ts
 ```
 ### sixfix
 * Fix SCTE-35 data mangled by ffmpeg:
 ```asm
-   threefive  mpegts   sixfix  video.ts
+   threefive   sixfix  video.ts
 ```
 ### show
 * Probe mpegts video:  
 ```asm
-threefive  mpegts   show  video.ts
+threefive   show  video.ts
 ```
 ### xml
 * Parse an mpegts stream and output xml: 
 ```asm
-threefive  mpegts   xml  video.ts
+threefive  xml  video.ts
 ```
 
 
