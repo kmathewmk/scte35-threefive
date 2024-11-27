@@ -279,14 +279,14 @@ def xml_out(cue):
     """
     xml_out prints cue as xml
     """
-    print2(cue.xml(binary=False))
+    print2(cue.xml(xmlbin=False))
 
 
 def xmlbin_out(cue):
     """
     xml_out prints cue as xml
     """
-    print2(cue.xml(binary=True))
+    print2(cue.xml(xmlbin=True))
 
 
 funk_map = {
