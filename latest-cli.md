@@ -67,7 +67,7 @@ ___
 ```
   * xml+bin format
 ```asm
-      threefive xml binary '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
+      threefive xmlbin '/DAsAAAAAAAAAP/wBQb+7YaD1QAWAhRDVUVJAADc8X+/DAVPVkxZSSIAAJ6Gk2Q='
 ```
 * MPEGTS
   * xml splice info section format
@@ -76,7 +76,7 @@ ___
 ```
   * xml+bin format
 ```asm                                                                                           
-      threefive xml binary https://example.com/video.ts 
+      threefive xmlbin https://example.com/video.ts 
 ```
 ___
 ###  `inject`
