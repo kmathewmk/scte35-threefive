@@ -1,4 +1,4 @@
-# Dash SCTE-35 Parser Preview    (_Updated 9/26/2024_)
+# Dash SCTE-35 Parser Preview    (_Updated 11/26/2024_)
 ### [The cli also has XML support](https://github.com/futzu/SCTE-35/edit/master/atest-cli.md)
 ### From Xml
 ___
