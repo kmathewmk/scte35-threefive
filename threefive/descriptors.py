@@ -329,8 +329,8 @@ class SegmentationDescriptor(SpliceDescriptor):
         self.device_restrictions = None
         self.segmentation_duration = None
         self.segmentation_message = None
-        self.segmentation_upid_length = None
         self.segmentation_type_id = None
+        self.segmentation_upid_length = None
         self.segmentation_upid_type = None
         self.segmentation_upid_type_name = None
         self.segmentation_upid = None
@@ -540,17 +540,16 @@ class SegmentationDescriptor(SpliceDescriptor):
             self.segmentation_upid_type_name, self.segmentation_upid = the_upid.decode()
 
     def _upid_from_xml(self, stuff):
-        if "SegmentationUpid" in stuff:
-            if "segmentation_upid" not in stuff["SegmentationUpid"]:
+        if "SegmentationUpid" in stuff['SegmentationDescriptor']:
+            sdsu=stuff['SegmentationDescriptor']["SegmentationUpid"]
+            if "segmentation_upid" not in sdsu:
                 self.segmentation_upid_type = 0
                 self.segmentation_upid_length = 0
                 self.segmentation_upid = ""
             else:
-                seg_upid = stuff["SegmentationUpid"]["segmentation_upid"]
-                if "segmentation_upid_type" in stuff["SegmentationUpid"]:
-                    self.segmentation_upid_type = stuff["SegmentationUpid"][
-                        "segmentation_upid_type"
-                    ]
+                seg_upid = sdsu["segmentation_upid"]
+                if "segmentation_upid_type" in sdsu:
+                    self.segmentation_upid_type = sdsu["segmentation_upid_type"]
                     self.segmentation_upid_type_name = upid_map[
                         self.segmentation_upid_type
                     ][0]
