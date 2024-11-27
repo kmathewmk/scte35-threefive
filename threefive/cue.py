@@ -189,11 +189,14 @@ class Cue(SCTE35Base):
         data. Encode is called to set missing fields
         when possible and re-calc the length vars and crc.
         """
-        if self.load(data):
-            bites = self.bites
-            self.encode()
-            return bites
+       # pass
+       # print2("_mk_load")
+       # if self.load(data):
+        #bites = self.bites
+       # self.encode()
+        #return bites
         return data
+
 
     def _mk_bits(self, data):
         """
