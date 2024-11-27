@@ -255,6 +255,7 @@ class Stream:
         func can be set to a custom function that accepts
         a threefive.Cue instance as it's only argument.
         """
+        self._find_start()
         for pkt in self.iter_pkts():
             cue = self._parse(pkt)
             if cue:
@@ -343,12 +344,13 @@ class Stream:
         """
         show_pts displays current pts by pid.
         """
-        print2("\tPID\tPTS")
+        print("\tPrgm\tPTS")
         for pkt in self.iter_pkts():
             pid = self._parse_info(pkt)
-            if self._pusi_flag(pkt) and pid != 0:
-                self._parse_pts(pkt, pid)
-                print(f"\t{pid}\t{self.pid2pts(pid)}", end="\r")
+            if pid in self.pids.pcr:
+                if self._pusi_flag(pkt) and pid != 0:
+                    self._parse_pts(pkt, pid)
+                    print(f"\t{self.pid2prgm(pid)}\t{self.pid2pts(pid)}")
 
     def pts(self):
         """
