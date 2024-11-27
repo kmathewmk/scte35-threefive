@@ -107,9 +107,11 @@ threefive                    {U}
 
 def read_buff():
     with reader(sys.stdin.buffer) as stuff:
-        inbuff = stuff.read().decode()
-        return inbuff
-
+        try:
+            inbuff = stuff.read().decode()
+            return inbuff
+        except:
+            decode(stuff.read())
 
 def mk_args(keys):
     """
@@ -375,3 +377,5 @@ if __name__ == "__main__":
     chk_print_map()
     chk_mpegts_map()
     chk_funk_map()
+# else:
+#    decode(sys.stdin.buffer)
