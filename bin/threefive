@@ -375,5 +375,3 @@ if __name__ == "__main__":
     chk_print_map()
     chk_mpegts_map()
     chk_funk_map()
-# else:
-#    decode(sys.stdin.buffer)
