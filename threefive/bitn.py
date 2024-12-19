@@ -35,8 +35,8 @@ class BitBin:
         if self.idx >= num_bits:
             self.idx -= num_bits
             return (self.bits >> (self.idx)) & ~(~0 << num_bits)
-        # return self.negative_shift(num_bits)
-        return False
+        self.negative_shift(num_bits)
+        return 0
 
     def as_hex(self, num_bits):
         """
@@ -91,7 +91,7 @@ class BitBin:
             f"{num_bits} bits requested, but only {self.idx} bits left."
         )
         print2(
-            f"\n bytes remaining: {self.as_bytes(self.idx)} "
+            f"bytes remaining: {self.as_bytes(self.idx)} "
         )
 
 
