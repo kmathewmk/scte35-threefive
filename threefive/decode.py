@@ -21,6 +21,7 @@ see the Cue and Stream classes.
 import sys
 from sys import stdout, stderr
 import logging
+import json
 logger = logging.getLogger('decode')
 
 from .cue import Cue
@@ -61,11 +62,15 @@ def _read_cue(stuff, args):
         cue.show(args.outFile)
     elif args.outFormat == "base64":
         cue.show_base64(args.outFile)
+    elif args.outFormat == "none":
+        pass
+    elif args.outFormat == "input+":
+        pass
     else:
         raise Exception(f"Unexpected SCTE-35 output format '{args.outFormat}'")
-    return True
+    return True, cue.get_json()
 
-def decode(stuff=None, args={"outFormat": "json", "outFile": stdout}):
+def decode(stuff=None, args={"outFormat": "json", "outFile": stdout, "inType": None}):
     """
     decode is a SCTE-35 decoder function
     with input type auto-detection.
@@ -100,9 +105,40 @@ def decode(stuff=None, args={"outFormat": "json", "outFile": stdout}):
     threefive.decode('https://futzu.com/xaa.ts')
 
     """
-    if stuff in [None]:
-        # Mpegts stream or file piped in
-        stuff = sys.stdin.buffer
-    elif isinstance(stuff, int):
-        stuff = hex(stuff)
-    return _read_stuff(stuff, args)
+    if args.inType == "base64Scte35":
+        _read_cue_safe(stuff, args)
+    elif args.inType == "base64Scte35File":
+        if stuff == "-":
+            fh = sys.stdin
+        else:
+            fh = open(stuff, "r", encoding="utf-8")
+        with fh as file:
+            for line in file:
+                try:
+                    words = line.strip().split()
+                    base64_scte35 = words[args.inCol-1]
+                    res, cue_json = _read_cue_safe(base64_scte35, args)
+                    descriptors = json.loads(cue_json)["descriptors"]
+                    if args.outFormat == "input+":
+                        seg_type_id, upid = (str(descriptors[0].get("segmentation_type_id", "-")), descriptors[0].get("segmentation_upid", "-")) if len(descriptors) > 0 else ("-", "-")
+                        words.append(seg_type_id)
+                        words.append(upid)
+                        print("  ".join(words))
+                except Exception as e1:
+                    logger.error(f"Decode line as base64 SCTE-35 failed", words)
+                    #logger.error(e1, exc_info=True)
+    else:
+        if stuff in [None]:
+            # Mpegts stream or file piped in
+            stuff = sys.stdin.buffer
+        elif isinstance(stuff, int):
+            stuff = hex(stuff)
+        return _read_stuff(stuff, args)
+
+def _read_cue_safe(stuff, args):
+        try:
+            return _read_cue(stuff, args)
+        except Exception as e1:
+            logger.error(f"Decode as base64 SCTE-35 failed")
+            logger.error(e1, exc_info=True)
+            return False
