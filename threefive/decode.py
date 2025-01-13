@@ -120,9 +120,13 @@ def decode(stuff=None, args={"outFormat": "json", "outFile": stdout, "inType": N
                     res, cue_json = _read_cue_safe(base64_scte35, args)
                     descriptors = json.loads(cue_json)["descriptors"]
                     if args.outFormat == "input+":
-                        seg_type_id, upid = (str(descriptors[0].get("segmentation_type_id", "-")), descriptors[0].get("segmentation_upid", "-")) if len(descriptors) > 0 else ("-", "-")
-                        words.append(seg_type_id)
-                        words.append(upid)
+                        for desc in descriptors:
+                            subwords = (
+                                str(desc.get("tag", "-")), 
+                                str(desc.get("segmentation_type_id", "-")), 
+                                desc.get("segmentation_upid", "-")
+                            )
+                            words.append(",".join(subwords))
                         print("  ".join(words))
                 except Exception as e1:
                     logger.error(f"Decode line as base64 SCTE-35 failed", words)
